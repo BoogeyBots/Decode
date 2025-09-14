@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Meeturi;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
 import java.util.List;
-
+@TeleOp
 public class TeleOP extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

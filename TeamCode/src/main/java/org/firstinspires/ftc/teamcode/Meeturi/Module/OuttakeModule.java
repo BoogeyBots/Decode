@@ -18,7 +18,7 @@ public class OuttakeModule {
         servo = hardwareMap.get(Servo.class, "angle");
     }
 
-    public void trage(int power) {
+    public void trage(double power) {
         motor.setPower(power);
         //probabil o sa avem o functie pentru far si una pentru close, vedem
     }
@@ -33,5 +33,9 @@ public class OuttakeModule {
 
     public void angle_far() {
         servo.setPosition(1);
+    }
+
+    public void custom_angle(double pos) {
+        servo.setPosition(pos);
     }
 }

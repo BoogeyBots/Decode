@@ -14,7 +14,7 @@ public class TurretModule {
     }
     GoBildaPinpointDriver pinpoint;
     CRServo s1, s2;
-    double targetHeading = 0, currentHeading, error, kp = 0.5;
+    double targetHeading = 0, currentHeading, error, kp = 0.5, deadband = 0.01, power; //deadband = 0.02
 
     public void init() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
@@ -31,8 +31,45 @@ public class TurretModule {
         pinpoint.update();
         currentHeading = pinpoint.getHeading(AngleUnit.RADIANS);
         error = targetHeading - currentHeading;
-        double power = kp * error;
+
+        /*
+        Daca oscileaza, implementam "banda moarta"
+        if(Math.abs(error) < deadband) {
+            s1.setPower(0);
+            s2.setPower(0);
+            return;
+        }
+
+         */
+
+        power = kp * error;
         s1.setPower(power);
         s2.setPower(power);
     }
+
+
+    //pentru calibrare
+
+    public void calibrare(double p, double d) {
+        kp = p;
+        deadband = d;
+    }
+
+    public double getHeading() {
+        return currentHeading;
+    }
+
+    public double getError() {
+        return error;
+    }
+
+    public double getPower() {
+        return power;
+    }
+
+    public double getkP() {
+        return kp;
+    }
+
+
 }
