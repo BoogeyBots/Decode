@@ -4,26 +4,35 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class IntakeModule {
-    HardwareMap hardwareMap;
-    public IntakeModule (HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
-    }
+public class IntakeModule extends Constants.Intake {
     DcMotorEx motor;
-    public void init() {
+    public enum IntakeCases {
+        TAKE,
+        EJECT,
+        OFF
+    }
+    public IntakeCases state = null;
+
+    public IntakeModule (HardwareMap hardwareMap) {
+        init(hardwareMap);
+    }
+    void init(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
-    }
 
-    public void trage(double power) {
-        motor.setPower(power);
+        state = IntakeCases.OFF;
     }
-
-    public void scuipa(double power) {
-        motor.setPower(-power);
+    public Actions actions;
+    public class Actions {
+        public void take() {
+            motor.setPower(powerMotorTake);
+        }
+    
+        public void eject() {
+            motor.setPower(powerMotorEject);
+        }
+    
+        public void off() {
+            motor.setPower(powerMotorOff);
+        }
     }
-
-    public void stop() {
-        motor.setPower(0);
-    }
-
 }

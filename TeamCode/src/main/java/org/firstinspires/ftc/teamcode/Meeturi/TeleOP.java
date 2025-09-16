@@ -17,16 +17,10 @@ public class TeleOP extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        IntakeModule intake = new IntakeModule(hardwareMap);
-        OuttakeModule outtake = new OuttakeModule(hardwareMap);
-        TurretModule turret = new TurretModule(hardwareMap);
+        Robot robot = new Robot(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        intake.init();
-        outtake.init();
-        turret.init();
 
         waitForStart();
 
@@ -55,27 +49,17 @@ public class TeleOP extends LinearOpMode {
 
             drive.update();
 
-            if(gamepad1.right_trigger > 0.01) {
-                intake.trage(gamepad1.right_trigger);
-            }
+            // de aici e partea mea de TeleOp
+            robot.controlAll();
 
-            else if(gamepad1.left_trigger > 0.01) {
-                intake.scuipa(gamepad1.left_trigger);
-            }
+            if(gamepad1.right_trigger > 0.01)
+                robot.intake.state = IntakeModule.IntakeCases.TAKE;
 
-            else {
-                intake.stop();
-            }
+            if(gamepad1.left_trigger > 0.01)
+                robot.intake.state = IntakeModule.IntakeCases.EJECT;
 
-            if(gamepad1.right_bumper) {
-                outtake.trage(1);
-            }
-
-            else {
-                outtake.stop();
-            }
-
-            turret.update();
+            if(gamepad1.right_bumper)
+                robot.outtake.state = OuttakeModule.OuttakeCases.SHOOT;
         }
     }
 }
