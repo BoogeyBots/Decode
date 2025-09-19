@@ -11,6 +11,6 @@ public class Constants {
     }
 
     static class Turret {
-        double targetHeading = 0, currentHeading, error, kp = 0.5, deadband = 0.01, power; //deadband = 0.02
+        public static double targetHeading = 0, currentHeading, error, kp = 0.5, deadband = 0.01, power; //deadband = 0.02
     }
 }
