@@ -56,24 +56,17 @@ public class TeleOP extends LinearOpMode {
             drive.update();
 
             if(gamepad1.right_trigger > 0.01) {
-                intake.trage(gamepad1.right_trigger);
+                //intake.trage(gamepad1.right_trigger);
             }
 
             else if(gamepad1.left_trigger > 0.01) {
-                intake.scuipa(gamepad1.left_trigger);
+                //intake.scuipa(gamepad1.left_trigger);
             }
 
             else {
                 intake.stop();
             }
 
-            if(gamepad1.right_bumper) {
-                outtake.trage(1);
-            }
-
-            else {
-                outtake.stop();
-            }
 
             turret.update();
         }

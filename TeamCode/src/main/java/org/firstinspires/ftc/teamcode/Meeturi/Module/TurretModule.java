@@ -50,8 +50,8 @@ public class TurretModule {
 
     //pentru calibrare
 
-    public void calibrare(double p, double d) {
-        kp = p;
+    public void calibrare(double kp, double d) {
+        this.kp = kp;
         deadband = d;
     }
 

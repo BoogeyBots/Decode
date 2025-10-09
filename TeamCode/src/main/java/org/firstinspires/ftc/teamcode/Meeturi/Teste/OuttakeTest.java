@@ -16,7 +16,7 @@ public class OuttakeTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            outtake.trage(power);
+            //outtake.trage(power);
             outtake.custom_angle(pos);
         }
     }
