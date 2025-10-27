@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
@@ -14,12 +15,16 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import java.util.List;
 @TeleOp
 public class TeleOP extends LinearOpMode {
+    SampleMecanumDrive drive = null;
+    IntakeModule intake = null;
+    OuttakeModule outtake = null;
+    TurretModule turret = null;
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        IntakeModule intake = new IntakeModule(hardwareMap);
-        OuttakeModule outtake = new OuttakeModule(hardwareMap);
-        TurretModule turret = new TurretModule(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
+        intake = new IntakeModule(hardwareMap);
+        outtake = new OuttakeModule(hardwareMap);
+        turret = new TurretModule(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -47,28 +52,42 @@ public class TeleOP extends LinearOpMode {
 
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            - gamepad1.left_stick_y,
-                            - gamepad1.left_stick_x,
-                            - gamepad1.right_stick_x
+                            gamepad1.left_stick_y,
+                            gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
                     )
             );
 
             drive.update();
 
-            if(gamepad1.right_trigger > 0.01) {
-                //intake.trage(gamepad1.right_trigger);
+            if (gamepad1.right_trigger > 0.01) {
+                intake.trage(1);
             }
 
-            else if(gamepad1.left_trigger > 0.01) {
-                //intake.scuipa(gamepad1.left_trigger);
+            else if (gamepad1.left_trigger > 0.01) {
+                intake.scuipa(1);
             }
 
             else {
                 intake.stop();
             }
 
+            if(gamepad1.a) {
+                outtake.departe();
+            }
 
-            turret.update();
+            if(gamepad1.b) {
+                outtake.aproape();
+            }
+
+            if(gamepad1.y) {
+                outtake.stop();
+            }
+
+            outtake.update();
+
+            telemetry.addData("Target: ", Constants.outtake.target_velocity);
+            telemetry.update();
         }
     }
 }
