@@ -5,6 +5,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
@@ -19,6 +20,7 @@ public class TeleOP extends LinearOpMode {
     IntakeModule intake = null;
     OuttakeModule outtake = null;
     TurretModule turret = null;
+    ElapsedTime timer;
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleMecanumDrive(hardwareMap);
@@ -33,6 +35,10 @@ public class TeleOP extends LinearOpMode {
         outtake.init();
         turret.init();
 
+        timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+
+        boolean shooter = false;
+
         waitForStart();
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
@@ -42,19 +48,17 @@ public class TeleOP extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-
-            //cred ca ar fi ideal sa fac o functie read pentru fiecare modul, s-o apelez o data pe loop si apoi sa ma folosesc de variabilele alea
-            //atp am doar update la pinpoint, deci nu e necesar
-
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
+
+            turret.update();
 
             drive.setWeightedDrivePower(
                     new Pose2d(
                             gamepad1.left_stick_y,
                             gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
+                            -gamepad1.right_stick_x * 0.7
                     )
             );
 
@@ -65,29 +69,49 @@ public class TeleOP extends LinearOpMode {
             }
 
             else if (gamepad1.left_trigger > 0.01) {
-                intake.scuipa(1);
+               intake.scuipa(1);
             }
 
             else {
                 intake.stop();
             }
 
+            if(gamepad1.dpad_up) {
+                intake.sus();
+            }
+
+            if(gamepad1.dpad_down) {
+                intake.jos();
+            }
+
             if(gamepad1.a) {
                 outtake.departe();
+                timer.reset();
+                shooter = true;
             }
 
             if(gamepad1.b) {
                 outtake.aproape();
+                timer.reset();
+                shooter = true;
+                intake.sus();
             }
+
+            if(timer.seconds() > 1.7 && shooter) {
+                outtake.deblocat();
+                intake.trage(1);
+                shooter = false;
+                timer.reset();
+            }
+
 
             if(gamepad1.y) {
                 outtake.stop();
+                outtake.blocat();
+                intake.stop();
             }
 
             outtake.update();
-
-            telemetry.addData("Target: ", Constants.outtake.target_velocity);
-            telemetry.update();
         }
     }
 }

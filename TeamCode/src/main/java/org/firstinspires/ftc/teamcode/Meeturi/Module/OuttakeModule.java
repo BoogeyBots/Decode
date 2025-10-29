@@ -21,7 +21,7 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motor_sus, motor_jos, motor_opus;
     Servo servo_rampa, servo_blocaj;
 
-    PIDController controller = new PIDController(kp, ki, kd);
+    //PIDController controller = new PIDController(kp, ki, kd);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
     public void init() {
@@ -34,19 +34,22 @@ public class OuttakeModule extends Constants.outtake {
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
         motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        controller.reset();
+        deblocat();
+        servo_rampa.setPosition(1);
+
+        //controller.reset();
     }
 
     public void update() {
-        controller.setPID(kp, ki, kd); //kp=4
+        //controller.setPID(kp, ki, kd); //kp=4
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
+        //double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
         double FF_output = feedforward.calculate(target_velocity);
-        double output = PID_output + FF_output;
+        //double output = PID_output + FF_output;
 
-        motor_sus.setVelocity(output);
-        motor_jos.setVelocity(output);
-        motor_opus.setVelocity(output);
+        motor_sus.setVelocity(FF_output);
+        motor_jos.setVelocity(FF_output);
+        motor_opus.setVelocity(FF_output);
     }
 
     public double get_velocity_sus() {
@@ -58,12 +61,12 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void departe() {
-        servo_rampa.setPosition(1);
-        target_velocity = 1600;
+        servo_rampa.setPosition(departe);
+        target_velocity = 1750;
     }
 
     public void aproape() {
-        servo_rampa.setPosition(0.5);
+        servo_rampa.setPosition(aproape);
         target_velocity = 1200;
     }
 

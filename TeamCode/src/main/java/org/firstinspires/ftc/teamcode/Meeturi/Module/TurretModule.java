@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,37 +18,52 @@ public class TurretModule extends Constants.turret {
     }
     GoBildaPinpointDriver pinpoint;
     CRServo servo_right, servo_left;
+    DcMotorEx encoder;
+    PIDController controller = new PIDController(kp, ki, kd);
+
 
     public void init() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         servo_right = hardwareMap.get(CRServo.class, "servo_right");
         servo_left = hardwareMap.get(CRServo.class, "servo_left");
+        encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
 
         pinpoint.setOffsets(-130.0, -11.5, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.resetPosAndIMU();
+
+        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        controller.reset();
     }
 
+//    public void update() {
+//        pinpoint.update();
+//        currentHeading = pinpoint.getHeading(AngleUnit.DEGREES) * 121.3629;
+//        double error = targetHeading - currentHeading - encoder.getCurrentPosition(); //error = targetHeading - currentHeading - encoder;
+//
+//        power = kp * error;
+//        servo_right.setPower(power);
+//        servo_left.setPower(power);
+//    }
+
     public void update() {
+        controller.setPID(kp, ki, kd);
         pinpoint.update();
         currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
-        error = targetHeading - currentHeading;
+        error = (currentHeading + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
+        power = controller.calculate(error);
 
-        /*
-        Daca oscileaza, implementam "banda moarta"
-        if(Math.abs(error) < deadband) {
-            s1.setPower(0);
-            s2.setPower(0);
-            return;
-        }
+        if(360 + currentHeading > 160 && 360 + currentHeading < 345 && currentHeading < 0)
+            power = 0;
 
-         */
-
-        power = kp * error;
         servo_right.setPower(power);
         servo_left.setPower(power);
     }
+
+
 
 
     //pentru calibrare
@@ -60,11 +76,7 @@ public class TurretModule extends Constants.turret {
     public double getHeading() {
         return currentHeading;
     }
-
-    public double getError() {
-        return error;
-    }
-
+    public double getErrore() {return error;}
     public double getPower() {
         return power;
     }

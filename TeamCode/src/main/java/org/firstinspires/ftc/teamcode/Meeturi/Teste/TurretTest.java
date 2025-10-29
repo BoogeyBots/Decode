@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Teste;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,13 +15,19 @@ public class TurretTest extends LinearOpMode {
         TurretModule turret = new TurretModule(hardwareMap);
         turret.init();
 
+        TelemetryManager panelsTelemetry;
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("Pinpoint ", turret.getHeading());
-            telemetry.addData("Error ", turret.getError());
+            panelsTelemetry.addData("Pinpoint ", turret.getHeading());
+            panelsTelemetry.addData("Ticks", turret.getHeading() * 121.3629);
+            panelsTelemetry.addData("Error", turret.getErrore());
+            panelsTelemetry.addData("Power", turret.getPower());
+            panelsTelemetry.addData("kP", turret.getkP());
             turret.update();
-            telemetry.update();
+            panelsTelemetry.update(telemetry);
         }
 
     }
