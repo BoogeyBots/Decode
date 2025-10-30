@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
 
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Configurable
 public class OuttakeModule extends Constants.outtake {
     HardwareMap hardwareMap;
@@ -24,7 +22,7 @@ public class OuttakeModule extends Constants.outtake {
     //PIDController controller = new PIDController(kp, ki, kd);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
-    public void init() {
+    public void init_teleOP() {
         motor_sus = hardwareMap.get(DcMotorEx.class, "motor_sus");
         motor_jos = hardwareMap.get(DcMotorEx.class, "motor_jos");
         motor_opus = hardwareMap.get(DcMotorEx.class, "motor_opus");
@@ -35,7 +33,27 @@ public class OuttakeModule extends Constants.outtake {
         motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
 
         deblocat();
-        servo_rampa.setPosition(1);
+        aproape();
+
+        target_velocity = 0;
+
+        //controller.reset();
+    }
+
+    public void init_auto_aproape() {
+        motor_sus = hardwareMap.get(DcMotorEx.class, "motor_sus");
+        motor_jos = hardwareMap.get(DcMotorEx.class, "motor_jos");
+        motor_opus = hardwareMap.get(DcMotorEx.class, "motor_opus");
+        servo_rampa = hardwareMap.get(Servo.class, "servo_rampa");
+        servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
+
+        motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        blocat();
+        aproape();
+
+        target_velocity = 0;
 
         //controller.reset();
     }

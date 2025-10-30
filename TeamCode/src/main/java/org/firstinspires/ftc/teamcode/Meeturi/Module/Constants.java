@@ -10,7 +10,7 @@ public class Constants {
     public static class intake {
         public static double power;
         public static double poz;
-        public static double jos = 0.8, sus = 0.1;
+        public static double jos = 1, sus = 0.1;
     }
     @Configurable
     public static class outtake {

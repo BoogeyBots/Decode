@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class TurretModule extends Constants.turret {
@@ -22,7 +21,7 @@ public class TurretModule extends Constants.turret {
     PIDController controller = new PIDController(kp, ki, kd);
 
 
-    public void init() {
+    public void init_teleOP() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         servo_right = hardwareMap.get(CRServo.class, "servo_right");
         servo_left = hardwareMap.get(CRServo.class, "servo_left");
@@ -32,6 +31,17 @@ public class TurretModule extends Constants.turret {
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.resetPosAndIMU();
+
+        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        controller.reset();
+    }
+
+    public void init_auto() {
+        servo_right = hardwareMap.get(CRServo.class, "servo_right");
+        servo_left = hardwareMap.get(CRServo.class, "servo_left");
+        encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
 
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -57,6 +67,19 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
         if(360 + currentHeading > 160 && 360 + currentHeading < 345 && currentHeading < 0)
+            power = 0;
+
+        servo_right.setPower(power);
+        servo_left.setPower(power);
+    }
+
+    public void update_auto(double ch) {
+        controller.setPID(kp, ki, kd);
+        //pinpoint.update();
+        error = (ch + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
+        power = controller.calculate(error);
+
+        if(360 + ch > 160 && 360 + ch < 345 && ch < 0)
             power = 0;
 
         servo_right.setPower(power);

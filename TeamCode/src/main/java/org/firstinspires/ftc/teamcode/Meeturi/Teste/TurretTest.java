@@ -5,7 +5,6 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 
 @TeleOp
@@ -13,7 +12,7 @@ public class TurretTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         TurretModule turret = new TurretModule(hardwareMap);
-        turret.init();
+        turret.init_teleOP();
 
         TelemetryManager panelsTelemetry;
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();

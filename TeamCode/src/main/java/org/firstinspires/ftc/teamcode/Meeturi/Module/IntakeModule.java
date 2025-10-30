@@ -11,10 +11,16 @@ public class IntakeModule extends Constants.intake {
     }
     DcMotorEx motor;
     Servo servo;
-    public void init() {
+    public void init_teleOP() {
         motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
         servo = hardwareMap.get(Servo.class, "servo_intake");
         sus();
+    }
+
+    public void init_auto() {
+        motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
+        servo = hardwareMap.get(Servo.class, "servo_intake");
+        jos();
     }
 
     public void trage(double power) {

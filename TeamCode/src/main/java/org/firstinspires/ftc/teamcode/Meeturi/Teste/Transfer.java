@@ -15,8 +15,8 @@ public class Transfer extends LinearOpMode {
         IntakeModule intake = new IntakeModule(hardwareMap);
         OuttakeModule outtake = new OuttakeModule(hardwareMap);
 
-        intake.init();
-        outtake.init();
+        intake.init_teleOP();
+        outtake.init_teleOP();
 
         waitForStart();
 

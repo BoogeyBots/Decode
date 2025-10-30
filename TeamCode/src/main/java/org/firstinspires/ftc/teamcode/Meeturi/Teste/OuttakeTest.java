@@ -15,7 +15,7 @@ public class OuttakeTest extends LinearOpMode {
         TelemetryManager panelsTelemetry;
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
-        outtake.init();
+        outtake.init_teleOP();
 
         waitForStart();
 

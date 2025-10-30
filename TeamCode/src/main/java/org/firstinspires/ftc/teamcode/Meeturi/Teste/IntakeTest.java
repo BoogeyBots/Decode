@@ -12,7 +12,7 @@ public class IntakeTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         IntakeModule intake = new IntakeModule(hardwareMap);
 
-        intake.init();
+        intake.init_teleOP();
 
         waitForStart();
 

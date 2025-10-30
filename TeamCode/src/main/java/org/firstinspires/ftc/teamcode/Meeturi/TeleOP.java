@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
@@ -31,9 +30,9 @@ public class TeleOP extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake.init();
-        outtake.init();
-        turret.init();
+        intake.init_teleOP();
+        outtake.init_teleOP();
+        turret.init_teleOP();
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
