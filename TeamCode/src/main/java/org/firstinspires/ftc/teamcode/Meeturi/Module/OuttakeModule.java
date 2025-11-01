@@ -30,7 +30,7 @@ public class OuttakeModule extends Constants.outtake {
         servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
 
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
 
         deblocat();
         aproape();
@@ -48,7 +48,7 @@ public class OuttakeModule extends Constants.outtake {
         servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
 
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
 
         blocat();
         aproape();

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Meeturi.Auto;
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
 
+import android.graphics.Point;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -31,16 +33,23 @@ public class Auto1 extends OpMode {
     private Timer pathTimer;
     private int pathState;
     public static double x_startPose = 89.94, y_startPose = 133.77, heading_startPose = 270;
-    public static double x_preload = 89.94, y_preload = 86, heading_preload = 270;
+    public static double x_preload = 89.94, y_preload = 83, heading_preload = 180;
+    public static double x_collect1 = 128, y_collect1 = 83, heading_collect1 = 180;
     private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose));
     private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload));
+    private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect1));
 
     private Path scorePreload;
     private PathChain move1;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setConstantHeadingInterpolation(startPose.getHeading());
+        scorePreload.setLinearHeadingInterpolation(Math.toRadians(heading_startPose), Math.toRadians(heading_preload));
+
+        move1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, collect1))
+                .setConstantHeadingInterpolation(Math.toRadians(heading_collect1))
+                .build();
     }
 
     public void autonomousPathUpdate() {
@@ -48,7 +57,17 @@ public class Auto1 extends OpMode {
             case 0:
                 turretActivated = true;
                 follower.followPath(scorePreload, true);
+                intake.trage(1);
+                outtake.aproape();
                 setPathState(1);
+
+                break;
+
+            case 1:
+                if(follower.atPose(scorePose, 1, 1)) {
+                    follower.followPath(move1, true);
+                    setPathState(2);
+                }
 
                 break;
         }
@@ -78,9 +97,11 @@ public class Auto1 extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        turret.update_auto(Math.toDegrees(follower.getPose().getHeading()));
         outtake.update();
         autonomousPathUpdate();
+        if(turretActivated) {
+            turret.update_auto(Math.toDegrees(follower.getPose().getHeading()));
+        }
 
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
@@ -100,7 +121,9 @@ public class Auto1 extends OpMode {
     }
 
     @Override
-    public void init_loop() {}
+    public void init_loop() {
+        //turret.update_auto(Math.toDegrees(follower.getPose().getHeading()));
+    }
 
     @Override
     public void stop() {}

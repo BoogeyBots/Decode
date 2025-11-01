@@ -79,8 +79,8 @@ public class TurretModule extends Constants.turret {
         error = (ch + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
         power = controller.calculate(error);
 
-        if(360 + ch > 160 && 360 + ch < 345 && ch < 0)
-            power = 0;
+//        if(360 + ch > 160 && 360 + ch < 345 && ch < 0)
+//            power = 0;
 
         servo_right.setPower(power);
         servo_left.setPower(power);
