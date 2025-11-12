@@ -10,11 +10,11 @@ public class Constants {
     public static class intake {
         public static double power;
         public static double poz;
-        public static double jos = 0.63, sus = 0.1;
+        public static double jos = 0.56, sus = 0;
     }
     @Configurable
     public static class outtake {
-        public static double kp = 0, ki = 0, kd = 0;
+        //public static double kp = 0, ki = 0, kd = 0;
         public static double ks = 0, kv = 1, ka = 0;
         public static double target_velocity;
         public static double pos_servo;
@@ -24,6 +24,6 @@ public class Constants {
     }
     @Configurable
     public static class turret {
-        public static double targetHeading = 50, currentHeading = 0, kp = 0.04, ki, kd = 0.0007, deadband = 0, power, error; //deadband = 0.02
+        public static double targetHeading = 230, currentHeading = 0, kp = 0.04, ki, kd = 0.0007, deadband = 0, power, error; //deadband = 0.02
     }
 }

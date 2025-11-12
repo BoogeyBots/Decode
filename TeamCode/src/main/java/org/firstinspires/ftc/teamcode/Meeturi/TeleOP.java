@@ -51,7 +51,7 @@ public class TeleOP extends LinearOpMode {
                 hub.clearBulkCache();
             }
 
-            turret.update();
+          //  turret.update();
 
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -108,6 +108,19 @@ public class TeleOP extends LinearOpMode {
                 outtake.stop();
                 outtake.blocat();
                 intake.stop();
+            }
+
+            //tureta manuala
+            if(gamepad1.right_bumper) {
+                turret.manual(1);
+            }
+
+            else if(gamepad1.left_bumper) {
+                turret.manual(-1);
+            }
+
+            else {
+                turret.manual(0);
             }
 
             outtake.update();

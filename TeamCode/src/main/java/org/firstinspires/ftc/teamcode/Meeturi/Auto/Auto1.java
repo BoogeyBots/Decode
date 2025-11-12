@@ -33,7 +33,7 @@ public class Auto1 extends OpMode {
     private Timer pathTimer;
     private int pathState;
     public static double x_startPose = 89.94, y_startPose = 133.77, heading_startPose = 270;
-    public static double x_preload = 89.94, y_preload = 83, heading_preload = 180;
+    public static double x_preload = 89.94, y_preload = 83, heading_preload = 270;
     public static double x_collect1 = 128, y_collect1 = 83, heading_collect1 = 180;
     private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose));
     private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload));
@@ -44,7 +44,7 @@ public class Auto1 extends OpMode {
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(Math.toRadians(heading_startPose), Math.toRadians(heading_preload));
+        scorePreload.setConstantHeadingInterpolation(Math.toRadians(heading_startPose));
 
         move1 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, collect1))
@@ -55,18 +55,36 @@ public class Auto1 extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                turretActivated = true;
                 follower.followPath(scorePreload, true);
-                intake.trage(1);
-                outtake.aproape();
                 setPathState(1);
 
                 break;
 
             case 1:
+                turretActivated = true;
+                //intake.trage(1);
+                outtake.aproape();
+                setPathState(2);
+
+                break;
+
+
+            case 2:
                 if(follower.atPose(scorePose, 1, 1)) {
-                    follower.followPath(move1, true);
-                    setPathState(2);
+                    outtake.deblocat();
+                    intake.trage(1);
+                    setPathState(3);
+                }
+
+                break;
+
+            case 3:
+                if(pathTimer.getElapsedTime() > 5) {
+                    intake.scuipa(1);
+                }
+
+                if(pathTimer.getElapsedTime() > 8) {
+                    intake.trage(1);
                 }
 
                 break;
@@ -107,7 +125,7 @@ public class Auto1 extends OpMode {
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", 180 + Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.addData("error", turret.getErrore());
         telemetry.addData("power", turret.getPower());
         telemetry.addData("kp", turret.getkP());

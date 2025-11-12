@@ -75,8 +75,12 @@ public class TurretModule extends Constants.turret {
 
     public void update_auto(double ch) {
         controller.setPID(kp, ki, kd);
+        if(ch < 0)
+            ch = 360 - Math.abs(ch);
         //pinpoint.update();
-        error = (ch + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
+        error = (ch) - targetHeading + encoder.getCurrentPosition() / 121.3629;
+
+        //error = (ch + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
         power = controller.calculate(error);
 
 //        if(360 + ch > 160 && 360 + ch < 345 && ch < 0)
@@ -94,6 +98,11 @@ public class TurretModule extends Constants.turret {
     public void calibrare(double kp, double d) {
         this.kp = kp;
         deadband = d;
+    }
+
+    public void manual(double p) {
+        servo_right.setPower(p);
+        servo_left.setPower(p);
     }
 
     public double getHeading() {
