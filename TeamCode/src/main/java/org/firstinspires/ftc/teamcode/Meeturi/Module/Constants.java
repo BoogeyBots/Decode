@@ -10,15 +10,15 @@ public class Constants {
     public static class intake {
         public static double power;
         public static double poz;
-        public static double jos = 0.56, sus = 0;
+        public static double jos = 1, sus = 0.85;
     }
     @Configurable
     public static class outtake {
-        //public static double kp = 0, ki = 0, kd = 0;
+        public static double kp = 1.5, ki = 0, kd = 0.95;
         public static double ks = 0, kv = 1, ka = 0;
         public static double target_velocity;
         public static double pos_servo;
-        public static double blocat = 0.5, deblocat = 1;
+        public static double blocat = 0.55, deblocat = 1;
         public static double aproape = 0.05, departe = 0.5;
 
     }

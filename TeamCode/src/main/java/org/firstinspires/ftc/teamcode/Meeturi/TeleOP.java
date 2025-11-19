@@ -51,7 +51,7 @@ public class TeleOP extends LinearOpMode {
                 hub.clearBulkCache();
             }
 
-          //  turret.update();
+            turret.update();
 
             drive.setWeightedDrivePower(
                     new Pose2d(

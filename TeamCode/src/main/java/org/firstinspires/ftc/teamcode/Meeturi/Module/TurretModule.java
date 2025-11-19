@@ -30,10 +30,14 @@ public class TurretModule extends Constants.turret {
         pinpoint.setOffsets(-130.0, -11.5, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpoint.resetPosAndIMU();
+        pinpoint.setHeading(-90, AngleUnit.DEGREES);
+
+        //pinpoint.resetPosAndIMU();
 
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 
         controller.reset();
     }
@@ -59,15 +63,31 @@ public class TurretModule extends Constants.turret {
 //        servo_left.setPower(power);
 //    }
 
+//    public void update() {
+//        controller.setPID(kp, ki, kd);
+//        pinpoint.update();
+//        currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+//        error = (currentHeading + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
+//        power = controller.calculate(error);
+//
+//        if(360 + currentHeading > 160 && 360 + currentHeading < 345 && currentHeading < 0)
+//            power = 0;
+//
+//        servo_right.setPower(power);
+//        servo_left.setPower(power);
+//    }
+
     public void update() {
         controller.setPID(kp, ki, kd);
         pinpoint.update();
         currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
-        error = (currentHeading + 180) - targetHeading + encoder.getCurrentPosition() / 121.3629;
-        power = controller.calculate(error);
+        if(currentHeading < 0) {
+            currentHeading = 360 - Math.abs(currentHeading);
+        }
 
-        if(360 + currentHeading > 160 && 360 + currentHeading < 345 && currentHeading < 0)
-            power = 0;
+        error = currentHeading - targetHeading + encoder.getCurrentPosition() / 121.3629;
+
+        power = controller.calculate(error);
 
         servo_right.setPower(power);
         servo_left.setPower(power);
@@ -90,7 +110,38 @@ public class TurretModule extends Constants.turret {
         servo_left.setPower(power);
     }
 
+    public void update_crazy1() {
+        controller.setPID(kp, ki, kd);
+        pinpoint.update();
+        currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double currentX = pinpoint.getPosX(DistanceUnit.INCH);
+        double currentY = pinpoint.getPosY(DistanceUnit.INCH);
 
+        if(currentHeading < 0) {
+            currentHeading = 360 - Math.abs(currentHeading);
+        }
+
+        double relative_angle = Math.atan2(Math.sqrt(2) * Math.abs(1.4197 * currentX + currentY - 137.3728), 1.73 * Math.abs(currentX - currentY));
+
+        error = currentHeading - targetHeading + encoder.getCurrentPosition() / 121.3629 + relative_angle;
+
+    }
+
+    public void update_crazy2() {
+        controller.setPID(kp, ki, kd);
+        pinpoint.update();
+        currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        double currentX = pinpoint.getPosX(DistanceUnit.INCH);
+        double currentY = pinpoint.getPosY(DistanceUnit.INCH);
+
+        if(currentHeading < 0) {
+            currentHeading = 360 - Math.abs(currentHeading);
+        }
+
+        double relative_angle = Math.acos(Math.abs(currentX - currentY) / Math.sqrt(2) * (Math.sqrt(72 - currentX) * (72 - currentX) + (72 - currentY) * (72 - currentY)));
+
+        error = currentHeading - targetHeading + encoder.getCurrentPosition() / 121.3629 + Math.toDegrees(relative_angle);
+    }
 
 
     //pentru calibrare

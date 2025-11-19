@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -19,7 +20,7 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motor_sus, motor_jos, motor_opus;
     Servo servo_rampa, servo_blocaj;
 
-    //PIDController controller = new PIDController(kp, ki, kd);
+    PIDController controller = new PIDController(kp, ki, kd);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
     public void init_teleOP() {
@@ -59,15 +60,23 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void update() {
-        //controller.setPID(kp, ki, kd); //kp=4
+        controller.setPID(kp, ki, kd); //kp=4
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        //double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
+        double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
         double FF_output = feedforward.calculate(target_velocity);
-        //double output = PID_output + FF_output;
+        double output = PID_output + FF_output;
 
-        motor_sus.setVelocity(FF_output);
-        motor_jos.setVelocity(FF_output);
-        motor_opus.setVelocity(FF_output);
+        if(target_velocity == 0) {
+            kd = 0;
+        }
+
+        else {
+            kd = 0.95;
+        }
+
+        motor_sus.setVelocity(output);
+        motor_jos.setVelocity(output);
+        motor_opus.setVelocity(output);
     }
 
     public double get_velocity_sus() {
