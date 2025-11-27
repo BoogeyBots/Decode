@@ -56,7 +56,7 @@ public class Auto1 extends OpMode {
         switch (pathState) {
             case 0:
                 follower.followPath(scorePreload, true);
-                setPathState(1);
+                setPathState(100);
 
                 break;
 

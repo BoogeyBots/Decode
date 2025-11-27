@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
@@ -20,6 +21,11 @@ public class TeleOP extends LinearOpMode {
     OuttakeModule outtake = null;
     TurretModule turret = null;
     ElapsedTime timer;
+
+    enum STATE {
+        trage,
+        numaitrage
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleMecanumDrive(hardwareMap);
@@ -34,9 +40,11 @@ public class TeleOP extends LinearOpMode {
         outtake.init_teleOP();
         turret.init_teleOP();
 
+        STATE mode = STATE.trage;
+
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
-        boolean shooter = false;
+        boolean switchingState = false;
 
         waitForStart();
 
@@ -51,6 +59,12 @@ public class TeleOP extends LinearOpMode {
                 hub.clearBulkCache();
             }
 
+            outtake.update();
+            turret.pinpoint_update();
+
+//            if(Constants.turret.activated) {
+//                turret.update();
+//            }
             turret.update();
 
             drive.setWeightedDrivePower(
@@ -83,47 +97,73 @@ public class TeleOP extends LinearOpMode {
                 intake.jos();
             }
 
-            if(gamepad1.a) {
-                outtake.departe();
-                timer.reset();
-                shooter = true;
-            }
-
-            if(gamepad1.b) {
-                outtake.aproape();
-                timer.reset();
-                shooter = true;
-                intake.sus();
-            }
-
-            if(timer.seconds() > 1.7 && shooter) {
-                outtake.deblocat();
-                intake.trage(1);
-                shooter = false;
+            if(gamepad1.a && mode == STATE.trage) {
+                Constants.outtake.activated = true;
+                switchingState = true;
                 timer.reset();
             }
 
-
-            if(gamepad1.y) {
-                outtake.stop();
+            if(gamepad1.a && mode == STATE.numaitrage) {
+                Constants.outtake.activated = false;
+                switchingState = true;
+                Constants.outtake.target_velocity = 0;
                 outtake.blocat();
-                intake.stop();
+                timer.reset();
             }
+
+
+            if (switchingState && timer.seconds() > 0.15) {
+                mode = (mode == STATE.trage) ? STATE.numaitrage : STATE.trage;
+                switchingState = false;
+            }
+
+            if(Constants.outtake.target_velocity <= Constants.outtake.velocity - 20 && Constants.turret.error <= 3) {
+                outtake.deblocat();
+            }
+
+
+//            if(gamepad1.b) {
+//                outtake.aproape();
+//                timer.reset();
+//                shooter = true;
+//                intake.sus();
+//            }
+//
+//            if(timer.seconds() > 1.7 && shooter) {
+//                outtake.deblocat();
+//                intake.trage(1);
+//                shooter = false;
+//                timer.reset();
+//            }
+
+
+//            if(gamepad1.y) {
+//                outtake.stop();
+//                outtake.blocat();
+//                intake.stop();
+//            }
 
             //tureta manuala
-            if(gamepad1.right_bumper) {
-                turret.manual(1);
-            }
+//            if(gamepad1.right_bumper) {
+//                turret.manual(1);
+//            }
+//
+//            else if(gamepad1.left_bumper) {
+//                turret.manual(-1);
+//            }
+//
+//            else {
+//                turret.manual(0);
+//            }
 
-            else if(gamepad1.left_bumper) {
-                turret.manual(-1);
-            }
-
-            else {
-                turret.manual(0);
-            }
-
-            outtake.update();
+            telemetry.addData("Power", turret.getPower());
+            //telemetry.addData("Formula", turret.getRelative());
+            telemetry.addData("RobotHeading", turret.getHeading());
+            telemetry.addData("Error", turret.getErrore());
+            telemetry.addData("Grade:", turret.gra());
+            telemetry.addData("STATE", mode);
+            telemetry.addData("Shooter", Constants.outtake.activated);
+            telemetry.update();
         }
     }
 }

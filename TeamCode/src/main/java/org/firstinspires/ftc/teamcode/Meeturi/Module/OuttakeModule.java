@@ -60,19 +60,33 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void update() {
-        controller.setPID(kp, ki, kd); //kp=4
+        //controller.setPID(kp, ki, kd); //kp=4
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
+        //double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
         double FF_output = feedforward.calculate(target_velocity);
-        double output = PID_output + FF_output;
+        double output = FF_output;
 
-        if(target_velocity == 0) {
-            kd = 0;
+        if(Constants.turret.distanta <= 11.5 && activated) {
+            target_velocity = 1050;
+            servo_rampa.setPosition(0);
         }
 
-        else {
-            kd = 0.95;
+        if(Constants.turret.distanta <= 34 && Constants.turret.distanta > 11.5 && activated) {
+            target_velocity = 1100;
+            servo_rampa.setPosition(0);
         }
+
+        if(Constants.turret.distanta <= 75 && Constants.turret.distanta > 34 && activated) {
+            target_velocity = 1250;
+            servo_rampa.setPosition(0);
+        }
+
+        if(Constants.turret.distanta >= 90 && activated) {
+            target_velocity = 1700;
+            servo_rampa.setPosition(0.3);
+        }
+
+        velocity = motor_sus.getVelocity();
 
         motor_sus.setVelocity(output);
         motor_jos.setVelocity(output);
@@ -102,9 +116,7 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void trage() {
-        motor_sus.setPower(1);
-        motor_jos.setPower(1);
-        motor_opus.setPower(1);
+
     }
 
     public void servo_custom() {
@@ -117,6 +129,14 @@ public class OuttakeModule extends Constants.outtake {
 
     public void deblocat() {
         servo_blocaj.setPosition(deblocat);
+    }
+
+
+    //functii bune
+    public void trage_bun() {
+
+
+
     }
 
 
