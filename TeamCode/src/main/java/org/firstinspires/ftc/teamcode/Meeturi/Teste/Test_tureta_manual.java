@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Teste;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 @Configurable
+@Disabled
 @TeleOp
 public class Test_tureta_manual extends LinearOpMode {
     CRServo servo1;

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
+import org.firstinspires.ftc.teamcode.Meeturi.Module.PinpointModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
@@ -20,6 +21,7 @@ public class TeleOP extends LinearOpMode {
     IntakeModule intake = null;
     OuttakeModule outtake = null;
     TurretModule turret = null;
+    PinpointModule pinpoint;
     ElapsedTime timer;
 
     enum STATE {
@@ -32,6 +34,7 @@ public class TeleOP extends LinearOpMode {
         intake = new IntakeModule(hardwareMap);
         outtake = new OuttakeModule(hardwareMap);
         turret = new TurretModule(hardwareMap);
+        pinpoint = new PinpointModule(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -39,6 +42,7 @@ public class TeleOP extends LinearOpMode {
         intake.init_teleOP();
         outtake.init_teleOP();
         turret.init_teleOP();
+        pinpoint.init();
 
         STATE mode = STATE.trage;
 
@@ -60,11 +64,7 @@ public class TeleOP extends LinearOpMode {
             }
 
             outtake.update();
-            turret.pinpoint_update();
-
-//            if(Constants.turret.activated) {
-//                turret.update();
-//            }
+            pinpoint.update();
             turret.update();
 
             drive.setWeightedDrivePower(
@@ -121,6 +121,10 @@ public class TeleOP extends LinearOpMode {
                 outtake.deblocat();
             }
 
+            if(gamepad1.triangle) {
+                pinpoint.recalibration();
+            }
+
 
 //            if(gamepad1.b) {
 //                outtake.aproape();
@@ -157,12 +161,9 @@ public class TeleOP extends LinearOpMode {
 //            }
 
             telemetry.addData("Power", turret.getPower());
-            //telemetry.addData("Formula", turret.getRelative());
-            telemetry.addData("RobotHeading", turret.getHeading());
             telemetry.addData("Error", turret.getErrore());
             telemetry.addData("Grade:", turret.gra());
             telemetry.addData("STATE", mode);
-            telemetry.addData("Shooter", Constants.outtake.activated);
             telemetry.update();
         }
     }

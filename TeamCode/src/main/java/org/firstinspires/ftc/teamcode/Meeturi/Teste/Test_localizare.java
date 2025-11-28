@@ -35,12 +35,10 @@ public class Test_localizare extends LinearOpMode {
             camera.updateRobotOrientation(currentHeading);
             LLResult result = camera.getLatestResult();
             if(result != null && result.isValid()) {
-                Pose3D botpose = result.getBotpose_MT2();
-
+                Pose3D botpose = result.getBotpose();
                 telemetry.addLine("Camera");
-                telemetry.addData("X", botpose.getPosition().x);
-                telemetry.addData("Y", botpose.getPosition().y);
-                telemetry.addData("A", botpose.getOrientation().getYaw());
+                telemetry.addData("X", 72 - botpose.getPosition().x * 39.3701);
+                telemetry.addData("Y", botpose.getPosition().y * 39.3701 + 72);
             }
 
 
@@ -49,9 +47,8 @@ public class Test_localizare extends LinearOpMode {
             telemetry.addData("Y", pinpoint.getPosY(DistanceUnit.INCH));
             telemetry.addData("A", pinpoint.getHeading(AngleUnit.DEGREES));
 
+
             telemetry.update();
-
-
 
         }
 

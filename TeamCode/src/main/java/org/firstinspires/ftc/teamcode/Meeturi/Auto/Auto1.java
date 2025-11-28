@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Auto;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
 
 import android.graphics.Point;
@@ -61,19 +64,16 @@ public class Auto1 extends OpMode {
                 break;
 
             case 1:
-                turretActivated = true;
-                //intake.trage(1);
-                outtake.aproape();
-                setPathState(2);
+                if(target_velocity < velocity - 20 && error < 3) {
+                    outtake.aproape();
+                }
 
                 break;
 
 
             case 2:
                 if(follower.atPose(scorePose, 1, 1)) {
-                    outtake.deblocat();
-                    intake.trage(1);
-                    setPathState(3);
+
                 }
 
                 break;
@@ -117,18 +117,21 @@ public class Auto1 extends OpMode {
         follower.update();
         outtake.update();
         autonomousPathUpdate();
-        if(turretActivated) {
-            turret.update_auto(Math.toDegrees(follower.getPose().getHeading()));
-        }
+
+        double x = follower.getPose().getX();
+        double y = follower.getPose().getY();
+        double h = Math.toDegrees(follower.getPose().getHeading());
+        turret.update_auto(x, y, h);
 
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("x", x);
+        telemetry.addData("y", y);
+        telemetry.addData("heading", h);
         telemetry.addData("error", turret.getErrore());
         telemetry.addData("power", turret.getPower());
         telemetry.addData("kp", turret.getkP());
+        telemetry.addData("Grade", turret.gra());
         telemetry.update();
     }
 

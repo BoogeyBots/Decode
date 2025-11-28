@@ -24,8 +24,12 @@ public class Constants {
     }
     @Configurable
     public static class turret {
-        public static double targetHeading = 230, currentHeading = 0, kp = 0.04, ki, kd = 0.0007, deadband = 0, power, error, distanta;
-        public static double TARGET_X = 144, TARGET_Y = 144, TICKS_PER_DEGREE = 121.3629, relative_angle, targetRelativeAngle;
+        public static double kp = 0.04, ki, kd = 0.0007, power, error;
+        public static double TICKS_PER_DEGREE = 121.3629, relative_angle, targetRelativeAngle;
 
+    }
+
+    public static class pinpoint {
+        public static double currentHeading, currentX, currentY, distanta, deltaX, deltaY;
     }
 }

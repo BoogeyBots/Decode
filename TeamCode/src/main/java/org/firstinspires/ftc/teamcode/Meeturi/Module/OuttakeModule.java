@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
+
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
@@ -63,25 +65,25 @@ public class OuttakeModule extends Constants.outtake {
         //controller.setPID(kp, ki, kd); //kp=4
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);
         //double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
-        double FF_output = feedforward.calculate(target_velocity);
-        double output = FF_output;
+        double output = feedforward.calculate(target_velocity);
+        //double output = FF_output;
 
-        if(Constants.turret.distanta <= 11.5 && activated) {
+        if(distanta <= 11.5 && activated) {
             target_velocity = 1050;
             servo_rampa.setPosition(0);
         }
 
-        if(Constants.turret.distanta <= 34 && Constants.turret.distanta > 11.5 && activated) {
+        if(distanta <= 34 && distanta > 11.5 && activated) {
             target_velocity = 1100;
             servo_rampa.setPosition(0);
         }
 
-        if(Constants.turret.distanta <= 75 && Constants.turret.distanta > 34 && activated) {
+        if(distanta <= 75 && distanta > 34 && activated) {
             target_velocity = 1250;
             servo_rampa.setPosition(0);
         }
 
-        if(Constants.turret.distanta >= 90 && activated) {
+        if(distanta >= 90 && activated) {
             target_velocity = 1700;
             servo_rampa.setPosition(0.3);
         }
@@ -101,26 +103,11 @@ public class OuttakeModule extends Constants.outtake {
         return target_velocity;
     }
 
-    public void departe() {
-        servo_rampa.setPosition(departe);
-        target_velocity = 1750;
-    }
+
 
     public void aproape() {
         servo_rampa.setPosition(aproape);
         target_velocity = 1200;
-    }
-
-    public void stop() {
-        target_velocity = 0;
-    }
-
-    public void trage() {
-
-    }
-
-    public void servo_custom() {
-        servo_rampa.setPosition(pos_servo);
     }
 
     public void blocat() {
@@ -129,14 +116,6 @@ public class OuttakeModule extends Constants.outtake {
 
     public void deblocat() {
         servo_blocaj.setPosition(deblocat);
-    }
-
-
-    //functii bune
-    public void trage_bun() {
-
-
-
     }
 
 
