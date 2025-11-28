@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Auto;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
@@ -35,23 +36,29 @@ public class Auto1 extends OpMode {
     private Follower follower;
     private Timer pathTimer;
     private int pathState;
+    public static double cat_trage = 5; //în secunde
     public static double x_startPose = 89.94, y_startPose = 133.77, heading_startPose = 270;
     public static double x_preload = 89.94, y_preload = 83, heading_preload = 270;
-    public static double x_collect1 = 128, y_collect1 = 83, heading_collect1 = 180;
+    public static double x_collect1 = 131, y_collect1 = 83, heading_collect1 = 180;
     private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose));
     private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload));
     private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect1));
 
     private Path scorePreload;
-    private PathChain move1;
+    private PathChain rand1, trage1;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
         scorePreload.setConstantHeadingInterpolation(Math.toRadians(heading_startPose));
 
-        move1 = follower.pathBuilder()
+        rand1 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, collect1))
                 .setConstantHeadingInterpolation(Math.toRadians(heading_collect1))
+                .build();
+
+        trage1 = follower.pathBuilder()
+                .addPath(new BezierLine(collect1, scorePose))
+                .setLinearHeadingInterpolation(Math.toRadians(heading_collect1), Math.toRadians(heading_startPose)) //probabil Linear, nush, vedem
                 .build();
     }
 
@@ -59,35 +66,83 @@ public class Auto1 extends OpMode {
         switch (pathState) {
             case 0:
                 follower.followPath(scorePreload, true);
-                setPathState(100);
+                setPathState(1);
 
                 break;
 
             case 1:
-                if(target_velocity < velocity - 20 && error < 3) {
-                    outtake.aproape();
+                if(follower.atPose(scorePose, 2, 2)) {
+                    activated = true;
+                    setPathState(2);
                 }
 
                 break;
 
-
             case 2:
-                if(follower.atPose(scorePose, 1, 1)) {
-
+                if(target_velocity <= velocity - 20 && error <= 3 && activated) {
+                    outtake.deblocat();
+                    setPathState(3);
                 }
 
                 break;
 
             case 3:
-                if(pathTimer.getElapsedTime() > 5) {
-                    intake.scuipa(1);
-                }
-
-                if(pathTimer.getElapsedTime() > 8) {
-                    intake.trage(1);
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
+                    setPathState(4);
                 }
 
                 break;
+
+            case 4:
+                follower.followPath(rand1, true);
+                intake.trage(1);
+                setPathState(5);
+
+                break;
+
+            case 5:
+                if(follower.atPose(collect1, 1, 1)) {
+                    follower.followPath(trage1);
+                    intake.trage(0.5); //să nu forțeze blocajul, sper
+                    setPathState(6);
+                }
+
+                break;
+
+            case 6:
+                if(follower.atPose(scorePose, 1,1)) {
+                    activated = true;
+                    setPathState(7);
+                }
+
+                break;
+
+            case 7:
+                if(target_velocity <= velocity - 20 && error <= 3 && activated) {
+                    outtake.deblocat();
+                    setPathState(8);
+                }
+
+                break;
+
+            case 8:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
+                    y_collect1 -= 24;
+                    buildPaths();
+                    if(y_collect1 == 9) {
+                        setPathState(1000);
+                    }
+                    else {
+                        setPathState(4);
+                    }
+                }
+
+                break;
+
+                // teoretic de aici avem loop, cu pozitii decalate
+
         }
     }
 
@@ -122,6 +177,7 @@ public class Auto1 extends OpMode {
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
         turret.update_auto(x, y, h);
+        outtake.update();
 
         // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
@@ -139,6 +195,7 @@ public class Auto1 extends OpMode {
     public void start() {
         pathTimer.resetTimer();
         setPathState(0);
+        target_velocity = 0;
     }
 
     @Override
@@ -152,5 +209,11 @@ public class Auto1 extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
+    }
+
+    public void numaitrag() {
+        outtake.blocat();
+        target_velocity = 0;
+        activated = false;
     }
 }

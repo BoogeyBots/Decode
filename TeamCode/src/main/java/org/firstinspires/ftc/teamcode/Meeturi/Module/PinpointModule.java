@@ -55,8 +55,6 @@ public class PinpointModule extends Constants.pinpoint {
         if(result != null && result.isValid()) {
             Pose3D botpose = result.getBotpose();
             pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, botpose.getPosition().y * 39.3701 + 72, 72 - botpose.getPosition().x * 39.3701, AngleUnit.DEGREES, currentHeading));
-            telemetry.addLine("Bravo, rege, ai actualizat pinpointul");
         }
-        else telemetry.addData("N-a mers, womp womp", result != null);
     }
 }

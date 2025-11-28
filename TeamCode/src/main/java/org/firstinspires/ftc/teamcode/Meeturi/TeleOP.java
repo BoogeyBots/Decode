@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Meeturi;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,7 +25,7 @@ public class TeleOP extends LinearOpMode {
     OuttakeModule outtake = null;
     TurretModule turret = null;
     PinpointModule pinpoint;
-    ElapsedTime timer;
+    ElapsedTime timer, ov;
 
     enum STATE {
         trage,
@@ -47,8 +50,10 @@ public class TeleOP extends LinearOpMode {
         STATE mode = STATE.trage;
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        ov = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
         boolean switchingState = false;
+        boolean overshoot = false;
 
         waitForStart();
 
@@ -117,7 +122,7 @@ public class TeleOP extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(Constants.outtake.target_velocity <= Constants.outtake.velocity - 20 && Constants.turret.error <= 3) {
+            if(Constants.outtake.target_velocity <= velocity - 20 && Constants.turret.error <= 3 && Constants.outtake.activated) {
                 outtake.deblocat();
             }
 
@@ -160,10 +165,11 @@ public class TeleOP extends LinearOpMode {
 //                turret.manual(0);
 //            }
 
-            telemetry.addData("Power", turret.getPower());
-            telemetry.addData("Error", turret.getErrore());
-            telemetry.addData("Grade:", turret.gra());
+            telemetry.addData("V", velocity);
+            telemetry.addData("T", target_velocity);
             telemetry.addData("STATE", mode);
+            telemetry.addData("Overshoot", overshoot);
+            telemetry.addData("Distance", Constants.pinpoint.distanta);
             telemetry.update();
         }
     }

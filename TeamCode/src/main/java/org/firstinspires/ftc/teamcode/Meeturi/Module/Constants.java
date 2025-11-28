@@ -13,7 +13,7 @@ public class Constants {
     }
     @Configurable
     public static class outtake {
-        public static double kp = 1.5, ki = 0, kd = 0.95;
+        public static double kp = 0.001, ki = 0, kd = 0, kf = 0.0005;
         public static double ks = 0, kv = 1, ka = 0;
         public static double target_velocity, velocity;
         public static double pos_servo;

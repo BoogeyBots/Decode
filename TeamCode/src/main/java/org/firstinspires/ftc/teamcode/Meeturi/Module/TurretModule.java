@@ -60,7 +60,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-        if(gr > 210 && gr < 390) {
+        if(gr > 180 && gr < 390) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }

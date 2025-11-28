@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Meeturi.Module;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -22,7 +23,7 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motor_sus, motor_jos, motor_opus;
     Servo servo_rampa, servo_blocaj;
 
-    PIDController controller = new PIDController(kp, ki, kd);
+    PIDFController controller = new PIDFController(kp, ki, kd, kf);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
     public void init_teleOP() {
@@ -35,7 +36,7 @@ public class OuttakeModule extends Constants.outtake {
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
         motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        deblocat();
+        blocat();
         aproape();
 
         target_velocity = 0;
@@ -62,37 +63,55 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void update() {
-        //controller.setPID(kp, ki, kd); //kp=4
-        feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        //double PID_output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
-        double output = feedforward.calculate(target_velocity);
-        //double output = FF_output;
+        controller.setPIDF(kp, ki, kd, kf); //kp=4
+        //feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+        double output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
 
-        if(distanta <= 11.5 && activated) {
+
+//        if(target_velocity != 0) {
+//            kd = 0.95;
+//        }
+//
+//        else {
+//            kd = 0;
+//        }
+
+        if(distanta <= 50 && activated) {
             target_velocity = 1050;
             servo_rampa.setPosition(0);
         }
 
-        if(distanta <= 34 && distanta > 11.5 && activated) {
-            target_velocity = 1100;
+        if(distanta <= 60 && distanta > 50 && activated) {
+            target_velocity = 1200;
             servo_rampa.setPosition(0);
         }
 
-        if(distanta <= 75 && distanta > 34 && activated) {
+        if(distanta <= 72 && distanta > 60 && activated) {
+            target_velocity = 1200;
+            servo_rampa.setPosition(0.13);
+        }
+
+        if(distanta <= 84 && distanta > 72 && activated) {
+            target_velocity = 1200;
+            servo_rampa.setPosition(0.1);
+        }
+
+
+        if(distanta <= 100 && distanta > 84 && activated) {
             target_velocity = 1250;
-            servo_rampa.setPosition(0);
+            servo_rampa.setPosition(0.15);
         }
 
-        if(distanta >= 90 && activated) {
-            target_velocity = 1700;
-            servo_rampa.setPosition(0.3);
+        if(distanta >= 120 && activated) {
+            target_velocity = 1900;
+            servo_rampa.setPosition(0.4);
         }
 
         velocity = motor_sus.getVelocity();
 
-        motor_sus.setVelocity(output);
-        motor_jos.setVelocity(output);
-        motor_opus.setVelocity(output);
+        motor_sus.setPower(output);
+        motor_jos.setPower(output);
+        motor_opus.setPower(output);
     }
 
     public double get_velocity_sus() {
