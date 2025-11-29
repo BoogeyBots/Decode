@@ -4,12 +4,8 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ac
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
-
-import android.graphics.Point;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -27,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous
-public class Auto1 extends OpMode {
+public class Auto_red extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;

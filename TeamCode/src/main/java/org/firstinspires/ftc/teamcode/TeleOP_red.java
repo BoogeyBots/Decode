@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Meeturi;
+package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
 import java.util.List;
 @TeleOp
-public class TeleOP extends LinearOpMode {
+public class TeleOP_red extends LinearOpMode {
     SampleMecanumDrive drive = null;
     IntakeModule intake = null;
     OuttakeModule outtake = null;
@@ -70,7 +70,7 @@ public class TeleOP extends LinearOpMode {
 
             outtake.update();
             pinpoint.update();
-            turret.update();
+            turret.update_red();
 
             drive.setWeightedDrivePower(
                     new Pose2d(

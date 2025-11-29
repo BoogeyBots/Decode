@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.d
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.deltaY;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -42,7 +41,7 @@ public class TurretModule extends Constants.turret {
         controller.reset();
     }
 
-    public void update() {
+    public void update_red() {
         controller.setPID(kp, ki, kd);
 
         if(currentHeading < 0) {
@@ -71,6 +70,38 @@ public class TurretModule extends Constants.turret {
         }
 
     }
+
+    public void update_blue() {
+        controller.setPID(kp, ki, kd);
+
+        if(currentHeading < 0) {
+            currentHeading = 360 + currentHeading;
+        }
+
+        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+
+        relative_angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+        gr = currentHeading + relative_angle;
+
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos;
+
+        power = controller.calculate(error);
+
+
+        if(gr > 180 && gr < 390) { //+ sau - 180
+            servo_right.setPower(power);
+            servo_left.setPower(power);
+        }
+
+        else {
+            servo_right.setPower(0);
+            servo_left.setPower(0);
+        }
+
+    }
+
+
 
     public void update_auto(double x, double y, double h) {
         controller.setPID(kp, ki, kd);
