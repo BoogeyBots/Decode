@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -34,7 +32,7 @@ public class PinpointModule extends Constants.pinpoint {
 
     }
 
-    public void update() {
+    public void update_red() {
         pinpoint.update();
 
         camera.updateRobotOrientation(currentHeading);
@@ -47,6 +45,21 @@ public class PinpointModule extends Constants.pinpoint {
         deltaY = 144 - currentY;
 
         distanta = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    }
+
+    public void update_blue() {
+        pinpoint.update();
+
+        camera.updateRobotOrientation(currentHeading);
+
+        currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+        currentX = pinpoint.getPosX(DistanceUnit.INCH);
+        currentY = pinpoint.getPosY(DistanceUnit.INCH);
+
+        deltaY = 144 - currentY;
+
+        distanta = Math.sqrt((0 - currentX) * (0 - currentX) + deltaY * deltaY);
 
     }
 

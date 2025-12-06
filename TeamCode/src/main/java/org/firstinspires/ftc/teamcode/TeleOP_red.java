@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 
@@ -55,6 +56,8 @@ public class TeleOP_red extends LinearOpMode {
         boolean switchingState = false;
         boolean overshoot = false;
 
+        activated = false;
+
         waitForStart();
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
@@ -69,7 +72,7 @@ public class TeleOP_red extends LinearOpMode {
             }
 
             outtake.update();
-            pinpoint.update();
+            pinpoint.update_red();
             turret.update_red();
 
             drive.setWeightedDrivePower(
@@ -122,7 +125,7 @@ public class TeleOP_red extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(Constants.outtake.target_velocity <= velocity - 20 && Constants.turret.error <= 3 && Constants.outtake.activated) {
+            if(Constants.outtake.target_velocity <= velocity + 5 && Constants.turret.error <= 3 && Constants.outtake.activated) {
                 outtake.deblocat();
             }
 

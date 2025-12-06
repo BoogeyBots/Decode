@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentHeading;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.deltaX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.deltaY;
 
@@ -50,7 +52,7 @@ public class TurretModule extends Constants.turret {
 
         double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
 
-        relative_angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+        relative_angle = Math.toDegrees(Math.atan2(144 - currentY, 144 - currentX));
 
         gr = currentHeading + relative_angle;
 
@@ -74,13 +76,11 @@ public class TurretModule extends Constants.turret {
     public void update_blue() {
         controller.setPID(kp, ki, kd);
 
-        if(currentHeading < 0) {
-            currentHeading = 360 + currentHeading;
-        }
+        currentHeading += 360;
 
         double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
 
-        relative_angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+        relative_angle = Math.toDegrees(Math.atan2(144 - currentY, 0 - currentX));
 
         gr = currentHeading + relative_angle;
 
@@ -89,7 +89,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-        if(gr > 180 && gr < 390) { //+ sau - 180
+        if(gr > 338 && gr < 560) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -103,7 +103,7 @@ public class TurretModule extends Constants.turret {
 
 
 
-    public void update_auto(double x, double y, double h) {
+    public void update_auto_red (double x, double y, double h) {
         controller.setPID(kp, ki, kd);
 
         if(h < 0) {
@@ -122,6 +122,32 @@ public class TurretModule extends Constants.turret {
 
 
         if(gr > 210 && gr < 390) {
+            servo_right.setPower(power);
+            servo_left.setPower(power);
+        }
+
+        else {
+            servo_right.setPower(0);
+            servo_left.setPower(0);
+        }
+    }
+
+    public void update_auto_blue (double x, double y, double h) {
+        controller.setPID(kp, ki, kd);
+
+        h += 360;
+
+        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+
+        relative_angle = Math.toDegrees(Math.atan2(144 - y, 0 - x));
+
+        gr = h + relative_angle;
+
+        error = (h - 180) - relative_angle + turretCurrentPos;
+
+        power = controller.calculate(error);
+
+        if(gr > 338 && gr < 560) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }

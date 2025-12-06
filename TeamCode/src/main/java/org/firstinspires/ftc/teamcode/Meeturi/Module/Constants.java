@@ -9,11 +9,11 @@ public class Constants {
     public static class intake {
         public static double power;
         public static double poz;
-        public static double jos = 1, sus = 0.83;
+        public static double jos = 0.96, sus = 0.9;
     }
     @Configurable
     public static class outtake {
-        public static double kp = 0.001, ki = 0, kd = 0, kf = 0.0005;
+        public static double kp = 0.001, ki = 0, kd = 0, kf = 0.0004;
         public static double ks = 0, kv = 1, ka = 0;
         public static double target_velocity, velocity;
         public static double pos_servo;

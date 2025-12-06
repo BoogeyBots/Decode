@@ -20,7 +20,6 @@ public class IntakeModule extends Constants.intake {
     public void init_auto() {
         motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
         servo = hardwareMap.get(Servo.class, "servo_intake");
-        jos();
     }
 
     public void trage(double power) {

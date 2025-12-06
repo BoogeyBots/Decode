@@ -12,21 +12,32 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
+
 @Configurable
 @TeleOp
 public class Outtake_test extends LinearOpMode {
     DcMotorEx motor_sus, motor_jos, motor_opus;
-    public static double targe, p, i, d, f, velocity, v, s, a;
+    Servo s, s1;
+    public static double targe, p, i, d, f, velocity, pos_rampa = 0.1, pos_blocaj = 0.55, pow;
     PIDFController controller = new PIDFController(p, i, d, f);
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(s, v, a);
+    IntakeModule intake;
     @Override
     public void runOpMode() throws InterruptedException {
         motor_sus = hardwareMap.get(DcMotorEx.class, "motor_sus");
         motor_jos = hardwareMap.get(DcMotorEx.class, "motor_jos");
         motor_opus = hardwareMap.get(DcMotorEx.class, "motor_opus");
+        s = hardwareMap.get(Servo.class, "servo_rampa");
+        s1 = hardwareMap.get(Servo.class, "servo_blocaj");
+
+        intake = new IntakeModule(hardwareMap);
 
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        intake.init_teleOP();
 
         TelemetryManager panelsTelemetry;
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -35,6 +46,9 @@ public class Outtake_test extends LinearOpMode {
 
         while (opModeIsActive()) {
             update();
+            intake.trage(pow);
+            s.setPosition(pos_rampa);
+            s1.setPosition(pos_blocaj);
             panelsTelemetry.addData("Velocity", velocity);
             panelsTelemetry.addData("Target", targe);
             panelsTelemetry.update(telemetry);
@@ -43,12 +57,9 @@ public class Outtake_test extends LinearOpMode {
     }
 
     public void update() {
-        controller.setPIDF(p, i, d, f); //kp=4
-        feedforward = new SimpleMotorFeedforward(s, v, a);
-        velocity = motor_sus.getVelocity();
-        double PID_output = controller.calculate(velocity, targe); //-2100
-        double FF_output = feedforward.calculate(targe);
-        double output = PID_output + FF_output;
+        controller.setPIDF(0.001, 0, 0, 0.0004);
+        velocity = motor_opus.getVelocity();
+        double output = controller.calculate(velocity, targe);
 
         motor_sus.setPower(output);
         motor_jos.setPower(output);

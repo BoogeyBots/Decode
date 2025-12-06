@@ -34,7 +34,7 @@ public class OuttakeModule extends Constants.outtake {
         servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
 
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
 
         blocat();
         aproape();
@@ -52,7 +52,9 @@ public class OuttakeModule extends Constants.outtake {
         servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
 
         motor_sus.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor_opus.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor_jos.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
 
         blocat();
         aproape();
@@ -65,63 +67,90 @@ public class OuttakeModule extends Constants.outtake {
     public void update() {
         controller.setPIDF(kp, ki, kd, kf); //kp=4
         //feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        double output = controller.calculate(motor_sus.getVelocity(), target_velocity); //-2100
+        double output = controller.calculate(motor_opus.getVelocity(), target_velocity); //-2100
 
-
-//        if(target_velocity != 0) {
-//            kd = 0.95;
+//        if(target_velocity == 0) {
+//            controller.setP(0);
 //        }
 //
 //        else {
-//            kd = 0;
+//            controller.setP(kp);
 //        }
 
         if(distanta <= 50 && activated) {
-            target_velocity = 1050;
+            target_velocity = 0;
             servo_rampa.setPosition(0);
         }
 
         if(distanta <= 60 && distanta > 50 && activated) {
-            target_velocity = 1200;
-            servo_rampa.setPosition(0);
+            target_velocity = 1400;
+            servo_rampa.setPosition(0.3);
         }
 
-        if(distanta <= 72 && distanta > 60 && activated) {
-            target_velocity = 1200;
-            servo_rampa.setPosition(0.13);
+        if(distanta <= 70 && distanta > 60 && activated) {
+            target_velocity = 1275;
+            servo_rampa.setPosition(0.1);
         }
 
-        if(distanta <= 84 && distanta > 72 && activated) {
-            target_velocity = 1200;
+        if(distanta <= 75 && distanta > 70 && activated) {
+            target_velocity = 1350;
+            servo_rampa.setPosition(0.1);
+        }
+
+        if(distanta <= 80 && distanta > 76 && activated) {
+            target_velocity = 1380;
             servo_rampa.setPosition(0.1);
         }
 
 
-        if(distanta <= 100 && distanta > 84 && activated) {
-            target_velocity = 1250;
-            servo_rampa.setPosition(0.15);
+        if(distanta <= 110 && distanta > 80 && activated) {
+            target_velocity = 1400;
+            servo_rampa.setPosition(0.14);
         }
 
         if(distanta >= 120 && activated) {
-            target_velocity = 1900;
-            servo_rampa.setPosition(0.4);
+            target_velocity = 1800;
+            servo_rampa.setPosition(0.5);
         }
 
-        velocity = motor_sus.getVelocity();
+        velocity = motor_opus.getVelocity();
 
-        motor_sus.setPower(output);
-        motor_jos.setPower(output);
-        motor_opus.setPower(output);
+        if(target_velocity != 0) {
+            motor_sus.setPower(output);
+            motor_jos.setPower(output);
+            motor_opus.setPower(output);
+        }
+
+        else {
+            motor_sus.setPower(0);
+            motor_jos.setPower(0);
+            motor_opus.setPower(0);
+        }
     }
 
-    public double get_velocity_sus() {
-        return motor_sus.getVelocity();
-    }
+    public void calibrare() {
+        controller.setPIDF(kp, ki, kd, kf); //kp=4
+        //feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+        double output = controller.calculate(motor_opus.getVelocity(), target_velocity); //-2100
+        velocity = motor_opus.getVelocity();
 
-    public double get_target() {
-        return target_velocity;
-    }
+        servo_rampa.setPosition(pos_servo);
 
+
+        if(target_velocity != 0) {
+            motor_sus.setPower(output);
+            motor_jos.setPower(output);
+            motor_opus.setPower(output);
+        }
+
+        else {
+            motor_sus.setPower(0);
+            motor_jos.setPower(0);
+            motor_opus.setPower(0);
+        }
+
+
+    }
 
 
     public void aproape() {
