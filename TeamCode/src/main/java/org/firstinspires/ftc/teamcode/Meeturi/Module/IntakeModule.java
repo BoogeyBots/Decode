@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -9,33 +11,50 @@ public class IntakeModule extends Constants.intake {
     public IntakeModule (HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
-    DcMotorEx motor;
+    DcMotorEx motor_intake, motor_transfer;
+   // DistanceSensor senzor_intake;
     Servo servo;
     public void init_teleOP() {
-        motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
+        motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
+        motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
+       // senzor_intake = hardwareMap.get(DistanceSensor.class, "senzor_intake");
+
+        motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
         servo = hardwareMap.get(Servo.class, "servo_intake");
         sus();
     }
 
     public void init_auto() {
-        motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
+        motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
+        motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
+        motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+       // senzor_intake = hardwareMap.get(DistanceSensor.class, "senzor_intake");
+
         servo = hardwareMap.get(Servo.class, "servo_intake");
     }
 
-    public void trage(double power) {
-        motor.setPower(power);
+    public void trage_intake(double power) {
+        motor_intake.setPower(power);
     }
 
-    public void scuipa(double power) {
-        motor.setPower(-power);
+    public void scuipa_intake(double power) {
+        motor_intake.setPower(-power);
     }
 
-    public void stop() {
-        motor.setPower(0);
+    public void stop_intake() {
+        motor_intake.setPower(0);
     }
 
-    public void poz_servo(double poz) {
-        servo.setPosition(poz);
+    public void trage_transfer(double power) {
+        motor_transfer.setPower(power);
+    }
+
+    public void scuipa_transfer(double power) {
+        motor_transfer.setPower(-power);
+    }
+
+    public void stop_transfer() {
+        motor_transfer.setPower(0);
     }
 
     public void jos() {

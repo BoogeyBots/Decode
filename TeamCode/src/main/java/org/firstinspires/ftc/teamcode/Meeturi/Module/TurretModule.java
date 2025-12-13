@@ -30,6 +30,8 @@ public class TurretModule extends Constants.turret {
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
 
         controller.reset();
+
+        decalation = 0;
     }
 
     public void init_auto() {
@@ -56,7 +58,7 @@ public class TurretModule extends Constants.turret {
 
         gr = currentHeading + relative_angle;
 
-        error = (currentHeading - 180) - relative_angle + turretCurrentPos;
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
         power = controller.calculate(error);
 

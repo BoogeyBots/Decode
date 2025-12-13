@@ -86,15 +86,15 @@ public class TeleOP_blue extends LinearOpMode {
             drive.update();
 
             if (gamepad1.right_trigger > 0.01) {
-                intake.trage(1);
+                intake.trage_intake(1);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
-                intake.scuipa(1);
+                intake.scuipa_intake(1);
             }
 
             else {
-                intake.stop();
+                intake.stop_intake();
             }
 
             if(gamepad1.dpad_up) {

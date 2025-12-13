@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Auto;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
@@ -17,7 +18,9 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
@@ -29,16 +32,19 @@ public class Auto_red extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
+    double delta_velocity;
     static TelemetryManager panelsTelemetry;
     boolean turretActivated = false;
+    double distance_sensor;
+    boolean transfer = false;
     private Follower follower;
     private Timer pathTimer;
     private int pathState;
     public static double cat_trage = 1.15; //în secunde
     public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
     public static double x_preload = 80, y_preload = 83, heading_preload = 225;
-    public static double x_collect1 = 123, y_collect1 = 83, heading_collect = 180;
-    public static double x_trapa = 126, y_trapa = 75, heading_trapa = 270;
+    public static double x_collect1 = 123, y_collect1 = 84, heading_collect = 180;
+    public static double x_trapa = 127, y_trapa = 75, heading_trapa = 290;
     public static double x_collect2 = 129, y_collect2 = 59;
     public static double x_collect3 = 129, y_collect3 = 35;
     public static double x_cp2 = 70.4, y_cp2 = 59;
@@ -79,6 +85,7 @@ public class Auto_red extends OpMode {
         rand2 = follower.pathBuilder()
                 .addPath(new BezierCurve(scorePose, cp_rand2, collect2))
                 .setConstantHeadingInterpolation(Math.toRadians(heading_collect))
+
                 .build();
 
         trage2 = follower.pathBuilder()
@@ -117,16 +124,18 @@ public class Auto_red extends OpMode {
 
             case 1:
                 intake.sus();
-                intake.trage(0.1);
+                intake.trage_intake(0.5);
+                intake.trage_transfer(0.47);
                 activated = true;
                 setPathState(2);
 
                 break;
 
             case 2:
-                if(follower.atPose(scorePose, 2, 2)) {
-                    if (target_velocity <= velocity + 5 && error <= 3 && activated) {
+                if(!follower.isBusy()) {
+                    if (target_velocity < velocity + 5 && error <= 3 && activated) {
                         outtake.deblocat();
+                        transfer = true;
                         setPathState(3);
                     }
                 }
@@ -135,7 +144,8 @@ public class Auto_red extends OpMode {
 
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > 0.1) {
-                    intake.trage(1);
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
                     setPathState(4);
                 }
 
@@ -157,9 +167,9 @@ public class Auto_red extends OpMode {
                 break;
 
             case 6:
-                if(follower.atPose(collect1, 1, 1)) {
+                if(!follower.isBusy()) {
                     follower.followPath(spretrapa, true);
-                    intake.trage(0.1);
+                    intake.trage_intake(0.7);
                     setPathState(7);
                 }
 
@@ -170,33 +180,28 @@ public class Auto_red extends OpMode {
                     if(pathTimer.getElapsedTimeSeconds() > 1.6) {
                         follower.followPath(trage1, true);
                         activated = true;
-                        setPathState(8);
+                        setPathState(9);
                     }
                 }
 
                 break;
 
-            case 8:
-                if(follower.atPose(scorePose, 1,1)) {
-                    intake.jos();
-                    intake.scuipa(0.4);
-                    setPathState(9);
-                }
 
-                break;
 
             case 9:
-                if(target_velocity <= velocity + 5 && error <= 3 && activated) {
+                if (target_velocity < velocity + 5 && error <= 3 && activated) {
                     outtake.deblocat();
+                    transfer = true;
                     setPathState(10);
                 }
 
                 break;
 
             case 10:
-                if(pathTimer.getElapsedTimeSeconds() > 0.2) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
-                    intake.trage(1);
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
                     setPathState(11);
                 }
 
@@ -218,7 +223,7 @@ public class Auto_red extends OpMode {
 
             case 13:
                 if(!follower.isBusy()) {
-                    intake.trage(0.1);
+                    intake.trage_intake(0.7);
                     setPathState(14);
                 }
 
@@ -227,31 +232,25 @@ public class Auto_red extends OpMode {
             case 14:
                 follower.followPath(trage2);
                 activated = true;
-                setPathState(15);
+                setPathState(16);
 
                 break;
 
-            case 15:
-                if(follower.atPose(scorePose, 1,1)) {
-                    intake.jos();
-                    intake.scuipa(0.4);
-                    setPathState(16);
-                }
-
-                break;
 
             case 16:
-                if(target_velocity <= velocity + 5 && error <= 3 && activated) {
+                if (target_velocity < velocity + 5 && error <= 3 && activated) {
                     outtake.deblocat();
+                    transfer = true;
                     setPathState(17);
                 }
 
                 break;
 
             case 17:
-                if(pathTimer.getElapsedTimeSeconds() > 0.2) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
-                    intake.trage(1);
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
                     setPathState(69);
                 }
 
@@ -273,7 +272,7 @@ public class Auto_red extends OpMode {
 
             case 19:
                 if(!follower.isBusy()) {
-                    intake.trage(0.1);
+                    intake.trage_intake(0.7);
                     setPathState(20);
                 }
 
@@ -282,30 +281,24 @@ public class Auto_red extends OpMode {
             case 20:
                 follower.followPath(trage3, true);
                 activated = true;
-                setPathState(21);
+                setPathState(22);
 
                 break;
 
-            case 21:
-                if(follower.atPose(scorePose, 1,1)) {
-                    intake.jos();
-                    intake.scuipa(0.4);
-                    setPathState(22);
-                }
-
-                break;
 
             case 22:
-                if(target_velocity <= velocity + 5 && error <= 3 && activated) {
+                if (target_velocity < velocity + 5 && error <= 3 && activated) {
                     outtake.deblocat();
+                    transfer = true;
                     setPathState(23);
                 }
 
                 break;
 
             case 23:
-                if(pathTimer.getElapsedTimeSeconds() > 0.2) {
-                    intake.trage(1);
+                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
                     setPathState(24);
                 }
 
@@ -328,35 +321,29 @@ public class Auto_red extends OpMode {
 
             case 26:
                 if(!follower.isBusy()) {
-                    intake.trage(0.1);
+                    intake.trage_intake(0.7);
                     activated = true;
                     follower.followPath(trage4, true);
-                    setPathState(27);
-                }
-
-                break;
-
-            case 27:
-                if(follower.atPose(scorePose, 1,1)) {
-                    intake.jos();
-                    intake.scuipa(0.4);
                     setPathState(28);
                 }
 
                 break;
 
+
             case 28:
-                if(target_velocity <= velocity + 5 && error <= 3 && activated) {
+                if (target_velocity < velocity + 5 && error <= 3 && activated) {
                     outtake.deblocat();
+                    transfer = true;
                     setPathState(29);
                 }
 
                 break;
 
             case 29:
-                if(pathTimer.getElapsedTimeSeconds() > 0.2) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
-                    intake.trage(1);
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
                     setPathState(30);
                 }
 
@@ -381,6 +368,8 @@ public class Auto_red extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        auto = true;
     }
 
     @Override
@@ -394,17 +383,18 @@ public class Auto_red extends OpMode {
         double h = Math.toDegrees(follower.getPose().getHeading());
         distanta = Math.sqrt((144 - x) * (144 - x) + (144 - y) * (144 - y));
         turret.update_auto_red(x, y, h);
+        delta_velocity = velocity - target_velocity - 1;
 
-        // Feedback to Driver Hub for debugging
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);
         telemetry.addData("y", y);
         telemetry.addData("heading", h);
         telemetry.addData("Distanta", distanta);
         telemetry.addData("error", turret.getErrore());
-        telemetry.addData("power", turret.getPower());
-        telemetry.addData("kp", turret.getkP());
-        telemetry.addData("Grade", turret.gra());
+        telemetry.addData("Delta velocity", delta_velocity);
+//        telemetry.addData("power", turret.getPower());
+//        telemetry.addData("kp", turret.getkP());
+//        telemetry.addData("Grade", turret.gra());
         telemetry.update();
     }
 
@@ -432,5 +422,7 @@ public class Auto_red extends OpMode {
         outtake.blocat();
         target_velocity = 0;
         activated = false;
+        transfer = false;
+        intake.trage_transfer(0.47);
     }
 }

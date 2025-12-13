@@ -105,7 +105,7 @@ public class Auto_blue extends OpMode {
 
             case 1:
                 intake.sus();
-                intake.trage(0.1);
+                intake.trage_intake(0.1);
                 activated = true;
                 setPathState(2);
 
@@ -123,7 +123,7 @@ public class Auto_blue extends OpMode {
 
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > 0.1) {
-                    intake.trage(1);
+                    intake.trage_intake(1);
                     setPathState(4);
                 }
 
@@ -147,7 +147,7 @@ public class Auto_blue extends OpMode {
             case 6:
                 if(follower.atPose(collect1, 1, 1)) {
                     follower.followPath(spretrapa, true);
-                    intake.trage(0.1);
+                    intake.trage_intake(0.1);
                     setPathState(7);
                 }
 
@@ -167,7 +167,7 @@ public class Auto_blue extends OpMode {
                 if(follower.atPose(scorePose, 1,1)) {
                     activated = true;
                     intake.jos();
-                    intake.scuipa(0.4);
+                    intake.scuipa_intake(0.4);
                     setPathState(9);
                 }
 
@@ -184,7 +184,7 @@ public class Auto_blue extends OpMode {
             case 10:
                 if(pathTimer.getElapsedTimeSeconds() > 0.2) {
                     intake.sus();
-                    intake.trage(1);
+                    intake.trage_intake(1);
                     setPathState(11);
                 }
 
@@ -206,7 +206,7 @@ public class Auto_blue extends OpMode {
 
             case 13:
                 if(!follower.isBusy()) {
-                    intake.trage(0.1);
+                    intake.trage_intake(0.1);
                     setPathState(14);
                 }
 
@@ -222,7 +222,7 @@ public class Auto_blue extends OpMode {
                 if(follower.atPose(scorePose, 1,1)) {
                     activated = true;
                     intake.jos();
-                    intake.scuipa(0.4);
+                    intake.scuipa_intake(0.4);
                     setPathState(16);
                 }
 
@@ -239,7 +239,7 @@ public class Auto_blue extends OpMode {
             case 17:
                 if(pathTimer.getElapsedTimeSeconds() > 0.2) {
                     intake.sus();
-                    intake.trage(1);
+                    intake.trage_intake(1);
                     setPathState(69);
                 }
 
@@ -261,7 +261,7 @@ public class Auto_blue extends OpMode {
 
             case 19:
                 if(!follower.isBusy()) {
-                    intake.trage(0.1);
+                    intake.trage_intake(0.1);
                     setPathState(20);
                 }
 
@@ -277,7 +277,7 @@ public class Auto_blue extends OpMode {
                 if(follower.atPose(scorePose, 1,1)) {
                     activated = true;
                     intake.jos();
-                    intake.scuipa(0.4);
+                    intake.scuipa_intake(0.4);
                     setPathState(22);
                 }
 
@@ -293,7 +293,7 @@ public class Auto_blue extends OpMode {
 
             case 23:
                 if(pathTimer.getElapsedTimeSeconds() > 0.2) {
-                    intake.trage(1);
+                    intake.trage_intake(1);
                     setPathState(24);
                 }
 

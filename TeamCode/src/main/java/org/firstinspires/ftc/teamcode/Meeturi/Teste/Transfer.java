@@ -21,7 +21,7 @@ public class Transfer extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
-            intake.trage(Constants.intake.power);
+            intake.trage_intake(Constants.intake.power);
             outtake.blocat();
             outtake.update();
         }
