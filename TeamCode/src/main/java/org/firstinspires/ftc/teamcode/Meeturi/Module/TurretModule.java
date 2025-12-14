@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.Meeturi.Module;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentHeading;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentY;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.deltaX;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.deltaY;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -123,7 +121,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-        if(gr > 210 && gr < 390) {
+        if(gr > 165 && gr < 390 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -161,7 +159,7 @@ public class TurretModule extends Constants.turret {
     }
 
 
-    public double getErrore() {
+    public double getError() {
         return error;
     }
     public double getPower() {

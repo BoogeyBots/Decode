@@ -19,13 +19,14 @@ public class Constants {
         public static int zone;
         public static double blocat = 0.45, deblocat = 1;
         public static double aproape = 0.05, departe = 0.5;
-        public static boolean activated, auto, ramp;
+        public static boolean act_outtake, auto, ramp;
 
     }
     @Configurable
     public static class turret {
         public static double kp = 0.04, ki, kd = 0.0007, power, error;
         public static double TICKS_PER_DEGREE = 121.3629, relative_angle, decalation = 0;
+        public static boolean act_turret;
 
     }
 

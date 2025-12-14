@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 
@@ -56,7 +56,7 @@ public class TeleOP_blue extends LinearOpMode {
         boolean switchingState = false;
         boolean overshoot = false;
 
-        activated = false;
+        act_outtake = false;
 
         waitForStart();
 
@@ -106,13 +106,13 @@ public class TeleOP_blue extends LinearOpMode {
             }
 
             if(gamepad1.a && mode == STATE.trage) {
-                Constants.outtake.activated = true;
+                Constants.outtake.act_outtake = true;
                 switchingState = true;
                 timer.reset();
             }
 
             if(gamepad1.a && mode == STATE.numaitrage) {
-                Constants.outtake.activated = false;
+                Constants.outtake.act_outtake = false;
                 switchingState = true;
                 Constants.outtake.target_velocity = 0;
                 outtake.blocat();
@@ -125,7 +125,7 @@ public class TeleOP_blue extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(Constants.outtake.target_velocity <= velocity + 5 && Constants.turret.error <= 3 && Constants.outtake.activated) {
+            if(Constants.outtake.target_velocity <= velocity + 5 && Constants.turret.error <= 3 && Constants.outtake.act_outtake) {
                 outtake.deblocat();
             }
 

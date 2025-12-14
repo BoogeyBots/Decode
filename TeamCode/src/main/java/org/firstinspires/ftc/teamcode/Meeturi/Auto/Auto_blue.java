@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Auto;
 
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
@@ -106,14 +106,14 @@ public class Auto_blue extends OpMode {
             case 1:
                 intake.sus();
                 intake.trage_intake(0.1);
-                activated = true;
+                act_outtake = true;
                 setPathState(2);
 
                 break;
 
             case 2:
                 if(follower.atPose(scorePose, 2, 2)) {
-                    if (target_velocity <= velocity - 20 && error <= 3 && activated) {
+                    if (target_velocity <= velocity - 20 && error <= 3 && act_outtake) {
                         outtake.deblocat();
                         setPathState(3);
                     }
@@ -165,7 +165,7 @@ public class Auto_blue extends OpMode {
 
             case 8:
                 if(follower.atPose(scorePose, 1,1)) {
-                    activated = true;
+                    act_outtake = true;
                     intake.jos();
                     intake.scuipa_intake(0.4);
                     setPathState(9);
@@ -174,7 +174,7 @@ public class Auto_blue extends OpMode {
                 break;
 
             case 9:
-                if(target_velocity <= velocity - 20 && error <= 3 && activated) {
+                if(target_velocity <= velocity - 20 && error <= 3 && act_outtake) {
                     outtake.deblocat();
                     setPathState(10);
                 }
@@ -220,7 +220,7 @@ public class Auto_blue extends OpMode {
 
             case 15:
                 if(follower.atPose(scorePose, 1,1)) {
-                    activated = true;
+                    act_outtake = true;
                     intake.jos();
                     intake.scuipa_intake(0.4);
                     setPathState(16);
@@ -229,7 +229,7 @@ public class Auto_blue extends OpMode {
                 break;
 
             case 16:
-                if(target_velocity <= velocity - 20 && error <= 3 && activated) {
+                if(target_velocity <= velocity - 20 && error <= 3 && act_outtake) {
                     outtake.deblocat();
                     setPathState(17);
                 }
@@ -275,7 +275,7 @@ public class Auto_blue extends OpMode {
 
             case 21:
                 if(follower.atPose(scorePose, 1,1)) {
-                    activated = true;
+                    act_outtake = true;
                     intake.jos();
                     intake.scuipa_intake(0.4);
                     setPathState(22);
@@ -284,7 +284,7 @@ public class Auto_blue extends OpMode {
                 break;
 
             case 22:
-                if(target_velocity <= velocity - 20 && error <= 3 && activated) {
+                if(target_velocity <= velocity - 20 && error <= 3 && act_outtake) {
                     outtake.deblocat();
                     setPathState(23);
                 }
@@ -337,7 +337,7 @@ public class Auto_blue extends OpMode {
         telemetry.addData("y", y);
         telemetry.addData("heading", h);
         telemetry.addData("Distanta", distanta);
-        telemetry.addData("error", turret.getErrore());
+        telemetry.addData("error", turret.getError());
         telemetry.addData("power", turret.getPower());
         telemetry.addData("kp", turret.getkP());
         telemetry.addData("Grade", turret.gra());
@@ -367,6 +367,6 @@ public class Auto_blue extends OpMode {
     public void numaitrag() {
         outtake.blocat();
         target_velocity = 0;
-        activated = false;
+        act_outtake = false;
     }
 }

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.activated;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ramp;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
@@ -68,7 +67,7 @@ public class TeleOP_red extends LinearOpMode {
 
         boolean switchingState = false;
 
-        activated = false;
+        act_outtake = false;
         auto = false;
 
         waitForStart();
@@ -134,7 +133,7 @@ public class TeleOP_red extends LinearOpMode {
 
             if(gamepad1.a && mode == STATE.trage) {
                 ramp = false;
-                Constants.outtake.activated = true;
+                Constants.outtake.act_outtake = true;
                 switchingState = true;
                 timer.reset();
             }
@@ -142,7 +141,7 @@ public class TeleOP_red extends LinearOpMode {
             if(gamepad1.a && mode == STATE.numaitrage) {
                 Constants.outtake.target_velocity = 0;
                 deschis = false;
-                Constants.outtake.activated = false;
+                Constants.outtake.act_outtake = false;
                 switchingState = true;
                 outtake.blocat();
                 timer.reset();
@@ -154,7 +153,7 @@ public class TeleOP_red extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.activated && timer.seconds() > 1) {
+            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 1) {
                 outtake.deblocat();
                 deschis = true;
             }
@@ -163,7 +162,7 @@ public class TeleOP_red extends LinearOpMode {
                 pinpoint.recalibration();
             }
 
-            if(target_velocity != 0 && activated && delta_velocity < -150 && deschis) {
+            if(target_velocity != 0 && act_outtake && delta_velocity < -150 && deschis) {
                 outtake.reglare();
             }
 
