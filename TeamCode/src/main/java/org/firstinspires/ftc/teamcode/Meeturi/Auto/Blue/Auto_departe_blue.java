@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.Meeturi.Auto;
+package org.firstinspires.ftc.teamcode.Meeturi.Auto.Blue;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ramp;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
@@ -27,7 +28,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous
-public class Auto_departe_red extends OpMode {
+public class Auto_departe_blue extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
@@ -46,43 +47,43 @@ public class Auto_departe_red extends OpMode {
     public static double x_cp3 = 85.5, y_cp3 = 40;
     public static double x_colt = 133, y_colt = 8.7, heading_colt = 90;
     public static double x_cptrapa = 109, y_cptrapa = 66;
-    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose));
-    private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload));
-    private final Pose scorePose_tangential = new Pose(x_preload, y_preload + 4, Math.toRadians(heading_preload));
-    private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect));
-    private final Pose collect2 = new Pose(x_collect2, y_collect2, heading_collect);
-    private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect);
-    private final Pose trapa = new Pose(x_trapa, y_trapa, heading_trapa);
-    private final Pose cp_rand2 = new Pose(x_cp2, y_cp2);
-    private final Pose cp_rand3 = new Pose(x_cp3, y_cp3);
-    private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa);
-    private final Pose colt = new Pose(x_colt, y_colt, heading_colt);
+    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
+    private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload)).mirror();
+    private final Pose scorePose_tangential = new Pose(x_preload, y_preload + 4, Math.toRadians(heading_preload)).mirror();
+    private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect)).mirror();
+    private final Pose collect2 = new Pose(x_collect2, y_collect2, Math.toRadians(heading_collect)).mirror();
+    private final Pose collect3 = new Pose(x_collect3, y_collect3, Math.toRadians(heading_collect)).mirror();
+    private final Pose trapa = new Pose(x_trapa, y_trapa).mirror();
+    private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
+    private final Pose cp_rand3 = new Pose(x_cp3, y_cp3).mirror();
+    private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa).mirror();
+    private final Pose colt = new Pose(x_colt, y_colt).mirror();
 
     private Path scorePreload;
-    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4, strafe;
+    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setConstantHeadingInterpolation(Math.toRadians(heading_startPose));
+        scorePreload.setConstantHeadingInterpolation(startPose.getHeading());
 
         rand1 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, collect1))
-                .setConstantHeadingInterpolation(Math.toRadians(heading_collect))
+                .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
 
         spretrapa = follower.pathBuilder()
                 .addPath(new BezierCurve(collect2, cp_trapa, trapa))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
 
         trage1 = follower.pathBuilder()
                 .addPath(new BezierLine(colt, scorePose))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
 
         rand2 = follower.pathBuilder()
                 .addPath(new BezierCurve(scorePose, cp_rand2, collect2))
-                .setLinearHeadingInterpolation(Math.toRadians(210), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(0))
                 .build();
 
         trage2 = follower.pathBuilder()
@@ -92,7 +93,7 @@ public class Auto_departe_red extends OpMode {
 
         rand3 = follower.pathBuilder()
                 .addPath(new BezierCurve(scorePose, cp_rand3, collect3))
-                .setConstantHeadingInterpolation(Math.toRadians(heading_collect))
+                .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
 
         trage3 = follower.pathBuilder()
@@ -102,7 +103,7 @@ public class Auto_departe_red extends OpMode {
 
         sprecolt = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, colt))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
     }
 
@@ -368,9 +369,10 @@ public class Auto_departe_red extends OpMode {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
-        distanta = Math.sqrt((144 - x) * (144 - x) + (144 - y) * (144 - y));
-        turret.update_auto_red(x, y, h);
+        distanta = Math.sqrt((0 - x) * (0 - x) + (144 - y) * (144 - y));
+        turret.update_auto_blue(x, y, h);
 
+        voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);

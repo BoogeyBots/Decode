@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.au
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ramp;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
 
@@ -82,6 +83,8 @@ public class TeleOP_red extends LinearOpMode {
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
+
+            voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
             outtake.update();
             pinpoint.update_red();

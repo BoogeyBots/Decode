@@ -84,7 +84,7 @@ public class TurretModule extends Constants.turret {
 
         gr = currentHeading + relative_angle;
 
-        error = (currentHeading - 180) - relative_angle + turretCurrentPos;
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos - decalation;
 
         power = controller.calculate(error);
 
@@ -147,7 +147,7 @@ public class TurretModule extends Constants.turret {
 
         power = controller.calculate(error);
 
-        if(gr > 338 && gr < 560) {
+        if(gr > 338 && gr < 560 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }

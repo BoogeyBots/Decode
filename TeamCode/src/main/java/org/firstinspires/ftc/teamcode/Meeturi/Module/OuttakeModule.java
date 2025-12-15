@@ -20,16 +20,14 @@ public class OuttakeModule extends Constants.outtake {
         this.hardwareMap = hardwareMap;
     }
 
-    DcMotorEx motorDR, motorST, motor_opus;
+    DcMotorEx motorDR, motorST;
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
-    public static double vel50_60 = 1100, vel60_70 = 1100, vel70_75 = 1150, vel75_80 = 1150, vel80_90 = 1170, vel90_110 = 1260, vel120 = 1600;
-    public static double p50_60 = 0, p60_70 = 0, p70_75 = 0, p75_80 = 0, p80_90 = 0, p90_110 = 0.12, p120 = 0.7;
-    public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_90 = 0, reg90_110 = 0, reg120 = 0.45;
+    public static double vel50_60 = 1080, vel60_70 = 1100, vel70_75 = 1080, vel75_80 = 1120, vel80_90 = 1150, vel90_110 = 1200, vel120 = 1550;
+    public static double p50_60 = 0, p60_70 = 0, p70_75 = 0, p75_80 = 0, p80_90 = 0, p90_110 = 0.12, p120 = 0.74;
+    public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_90 = 0, reg90_110 = 0, reg120 = 0.45, pow = 50;
 
-    public static double timp = 0.47;
-
-    PIDFController controller = new PIDFController(kp, ki, kd, kf);
+    PIDFController controller = new PIDFController(kp, 0, 0, 0);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
 
     public void init_teleOP() {
@@ -46,8 +44,6 @@ public class OuttakeModule extends Constants.outtake {
         aproape();
 
         target_velocity = 0;
-
-        //controller.reset();
     }
 
     public void init_auto_aproape() {
@@ -65,23 +61,17 @@ public class OuttakeModule extends Constants.outtake {
         aproape();
 
         target_velocity = 0;
-
-        //controller.reset();
     }
 
     public void update() {
-        controller.setPIDF(kp, ki, kd, kf); //kp=4
         velocity = motorDR.getVelocity();
-        //feedforward = new SimpleMotorFeedforward(ks, kv, ka);
-        double output = controller.calculate(velocity, target_velocity); //-2100
 
-//        if(target_velocity == 0) {
-//            controller.setP(0);
-//        }
-//
-//        else {
-//            controller.setP(kp);
-//        }
+        controller.setPIDF(kp, 0, 0, 0);
+        feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+
+        double PID_output = controller.calculate(velocity, target_velocity);
+        double ff_output = feedforward.calculate(target_velocity);
+        double output = PID_output + ff_output;
 
         if(distanta <= 50 && act_outtake && auto) {
             target_velocity = 1100;
@@ -151,15 +141,15 @@ public class OuttakeModule extends Constants.outtake {
         if(distanta >= 110 && act_outtake) {
             if(!ramp) {
                 servo_rampa.setPosition(p120);
-                target_velocity = vel120;
+                target_velocity = vel120 + pow;
             }
             zone = 7;
             timer.reset();
         }
 
         if(target_velocity != 0) {
-            motorDR.setPower(output);
-            motorST.setPower(output);
+            motorDR.setPower(output * (nominalvoltage / voltage));
+            motorST.setPower(output * (nominalvoltage / voltage));
         }
 
         else {
