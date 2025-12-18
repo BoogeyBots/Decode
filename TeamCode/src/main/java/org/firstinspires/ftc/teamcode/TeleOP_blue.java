@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ta
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
 import java.util.List;
-@TeleOp
+@TeleOp (name = "Tiliopa blue")
 public class TeleOP_blue extends LinearOpMode {
 
     DistanceSensor sensor;
@@ -69,6 +70,7 @@ public class TeleOP_blue extends LinearOpMode {
         boolean switchingState = false;
 
         act_outtake = false;
+        act_turret = false;
         auto = false;
 
         waitForStart();
@@ -113,7 +115,7 @@ public class TeleOP_blue extends LinearOpMode {
                 if(distanta < 110) {
                     intake.trage_transfer(0.87);
                 }
-                else intake.trage_transfer(0.7);
+                else intake.trage_transfer(0.87);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
@@ -136,15 +138,17 @@ public class TeleOP_blue extends LinearOpMode {
 
             if(gamepad1.a && mode == STATE.trage) {
                 ramp = false;
+                act_turret = true;
                 Constants.outtake.act_outtake = true;
                 switchingState = true;
                 timer.reset();
             }
 
             if(gamepad1.a && mode == STATE.numaitrage) {
-                Constants.outtake.target_velocity = 0;
+                Constants.outtake.target_velocity = 1000;
                 deschis = false;
                 Constants.outtake.act_outtake = false;
+                act_turret = false;
                 switchingState = true;
                 outtake.blocat();
                 timer.reset();
@@ -156,7 +160,7 @@ public class TeleOP_blue extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 1) {
+            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 0.107) {
                 outtake.deblocat();
                 deschis = true;
             }
@@ -165,7 +169,7 @@ public class TeleOP_blue extends LinearOpMode {
                 pinpoint.recalibration();
             }
 
-            if(target_velocity != 0 && act_outtake && delta_velocity < -150 && deschis) {
+            if(target_velocity != 1000 && act_outtake && delta_velocity < -150 && deschis) {
                 outtake.reglare();
             }
 
@@ -177,46 +181,12 @@ public class TeleOP_blue extends LinearOpMode {
                 decalation -= 0.3;
             }
 
-
-//            if(gamepad1.b) {
-//                outtake.aproape();
-//                timer.reset();
-//                shooter = true;
-//                intake.sus();
-//            }
-//
-//            if(timer.seconds() > 1.7 && shooter) {
-//                outtake.deblocat();
-//                intake.trage(1);
-//                shooter = false;
-//                timer.reset();
-//            }
-
-
-//            if(gamepad1.y) {
-//                outtake.stop();
-//                outtake.blocat();
-//                intake.stop();
-//            }
-
-            //tureta manuala
-//            if(gamepad1.right_bumper) {
-//                turret.manual(1);
-//            }
-//
-//            else if(gamepad1.left_bumper) {
-//                turret.manual(-1);
-//            }
-//
-//            else {
-//                turret.manual(0);
-//            }
-
             telemetry.addData("V", velocity);
             telemetry.addData("T", target_velocity);
             telemetry.addData("Delta velocity", delta_velocity);
             telemetry.addData("Decalare", decalation);
             telemetry.addData("STATE", mode);
+            telemetry.addData("Gra", turret.gra());
             telemetry.addData("Distance", distanta);
             telemetry.update();
         }

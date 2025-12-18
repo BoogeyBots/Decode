@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentHeading;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentY;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -18,8 +21,6 @@ public class TurretModule extends Constants.turret {
     CRServo servo_right, servo_left;
     DcMotorEx encoder;
     PIDController controller = new PIDController(kp, ki, kd);
-
-    double gr = 270;
 
 
     public void init_teleOP() {
@@ -61,7 +62,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-        if(gr > 180 && gr < 390) {
+        if(gr > 195 && gr < 390) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -84,12 +85,12 @@ public class TurretModule extends Constants.turret {
 
         gr = currentHeading + relative_angle;
 
-        error = (currentHeading - 180) - relative_angle + turretCurrentPos - decalation;
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
         power = controller.calculate(error);
 
 
-        if(gr > 338 && gr < 560) {
+        if(gr > 350 && gr < 520 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -121,7 +122,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-        if(gr > 165 && gr < 390 && act_turret) {
+            if(gr > 180 && gr < 430 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -147,7 +148,7 @@ public class TurretModule extends Constants.turret {
 
         power = controller.calculate(error);
 
-        if(gr > 338 && gr < 560 && act_turret) {
+        if(gr > 350 && gr < 560 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -171,6 +172,50 @@ public class TurretModule extends Constants.turret {
     }
     public double gra() {
         return gr;
+    }
+
+
+    //Compensare cinematică
+
+    public void update_red_diferit() {
+        if(currentHeading < 0) {
+            currentHeading = 360 + currentHeading;
+        }
+
+        double dx = 144 - currentX;
+        double dy = 144 - currentY;
+        double realDist = Math.hypot(dx, dy);
+
+        double transformare_inch = 12.368 / 28;
+
+        double viteza_lansare = velocity * (transformare_inch * frecari);
+
+        if(viteza_lansare < 100) {
+            viteza_lansare = 400;
+        }
+        double timp_aer = realDist / viteza_lansare;
+
+        double virtualX = 144 - (velocityX * timp_aer * constanta_inertie);
+        double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+
+        virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
+
+        double relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
+
+        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        gr = currentHeading + relative_angle;
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
+
+        power = controller.calculate(error);
+
+        if(gr > 180 && gr < 390) {
+            servo_right.setPower(power);
+            servo_left.setPower(power);
+        }
+        else {
+            servo_right.setPower(0);
+            servo_left.setPower(0);
+        }
     }
 
 }

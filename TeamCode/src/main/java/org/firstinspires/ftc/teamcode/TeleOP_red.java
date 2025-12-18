@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
 import java.util.List;
-@TeleOp
+@TeleOp (name = "Tiliopa red")
 public class TeleOP_red extends LinearOpMode {
 
     DistanceSensor sensor;
@@ -111,9 +111,9 @@ public class TeleOP_red extends LinearOpMode {
             else if(gamepad1.right_trigger > 0.01 && mode == STATE.numaitrage) {
                 intake.trage_intake(1);
                 if(distanta < 110) {
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                 }
-                else intake.trage_transfer(1);
+                else intake.trage_transfer(0.87);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
@@ -156,7 +156,7 @@ public class TeleOP_red extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 1) {
+            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 0.107) {
                 outtake.deblocat();
                 deschis = true;
             }
@@ -176,41 +176,6 @@ public class TeleOP_red extends LinearOpMode {
             else if(gamepad1.left_bumper) {
                 decalation -= 0.3;
             }
-
-
-//            if(gamepad1.b) {
-//                outtake.aproape();
-//                timer.reset();
-//                shooter = true;
-//                intake.sus();
-//            }
-//
-//            if(timer.seconds() > 1.7 && shooter) {
-//                outtake.deblocat();
-//                intake.trage(1);
-//                shooter = false;
-//                timer.reset();
-//            }
-
-
-//            if(gamepad1.y) {
-//                outtake.stop();
-//                outtake.blocat();
-//                intake.stop();
-//            }
-
-            //tureta manuala
-//            if(gamepad1.right_bumper) {
-//                turret.manual(1);
-//            }
-//
-//            else if(gamepad1.left_bumper) {
-//                turret.manual(-1);
-//            }
-//
-//            else {
-//                turret.manual(0);
-//            }
 
             telemetry.addData("V", velocity);
             telemetry.addData("T", target_velocity);

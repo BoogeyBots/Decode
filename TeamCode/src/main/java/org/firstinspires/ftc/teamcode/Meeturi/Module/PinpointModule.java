@@ -57,6 +57,9 @@ public class PinpointModule extends Constants.pinpoint {
         currentX = pinpoint.getPosX(DistanceUnit.INCH);
         currentY = pinpoint.getPosY(DistanceUnit.INCH);
 
+        velocityX = pinpoint.getVelX(DistanceUnit.INCH);
+        velocityY = pinpoint.getVelY(DistanceUnit.INCH);
+
         deltaY = 144 - currentY;
 
         distanta = Math.sqrt((0 - currentX) * (0 - currentX) + deltaY * deltaY);

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Meeturi.Auto.Blue;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.nominalvoltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
@@ -40,8 +41,8 @@ public class Auto_aproape_blue extends OpMode {
     public static double x_preload = 80, y_preload = 83, heading_preload = 225;
     public static double x_collect1 = 123, y_collect1 = 84, heading_collect = 180;
     public static double x_trapa = 126, y_trapa = 73, heading_trapa = 110;
-    public static double x_collect2 = 129, y_collect2 = 59;
-    public static double x_collect3 = 129, y_collect3 = 35;
+    public static double x_collect2 = 129.7, y_collect2 = 59;
+    public static double x_collect3 = 129.7, y_collect3 = 35;
     public static double x_cp2 = 70.4, y_cp2 = 59;
     public static double x_cp3 = 82, y_cp3 = 29;
     public static double x_cptrapa = 109, y_cptrapa = 66;
@@ -148,7 +149,7 @@ public class Auto_aproape_blue extends OpMode {
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > 0.1) {
                     intake.trage_intake(1);
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                     setPathState(4);
                 }
 
@@ -174,7 +175,7 @@ public class Auto_aproape_blue extends OpMode {
                     if(pathTimer.getElapsedTimeSeconds() > 1.6) {
                         follower.followPath(trage1, true);
                         act_outtake = true;
-                        setPathState(9);
+                        setPathState(7);
                     }
                 }
 
@@ -182,10 +183,6 @@ public class Auto_aproape_blue extends OpMode {
 
 
             case 7:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
-                    intake.scuipa_transfer(0.35);
-                }
-
                 if(!follower.isBusy()) {
                     if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
                         outtake.deblocat();
@@ -200,7 +197,7 @@ public class Auto_aproape_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
                     intake.trage_intake(1);
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                     setPathState(9);
                 }
 
@@ -252,12 +249,8 @@ public class Auto_aproape_blue extends OpMode {
 
 
             case 14:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
-                    intake.scuipa_transfer(0.35);
-                }
-
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 15 && error <= 3 && act_outtake) {
+                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(15);
@@ -270,7 +263,7 @@ public class Auto_aproape_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
                     intake.trage_intake(1);
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                     setPathState(16);
                 }
 
@@ -310,11 +303,11 @@ public class Auto_aproape_blue extends OpMode {
             case 20:
                 if(pathTimer.getElapsedTimeSeconds() > 1.3) {
                     act_turret = true;
-                    intake.scuipa_transfer(0.35);
+                    intake.scuipa_transfer(0.1);
                 }
 
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 15 && error <= 3 && act_outtake) {
+                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(21);
@@ -326,7 +319,7 @@ public class Auto_aproape_blue extends OpMode {
             case 21:
                 if(pathTimer.getElapsedTimeSeconds() > 0.3)  {
                     intake.trage_intake(1);
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                     setPathState(22);
                 }
 
@@ -362,7 +355,7 @@ public class Auto_aproape_blue extends OpMode {
             case 25:
                 if(pathTimer.getElapsedTimeSeconds() > 1.7) {
                     act_turret = true;
-                    intake.scuipa_transfer(0.35);
+                    intake.scuipa_transfer(0.1);
                 }
 
                 if(!follower.isBusy()) {
@@ -379,7 +372,7 @@ public class Auto_aproape_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 0.3) {
                     intake.sus();
                     intake.trage_intake(1);
-                    intake.trage_transfer(1);
+                    intake.trage_transfer(0.87);
                     setPathState(27);
                 }
 
@@ -411,7 +404,6 @@ public class Auto_aproape_blue extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        outtake.update();
         autonomousPathUpdate();
 
         double x = follower.getPose().getX();
@@ -427,10 +419,12 @@ public class Auto_aproape_blue extends OpMode {
         telemetry.addData("y", y);
         telemetry.addData("heading", h);
         telemetry.addData("Distanta", distanta);
-        telemetry.addData("error", turret.getError());
-        telemetry.addData("Grade", turret.gra());
-
+//        telemetry.addData("error", turret.getError());
+//        telemetry.addData("Grade", turret.gra());
+        telemetry.addData("Voltage", nominalvoltage/voltage);
         telemetry.update();
+
+        outtake.update();
     }
 
     @Override

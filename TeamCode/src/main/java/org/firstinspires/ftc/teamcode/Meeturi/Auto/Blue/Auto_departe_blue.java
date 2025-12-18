@@ -38,14 +38,16 @@ public class Auto_departe_blue extends OpMode {
     private int pathState;
     public static double cat_trage = 1.15;
     public static double x_startPose = 88.987, y_startPose = 8.792, heading_startPose = 270;
-    public static double x_preload = 82, y_preload = 20, heading_preload = 270;
+    public static double x_preload = 82, y_preload = 23.5, heading_preload = 270;
     public static double x_collect1 = 123, y_collect1 = 84, heading_collect = 180;
     public static double x_trapa = 126, y_trapa = 75, heading_trapa = 110;
     public static double x_collect2 = 130.5, y_collect2 = 62;
     public static double x_collect3 = 130.5, y_collect3 = 38;
-    public static double x_cp2 = 78.5, y_cp2 = 65.5;
+    public static double x_cp2 = 60, y_cp2 = 65;
     public static double x_cp3 = 85.5, y_cp3 = 40;
-    public static double x_colt = 133, y_colt = 8.7, heading_colt = 90;
+    public static double x_colt = 120, y_colt = 19, heading_colt = 90;
+    public static double x_strafe = 126.5, y_strafe = 12, heading_strafe = 40;
+    public static double x_colt2 = 133, y_colt2 = 8.7, heading_colt2 = 90;
     public static double x_cptrapa = 109, y_cptrapa = 66;
     private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
     private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload)).mirror();
@@ -58,9 +60,11 @@ public class Auto_departe_blue extends OpMode {
     private final Pose cp_rand3 = new Pose(x_cp3, y_cp3).mirror();
     private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa).mirror();
     private final Pose colt = new Pose(x_colt, y_colt).mirror();
+    private final Pose colt_str = new Pose(x_strafe, y_strafe).mirror();
+    private final Pose colt2 = new Pose(x_colt2, y_colt2).mirror();
 
     private Path scorePreload;
-    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt;
+    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, strafeccolt, sprecolt2, trage0;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
@@ -77,8 +81,8 @@ public class Auto_departe_blue extends OpMode {
                 .build();
 
         trage1 = follower.pathBuilder()
-                .addPath(new BezierLine(colt, scorePose))
-                .setConstantHeadingInterpolation(collect1.getHeading())
+                .addPath(new BezierLine(colt_str, scorePose))
+                .setLinearHeadingInterpolation(collect1.getHeading(), scorePose.getHeading())
                 .build();
 
         rand2 = follower.pathBuilder()
@@ -105,6 +109,21 @@ public class Auto_departe_blue extends OpMode {
                 .addPath(new BezierLine(scorePose, colt))
                 .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
+
+        strafeccolt = follower.pathBuilder()
+                .addPath(new BezierLine(colt, colt_str))
+                .setConstantHeadingInterpolation(Math.toRadians(40))
+                .build();
+
+        sprecolt2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, colt2))
+                .setConstantHeadingInterpolation(collect1.getHeading())
+                .build();
+
+        trage0 = follower.pathBuilder()
+                .addPath(new BezierLine(colt2, scorePose))
+                .setLinearHeadingInterpolation(collect1.getHeading(), scorePose.getHeading())
+                .build();
     }
 
     public void autonomousPathUpdate() {
@@ -125,7 +144,7 @@ public class Auto_departe_blue extends OpMode {
                 }
 
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
+                    if (target_velocity < velocity + 5 && error <= 1 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(2);
@@ -184,7 +203,7 @@ public class Auto_departe_blue extends OpMode {
                 }
 
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
+                    if (target_velocity < velocity + 5 && error <= 1 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(7);
@@ -257,7 +276,7 @@ public class Auto_departe_blue extends OpMode {
                 }
 
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 15 && error <= 3 && act_outtake) {
+                    if (target_velocity < velocity + 15 && error <= 1 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(14);
@@ -284,6 +303,7 @@ public class Auto_departe_blue extends OpMode {
             case 15:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
                     numaitrag();
+                    act_turret = false;
                     setPathState(16);
                 }
 
@@ -291,9 +311,18 @@ public class Auto_departe_blue extends OpMode {
 
             case 16:
                 follower.followPath(sprecolt, true);
-                setPathState(17);
+                setPathState(69);
 
                 break;
+
+            case 69:
+                if(!follower.isBusy()) {
+                    follower.followPath(strafeccolt, true);
+                    setPathState(17);
+                }
+
+                break;
+
 
             case 17:
                 if(!follower.isBusy()) {
@@ -313,7 +342,7 @@ public class Auto_departe_blue extends OpMode {
                 }
 
                 if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 5 && error <= 1.5 && act_outtake) {
+                    if (target_velocity < velocity + 5 && error <= 1 && act_outtake) {
                         outtake.deblocat();
                         transfer = true;
                         setPathState(19);
@@ -332,11 +361,66 @@ public class Auto_departe_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 0.4) {
                     ramp = true;
                     outtake.reglare();
-                    setPathState(15);
+                    setPathState(20);
                 }
 
                 break;
 
+            case 20:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
+                    act_turret = false;
+                    setPathState(21);
+                }
+
+                break;
+
+            case 21:
+                follower.followPath(sprecolt2, true);
+                setPathState(22);
+
+                break;
+
+
+            case 22:
+                if(!follower.isBusy()) {
+                    intake.trage_intake(0.7);
+                    follower.followPath(trage1, true);
+                    act_outtake = true;
+                    act_turret = true;
+                    ramp = false;
+                    setPathState(23);
+                }
+
+                break;
+
+            case 23:
+                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
+                    intake.scuipa_transfer(0.35);
+                }
+
+                if(!follower.isBusy()) {
+                    if (target_velocity < velocity + 5 && error <= 1 && act_outtake) {
+                        outtake.deblocat();
+                        transfer = true;
+                        setPathState(24);
+                    }
+                }
+
+                break;
+
+            case 24:
+                if(pathTimer.getElapsedTimeSeconds() > 0.1) {
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
+
+                }
+
+                if(pathTimer.getElapsedTimeSeconds() > 0.4) {
+                    ramp = true;
+                    outtake.reglare();
+                    setPathState(15);
+                }
         }
     }
 
