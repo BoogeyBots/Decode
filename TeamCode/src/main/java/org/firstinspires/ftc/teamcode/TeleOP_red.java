@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ta
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -86,9 +88,9 @@ public class TeleOP_red extends LinearOpMode {
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
-            outtake.update();
+            outtake.update_kinematics();
             pinpoint.update_red();
-            turret.update_red();
+            turret.update_kinematics_red();
 
             delta_velocity = velocity - target_velocity - 1;
 
@@ -110,10 +112,13 @@ public class TeleOP_red extends LinearOpMode {
 
             else if(gamepad1.right_trigger > 0.01 && mode == STATE.numaitrage) {
                 intake.trage_intake(1);
-                if(distanta < 110) {
+                if(velocityX > 0.7 || velocityY > 0.7) {
+                    intake.trage_transfer(0.77);
+                }
+                else if(distanta > 120) {
                     intake.trage_transfer(0.87);
                 }
-                else intake.trage_transfer(0.87);
+                else intake.trage_transfer(1);
             }
 
             else if (gamepad1.left_trigger > 0.01) {

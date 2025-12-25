@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.constanta_inertie;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.frecari;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;

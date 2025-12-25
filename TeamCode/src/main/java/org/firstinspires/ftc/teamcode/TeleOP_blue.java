@@ -2,13 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.final_target;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ramp;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.timp_aer;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -35,8 +39,7 @@ public class TeleOP_blue extends LinearOpMode {
     OuttakeModule outtake = null;
     TurretModule turret = null;
     PinpointModule pinpoint;
-    ElapsedTime timer, timer_delta_velocity;
-    double distanta_sensor;
+    ElapsedTime timer;
     double delta_velocity;
     boolean deschis = false;
 
@@ -88,16 +91,16 @@ public class TeleOP_blue extends LinearOpMode {
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
-            outtake.update();
+            outtake.update_kinematics();
             pinpoint.update_blue();
-            turret.update_blue();
+            turret.update_kinematics_blue();
 
             delta_velocity = velocity - target_velocity - 1;
 
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            gamepad1.left_stick_y,
-                            gamepad1.left_stick_x,
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
                             -gamepad1.right_stick_x * 0.7
                     )
             );
@@ -112,10 +115,13 @@ public class TeleOP_blue extends LinearOpMode {
 
             else if(gamepad1.right_trigger > 0.01 && mode == STATE.numaitrage) {
                 intake.trage_intake(1);
-                if(distanta < 110) {
+                if(velocityX > 0.7 || velocityY > 0.7) {
+                    intake.trage_transfer(0.77);
+                }
+                else if(distanta > 120) {
                     intake.trage_transfer(0.87);
                 }
-                else intake.trage_transfer(0.87);
+                else intake.trage_transfer(1);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
@@ -145,7 +151,7 @@ public class TeleOP_blue extends LinearOpMode {
             }
 
             if(gamepad1.a && mode == STATE.numaitrage) {
-                Constants.outtake.target_velocity = 1000;
+                Constants.outtake.target_velocity = 990;
                 deschis = false;
                 Constants.outtake.act_outtake = false;
                 act_turret = false;
@@ -183,11 +189,15 @@ public class TeleOP_blue extends LinearOpMode {
 
             telemetry.addData("V", velocity);
             telemetry.addData("T", target_velocity);
+            telemetry.addData("TT", final_target);
             telemetry.addData("Delta velocity", delta_velocity);
             telemetry.addData("Decalare", decalation);
             telemetry.addData("STATE", mode);
             telemetry.addData("Gra", turret.gra());
             telemetry.addData("Distance", distanta);
+            telemetry.addData("VelocityX", velocityX);
+            telemetry.addData("VelocityY", velocityY);
+            telemetry.addData("Timp", timp_aer);
             telemetry.update();
         }
     }

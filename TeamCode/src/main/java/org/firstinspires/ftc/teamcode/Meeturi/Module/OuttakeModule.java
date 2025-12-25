@@ -15,8 +15,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.opencv.core.Mat;
-
 @Configurable
 public class OuttakeModule extends Constants.outtake {
     HardwareMap hardwareMap;
@@ -28,7 +26,7 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motorDR, motorST;
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
-    public static double vel50_60 = 1050, vel60_70 = 1060, vel70_75 = 1100, vel75_80 = 1120, vel80_86 = 1150, vel86_95 = 1150, vel95_105 = 1220, vel105_120 = 1330, vel120 = 1405, vel144 = 1480;
+    public static double vel50_60 = 1000, vel60_70 = 1010, vel70_75 = 1050, vel75_80 = 1070, vel80_86 = 1100, vel86_95 = 1100, vel95_105 = 1170, vel105_120 = 1280, vel120 = 1400, vel144 = 1430;
     public static double p50_60 = 0, p60_70 = 0, p70_75 = 0, p75_80 = 0, p80_86 = 0, p86_95 = 0, p95_105 = 0, p105_120 = 0, p120 = 0;
     public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_86 = 0, reg86_95 = 0, reg95_105 = 0, reg105_120 = 0, reg120 = 0, pow = 50;
 
@@ -263,7 +261,7 @@ public class OuttakeModule extends Constants.outtake {
 
     //Compesare cinematica
 
-    public void update_altfel() {
+    public void update_kinematics() {
         velocity = motorDR.getVelocity();
 
         controller.setPIDF(kp, 0, 0, 0);
@@ -370,12 +368,12 @@ public class OuttakeModule extends Constants.outtake {
             timer.reset();
         }
 
-        if(target_velocity != 0) {
+        if(target_velocity != 990) {
             double gr_rad = Math.toRadians(gr);
 
             double viteza_compusa = velocityX * Math.cos(gr_rad) + velocityY * Math.sin(gr_rad);
 
-            double final_target = target_velocity - (viteza_compusa * factor_corectie);
+            final_target = target_velocity - (viteza_compusa * factor_corectie);
 
             double PID_output = controller.calculate(velocity, final_target);
             double ff_output = feedforward.calculate(final_target);
@@ -386,8 +384,12 @@ public class OuttakeModule extends Constants.outtake {
         }
 
         else {
-            motorDR.setPower(0);
-            motorST.setPower(0);
+            double PID_output = controller.calculate(velocity, 990);
+            double ff_output = feedforward.calculate(990);
+            double output = PID_output + ff_output;
+
+            motorDR.setPower(output * (nominalvoltage / voltage));
+            motorST.setPower(output * (nominalvoltage / voltage));
         }
     }
 

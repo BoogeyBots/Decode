@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class TurretModule extends Constants.turret {
@@ -28,6 +29,9 @@ public class TurretModule extends Constants.turret {
         servo_left = hardwareMap.get(CRServo.class, "servo_left");
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
 
+        servo_right.setDirection(DcMotorSimple.Direction.REVERSE);
+        servo_left.setDirection(DcMotorSimple.Direction.REVERSE);
+
         controller.reset();
 
         decalation = 0;
@@ -37,6 +41,9 @@ public class TurretModule extends Constants.turret {
         servo_right = hardwareMap.get(CRServo.class, "servo_right");
         servo_left = hardwareMap.get(CRServo.class, "servo_left");
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
+
+        servo_right.setDirection(DcMotorSimple.Direction.REVERSE);
+        servo_left.setDirection(DcMotorSimple.Direction.REVERSE);
 
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -177,12 +184,12 @@ public class TurretModule extends Constants.turret {
 
     //Compensare cinematică
 
-    public void update_red_diferit() {
+    public void update_kinematics_blue() {
         if(currentHeading < 0) {
             currentHeading = 360 + currentHeading;
         }
 
-        double dx = 144 - currentX;
+        double dx = 0 - currentX;
         double dy = 144 - currentY;
         double realDist = Math.hypot(dx, dy);
 
@@ -190,12 +197,13 @@ public class TurretModule extends Constants.turret {
 
         double viteza_lansare = velocity * (transformare_inch * frecari);
 
-        if(viteza_lansare < 100) {
-            viteza_lansare = 400;
+        if(viteza_lansare < 5) {
+            viteza_lansare = 100;
         }
-        double timp_aer = realDist / viteza_lansare;
 
-        double virtualX = 144 - (velocityX * timp_aer * constanta_inertie);
+        timp_aer = realDist / viteza_lansare;
+
+        double virtualX = 0 - (velocityX * timp_aer * constanta_inertie);
         double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
 
         virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
@@ -208,7 +216,49 @@ public class TurretModule extends Constants.turret {
 
         power = controller.calculate(error);
 
-        if(gr > 180 && gr < 390) {
+        if(gr > 350 && gr < 560 && act_turret) {
+            servo_right.setPower(power);
+            servo_left.setPower(power);
+        }
+        else {
+            servo_right.setPower(0);
+            servo_left.setPower(0);
+        }
+    }
+
+    public void update_kinematics_red() {
+        if(currentHeading < 0) {
+            currentHeading = 360 + currentHeading;
+        }
+
+        double dx = 144 - currentX;
+        double dy = 144 - currentY;
+        double realDist = Math.hypot(dx, dy);
+
+        double transformare_inch = 12.368 / 28;
+
+        double viteza_lansare = velocity * (transformare_inch * frecari);
+
+        if(viteza_lansare < 5) {
+            viteza_lansare = 100;
+        }
+
+        timp_aer = realDist / viteza_lansare;
+
+        double virtualX = 0 - (velocityX * timp_aer * constanta_inertie);
+        double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+
+        virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
+
+        double relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
+
+        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        gr = currentHeading + relative_angle;
+        error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
+
+        power = controller.calculate(error);
+
+        if(gr > 195 && gr < 390 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
