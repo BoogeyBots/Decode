@@ -9,7 +9,7 @@ public class DigitalSensor_test extends LinearOpMode {
     boolean bool;
     @Override
     public void runOpMode() throws InterruptedException {
-        sensor = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+        sensor = hardwareMap.get(DigitalChannel.class, "senzor_intake");
 
         sensor.setMode(DigitalChannel.Mode.INPUT);
 

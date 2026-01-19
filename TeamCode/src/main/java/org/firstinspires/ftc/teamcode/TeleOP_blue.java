@@ -12,7 +12,9 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.v
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.gr;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.timp_aer;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.trage_gresit;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -32,14 +34,12 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import java.util.List;
 @TeleOp (name = "Tiliopa blue")
 public class TeleOP_blue extends LinearOpMode {
-
-    DistanceSensor sensor;
     SampleMecanumDrive drive = null;
     IntakeModule intake = null;
     OuttakeModule outtake = null;
     TurretModule turret = null;
     PinpointModule pinpoint;
-    ElapsedTime timer;
+    ElapsedTime timer, timer_sensor;
     double delta_velocity;
     boolean deschis = false;
 
@@ -49,8 +49,6 @@ public class TeleOP_blue extends LinearOpMode {
     }
     @Override
     public void runOpMode() throws InterruptedException {
-        sensor = hardwareMap.get(DistanceSensor.class, "senzor_distanta");
-
         drive = new SampleMecanumDrive(hardwareMap);
         intake = new IntakeModule(hardwareMap);
         outtake = new OuttakeModule(hardwareMap);
@@ -68,13 +66,15 @@ public class TeleOP_blue extends LinearOpMode {
         STATE mode = STATE.trage;
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        //timer_delta_velocity = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        timer_sensor = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
         boolean switchingState = false;
+        boolean bila_in_intake = false;
 
         act_outtake = false;
         act_turret = false;
         auto = false;
+        trage_gresit = false;
 
         waitForStart();
 
@@ -99,8 +99,8 @@ public class TeleOP_blue extends LinearOpMode {
 
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
+                            gamepad1.left_stick_y,
+                            gamepad1.left_stick_x,
                             -gamepad1.right_stick_x * 0.7
                     )
             );
@@ -111,22 +111,16 @@ public class TeleOP_blue extends LinearOpMode {
             if (gamepad1.right_trigger > 0.01 && mode == STATE.trage) {
                 intake.trage_intake(1);
                 intake.trage_transfer(0.47);
-            }
 
-            else if(gamepad1.right_trigger > 0.01 && mode == STATE.numaitrage) {
-                intake.trage_intake(1);
-                if(velocityX > 0.7 || velocityY > 0.7) {
-                    intake.trage_transfer(0.77);
+                if(intake.bile()) {
+                    gamepad1.rumbleBlips(1);
                 }
-                else if(distanta > 120) {
-                    intake.trage_transfer(0.87);
-                }
-                else intake.trage_transfer(1);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
                 intake.scuipa_intake(1);
                 intake.scuipa_transfer(1);
+                intake.sus();
             }
 
             else {
@@ -143,12 +137,13 @@ public class TeleOP_blue extends LinearOpMode {
             }
 
             if(gamepad1.a && mode == STATE.trage) {
-                ramp = false;
+                intake.sus();
                 act_turret = true;
                 Constants.outtake.act_outtake = true;
                 switchingState = true;
                 timer.reset();
             }
+
 
             if(gamepad1.a && mode == STATE.numaitrage) {
                 Constants.outtake.target_velocity = 990;
@@ -166,17 +161,26 @@ public class TeleOP_blue extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 0.107) {
+            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 0.002 && gr > 350 && gr < 560) {
                 outtake.deblocat();
                 deschis = true;
             }
 
-            if(gamepad1.triangle) {
-                pinpoint.recalibration();
+            if(deschis && timer.seconds() > 0.067 && distanta < 120) {
+                intake.trage_intake(1);
+                if(velocityX > 0.7 || velocityY > 0.7) {
+                    intake.trage_transfer(0.77);
+                }
+                else intake.trage_transfer(1);
             }
 
-            if(target_velocity != 1000 && act_outtake && delta_velocity < -150 && deschis) {
-                outtake.reglare();
+            else if(deschis && distanta >= 120 && timer.seconds() > 0.117) {
+                intake.trage_transfer(0.87);
+                intake.trage_intake(1);
+            }
+
+            if(gamepad1.triangle) {
+                pinpoint.recalibration();
             }
 
             if(gamepad1.right_bumper) {

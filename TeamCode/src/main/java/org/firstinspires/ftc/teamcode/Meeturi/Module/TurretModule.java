@@ -109,8 +109,6 @@ public class TurretModule extends Constants.turret {
 
     }
 
-
-
     public void update_auto_red (double x, double y, double h) {
         controller.setPID(kp, ki, kd);
 
@@ -129,7 +127,7 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
 
-            if(gr > 180 && gr < 430 && act_turret) {
+            if(gr > 130 && gr < 470 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -169,13 +167,6 @@ public class TurretModule extends Constants.turret {
 
     public double getError() {
         return error;
-    }
-    public double getPower() {
-        return power;
-    }
-
-    public double getkP() {
-        return kp;
     }
     public double gra() {
         return gr;
@@ -217,10 +208,12 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
         if(gr > 350 && gr < 560 && act_turret) {
+            trage_gresit = false;
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
         else {
+            trage_gresit = true;
             servo_right.setPower(0);
             servo_left.setPower(0);
         }
@@ -245,7 +238,7 @@ public class TurretModule extends Constants.turret {
 
         timp_aer = realDist / viteza_lansare;
 
-        double virtualX = 0 - (velocityX * timp_aer * constanta_inertie);
+        double virtualX = 144 - (velocityX * timp_aer * constanta_inertie);
         double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
 
         virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
@@ -259,6 +252,50 @@ public class TurretModule extends Constants.turret {
         power = controller.calculate(error);
 
         if(gr > 195 && gr < 390 && act_turret) {
+            servo_right.setPower(power);
+            servo_left.setPower(power);
+        }
+        else {
+            servo_right.setPower(0);
+            servo_left.setPower(0);
+        }
+    }
+
+    public void update_auto_blue_kinematics (double x, double y, double h, double vx, double vy) {
+        controller.setPID(kp, ki, kd);
+
+        if(h < 0) {
+            h = 360 + h;
+        }
+
+        double dx = 0 - x;
+        double dy = 144 - y;
+        double realDist = Math.hypot(dx, dy);
+
+        double transformare_inch = 12.368 / 28;
+
+        double viteza_lansare = velocity * (transformare_inch * frecari);
+
+        if(viteza_lansare < 5) {
+            viteza_lansare = 100;
+        }
+
+        timp_aer = realDist / viteza_lansare;
+
+        double virtualX = 0 - (vx * timp_aer * constanta_inertie);
+        double virtualY = 144 - (vy * timp_aer * constanta_inertie);
+
+        virtual_distance = Math.hypot(virtualX - x, virtualY - y);
+
+        double relative_angle = Math.toDegrees(Math.atan2(virtualY - y, virtualX - x));
+
+        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        gr = h + relative_angle;
+        error = (h - 180) - relative_angle + turretCurrentPos + decalation;
+
+        power = controller.calculate(error);
+
+        if(gr > 350 && gr < 560 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }

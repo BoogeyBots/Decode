@@ -8,13 +8,12 @@ public class Constants {
     @Configurable
     public static class intake {
         public static double power;
-        public static double poz;
-        public static double jos = 0.96, sus = 0.9;
+        public static double jos = 0.83, sus = 0.77;
     }
     @Configurable
     public static class outtake {
-        public static double kp = 0.0087, ki = 0, kd = 0, kf = 0;
-        public static double ks = 0.12, kv = 0.000553144, ka = 0.005; // ka = 0.005
+        public static double kp = 0.0087; //kp = 0.0087
+        public static double ks = 0.12, kv = 0.000553144, ka = 0.005; // ks = 0.12, kv = 0.000553144, ka = 0.005;
         public static double target_velocity, velocity;
         public static int zone;
         public static double blocat = 0.21, deblocat = 0.9;
@@ -34,11 +33,13 @@ public class Constants {
         public static double virtual_distance;
         public static double frecari = 0.37; //de tunat
         public static double timp_aer;
+        public static boolean trage_gresit = false;
 
 
     }
-
+    @Configurable
     public static class pinpoint {
         public static double currentHeading, currentX, currentY, distanta, deltaX, deltaY, velocityX, velocityY;
+        public static double odoY = 130.0, odoX = 11.5;
     }
 }

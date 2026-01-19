@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -35,9 +36,10 @@ public class Auto_aproape_red extends OpMode {
     private Follower follower;
     private Timer pathTimer;
     private int pathState;
-    public static double cat_trage = 1.15; //în secunde
+    public static double cat_trage = 0.5; //în secunde
     public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
     public static double x_preload = 80, y_preload = 83, heading_preload = 225;
+    public static double x_afara = 100, y_afara = 83;
     public static double x_collect1 = 123, y_collect1 = 84, heading_collect = 180;
     public static double x_trapa = 126, y_trapa = 73, heading_trapa = 110;
     public static double x_collect2 = 129.7, y_collect2 = 59;
@@ -57,9 +59,10 @@ public class Auto_aproape_red extends OpMode {
     private final Pose cp_rand3 = new Pose(x_cp3, y_cp3);
     private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa);
     private final Pose colt = new Pose(x_colt, y_colt, Math.toRadians(heading_colt));
+    private final Pose afara = new Pose(x_afara, y_afara);
 
     private Path scorePreload;
-    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4;
+    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4, leave;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
@@ -97,7 +100,7 @@ public class Auto_aproape_red extends OpMode {
                 .build();
 
         trage3 = follower.pathBuilder()
-                .addPath(new BezierLine(collect3, scorePose_tangential))
+                .addPath(new BezierLine(collect3, scorePose))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -107,8 +110,13 @@ public class Auto_aproape_red extends OpMode {
                 .build();
 
         trage4 = follower.pathBuilder()
-                .addPath(new BezierLine(colt, scorePose_tangential))
+                .addPath(new BezierLine(colt, scorePose))
                 .setTangentHeadingInterpolation()
+                .build();
+
+        leave = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, afara))
+                .setConstantHeadingInterpolation(follower.getHeading())
                 .build();
     }
 
@@ -376,6 +384,22 @@ public class Auto_aproape_red extends OpMode {
 
                 break;
 
+            case 27:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
+                    act_turret = false;
+                    intake.sus();
+                    setPathState(28);
+                }
+
+                break;
+
+            case 28:
+                follower.followPath(rand1, true);
+                setPathState(29);
+
+                break;
+
         }
     }
 
@@ -445,7 +469,7 @@ public class Auto_aproape_red extends OpMode {
 
     public void numaitrag() {
         outtake.blocat();
-        target_velocity = 0;
+        target_velocity = 990;
         act_outtake = false;
         transfer = false;
         intake.trage_transfer(0.47);

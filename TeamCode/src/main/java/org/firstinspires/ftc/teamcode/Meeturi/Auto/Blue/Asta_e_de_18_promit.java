@@ -11,7 +11,7 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.VectorCalculator;
+import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -21,6 +21,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
@@ -30,7 +31,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous
-public class Auto_aproape_blue extends OpMode {
+public class Asta_e_de_18_promit extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
@@ -38,31 +39,32 @@ public class Auto_aproape_blue extends OpMode {
     private Follower follower;
     private Timer pathTimer;
     private int pathState;
-    public static double cat_trage = 1.15; //în secunde
-    public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
+    public static double cat_trage = 0.4, cat_sta = 1.5, cat_asteapta = 0.6; //în secunde
+    public static double x_startPose = 118.476, y_startPose = 127.106, heading_startPose = 225;  //127.106  118.476
     public static double x_preload = 80, y_preload = 83, heading_preload = 225;
+    public static double x_trapa = 120, y_trapa = 72, heading_trapa = 180;
+    public static double x_dupa = 133.5, y_dupa = 55, heading_dupa = 240;
+    public static double x_cp = 123.5, y_cp = 58;
     public static double x_collect1 = 123, y_collect1 = 84, heading_collect = 180;
-    public static double x_trapa = 126, y_trapa = 73, heading_trapa = 110;
     public static double x_collect2 = 129.7, y_collect2 = 59;
     public static double x_collect3 = 129.7, y_collect3 = 35;
     public static double x_cp2 = 70.4, y_cp2 = 59;
     public static double x_cp3 = 82, y_cp3 = 29;
-    public static double x_cptrapa = 109, y_cptrapa = 66;
-    public static double x_colt = 135, y_colt = 6.7, heading_colt = 140;
-    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
-    private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload)).mirror();
     private final Pose scorePose_tangential = new Pose(x_preload, y_preload + 4, Math.toRadians(heading_preload)).mirror();
     private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect)).mirror();
     private final Pose collect2 = new Pose(x_collect2, y_collect2, heading_collect).mirror();
     private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose trapa = new Pose(x_trapa, y_trapa, heading_trapa).mirror();
     private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
     private final Pose cp_rand3 = new Pose(x_cp3, y_cp3).mirror();
-    private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa).mirror();
-    private final Pose colt = new Pose(x_colt, y_colt, Math.toRadians(heading_colt)).mirror();
+    private final Pose trapa = new Pose(x_trapa, y_trapa, Math.toRadians(heading_trapa)).mirror();
+
+    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
+    private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload)).mirror();
+    private final Pose cp = new Pose(x_cp, y_cp).mirror();
+    private final Pose dupa = new Pose(x_dupa, y_dupa, Math.toRadians(heading_dupa)).mirror();
 
     private Path scorePreload;
-    private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4;
+    private PathChain rand1, cycle, trage_cycle, trage1, spretrapa, rand2, trage2, rand3, trage3, trp1, trp2;
 
     public void buildPaths() {
         scorePreload = new Path(new BezierLine(startPose, scorePose));
@@ -73,9 +75,19 @@ public class Auto_aproape_blue extends OpMode {
                 .setConstantHeadingInterpolation(collect1.getHeading())
                 .build();
 
-        spretrapa = follower.pathBuilder()
-                .addPath(new BezierCurve(collect2, cp_trapa, trapa))
-                .setConstantHeadingInterpolation(collect1.getHeading())
+        trp1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, trapa))
+                .setConstantHeadingInterpolation(trapa.getHeading())
+                .build();
+
+        trp2 = follower.pathBuilder()
+                .addPath(new BezierCurve(trapa, cp, dupa))
+                .setLinearHeadingInterpolation(trapa.getHeading(), dupa.getHeading())
+                .build();
+
+        trage_cycle = follower.pathBuilder()
+                .addPath(new BezierCurve(dupa, scorePose))
+                .setTangentHeadingInterpolation()
                 .build();
 
         trage1 = follower.pathBuilder()
@@ -90,7 +102,7 @@ public class Auto_aproape_blue extends OpMode {
 
 
         trage2 = follower.pathBuilder()
-                .addPath(new BezierLine(trapa, scorePose))
+                .addPath(new BezierLine(collect2, scorePose))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -103,21 +115,12 @@ public class Auto_aproape_blue extends OpMode {
                 .addPath(new BezierLine(collect3, scorePose_tangential))
                 .setTangentHeadingInterpolation()
                 .build();
-
-        sprecolt = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, colt))
-                .setConstantHeadingInterpolation(colt.getHeading())
-                .build();
-
-        trage4 = follower.pathBuilder()
-                .addPath(new BezierLine(colt, scorePose_tangential))
-                .setTangentHeadingInterpolation()
-                .build();
     }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                follower.setMaxPower(0.8);
                 follower.followPath(scorePreload, true);
                 setPathState(1);
 
@@ -134,10 +137,6 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 2:
-                if(pathTimer.getElapsedTimeSeconds() > 0.2) {
-                    intake.scuipa_transfer(0.35);
-                }
-
                 if(!follower.isBusy()) {
                     if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
                         outtake.deblocat();
@@ -149,16 +148,16 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 0.1) {
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta) {
                     intake.trage_intake(1);
-                    intake.trage_transfer(0.87);
+                    intake.trage_transfer(1);
                     setPathState(4);
                 }
 
                 break;
 
             case 4:
-                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage + 0.2) {
                     numaitrag();
                     setPathState(5);
                 }
@@ -167,7 +166,8 @@ public class Auto_aproape_blue extends OpMode {
 
 
             case 5:
-                follower.followPath(rand1, true);
+                follower.setMaxPower(1);
+                follower.followPath(rand2, true);
                 setPathState(6);
 
                 break;
@@ -175,7 +175,8 @@ public class Auto_aproape_blue extends OpMode {
             case 6:
                 if(!follower.isBusy()) {
                     if(pathTimer.getElapsedTimeSeconds() > 1.6) {
-                        follower.followPath(trage1, true);
+                        follower.setMaxPower(0.8);
+                        follower.followPath(trage2, true);
                         act_outtake = true;
                         setPathState(7);
                     }
@@ -196,10 +197,10 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 8:
-                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta) {
                     intake.sus();
                     intake.trage_intake(1);
-                    intake.trage_transfer(0.87);
+                    intake.trage_transfer(1);
                     setPathState(9);
                 }
 
@@ -208,13 +209,129 @@ public class Auto_aproape_blue extends OpMode {
             case 9:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
                     numaitrag();
+                    setPathState(69);
+                }
+
+                break;
+
+            case 69:
+                follower.setMaxPower(1);
+                follower.followPath(trp1, true);
+                setPathState(70);
+
+                break;
+
+            case 70:
+                if(!follower.isBusy()) {
+                    follower.followPath(trp2, true);
+                    setPathState(71);
+                }
+
+                break;
+
+            case 71:
+                if(!follower.isBusy()) {
+                    if(pathTimer.getElapsedTimeSeconds() > cat_sta) {
+                        follower.setMaxPower(0.8);
+                        follower.followPath(trage_cycle, true);
+                        act_outtake = true;
+                        setPathState(72);
+                    }
+                }
+
+                break;
+
+
+            case 72:
+                if(!follower.isBusy()) {
+                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
+                        outtake.deblocat();
+                        transfer = true;
+                        setPathState(73);
+                    }
+                }
+
+                break;
+
+            case 73:
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta) {
+                    intake.sus();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
+                    setPathState(74);
+                }
+
+                break;
+
+            case 74:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
+                    setPathState(75);
+                }
+
+                break;
+
+            case 75:
+                follower.setMaxPower(1);
+                follower.followPath(trp1, true);
+                setPathState(76);
+
+                break;
+
+            case 76:
+                if(!follower.isBusy()) {
+                    follower.followPath(trp2, true);
+                    setPathState(77);
+                }
+
+                break;
+
+            case 77:
+                if(!follower.isBusy()) {
+                    if(pathTimer.getElapsedTimeSeconds() > cat_sta) {
+                        follower.setMaxPower(0.8);
+                        follower.followPath(trage_cycle, true);
+                        act_outtake = true;
+                        setPathState(78);
+                    }
+                }
+
+                break;
+
+
+            case 78:
+                if(!follower.isBusy()) {
+                    if (target_velocity < velocity + 5 && error <= 3 && act_outtake) {
+                        outtake.deblocat();
+                        transfer = true;
+                        setPathState(79);
+                    }
+                }
+
+                break;
+
+            case 79:
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta) {
+                    intake.sus();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(1);
+                    setPathState(80);
+                }
+
+                break;
+
+            case 80:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                    numaitrag();
                     setPathState(10);
                 }
 
                 break;
 
+
             case 10:
-                follower.followPath(rand2, true);
+                follower.setMaxPower(1);
+                follower.followPath(rand1, true);
                 act_turret = false;
                 setPathState(11);
 
@@ -223,7 +340,7 @@ public class Auto_aproape_blue extends OpMode {
             case 11:
                 if(!follower.isBusy()) {
                     intake.trage_intake(0.7);
-                    setPathState(12);
+                    setPathState(13);
                 }
 
                 break;
@@ -237,11 +354,11 @@ public class Auto_aproape_blue extends OpMode {
 
                 break;
 
-
             case 13:
                 intake.trage_transfer(0.7);
                 if(!follower.isBusy()) {
-                    follower.followPath(trage2, true);
+                    follower.setMaxPower(0.8);
+                    follower.followPath(trage1, true);
                     act_outtake = true;
                     act_turret = true;
                     setPathState(14);
@@ -262,10 +379,10 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 15:
-                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta) {
                     intake.sus();
                     intake.trage_intake(1);
-                    intake.trage_transfer(0.87);
+                    intake.trage_transfer(1);
                     setPathState(16);
                 }
 
@@ -281,6 +398,7 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 17:
+                follower.setMaxPower(1);
                 follower.followPath(rand3, true);
                 setPathState(18);
 
@@ -319,9 +437,9 @@ public class Auto_aproape_blue extends OpMode {
                 break;
 
             case 21:
-                if(pathTimer.getElapsedTimeSeconds() > 0.3)  {
+                if(pathTimer.getElapsedTimeSeconds() > cat_asteapta)  {
                     intake.trage_intake(1);
-                    intake.trage_transfer(0.87);
+                    intake.trage_transfer(1);
                     setPathState(22);
                 }
 
@@ -336,50 +454,6 @@ public class Auto_aproape_blue extends OpMode {
                 }
 
                 break;
-
-            case 23:
-                follower.followPath(sprecolt, true);
-                setPathState(24);
-
-                break;
-
-            case 24:
-                if(!follower.isBusy()) {
-                    intake.trage_intake(0.7);
-                    act_outtake = true;
-                    follower.followPath(trage4, true);
-                    setPathState(25);
-                }
-
-                break;
-
-
-            case 25:
-                if(pathTimer.getElapsedTimeSeconds() > 1.7) {
-                    act_turret = true;
-                    intake.scuipa_transfer(0.1);
-                }
-
-                if(!follower.isBusy()) {
-                    if (target_velocity < velocity + 15 && error <= 3 && act_outtake) {
-                        outtake.deblocat();
-                        transfer = true;
-                        setPathState(26);
-                    }
-                }
-
-                break;
-
-            case 26:
-                if(pathTimer.getElapsedTimeSeconds() > 0.3) {
-                    intake.sus();
-                    intake.trage_intake(1);
-                    intake.trage_transfer(0.87);
-                    setPathState(27);
-                }
-
-                break;
-
         }
     }
 
@@ -411,6 +485,9 @@ public class Auto_aproape_blue extends OpMode {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
+        Vector v = follower.getVelocity();
+        double vx = v.getXComponent();
+        double vy = v.getYComponent();
         distanta = Math.sqrt((0 - x) * (0 - x) + (144 - y) * (144 - y));
         turret.update_auto_blue(x, y, h);
 
@@ -419,12 +496,16 @@ public class Auto_aproape_blue extends OpMode {
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);
         telemetry.addData("y", y);
+        telemetry.addData("vx", vx);
+        telemetry.addData("vy", vy);
         telemetry.addData("heading", h);
         telemetry.addData("Distanta", distanta);
-        telemetry.addData("Voltage", nominalvoltage / voltage);
+//        telemetry.addData("error", turret.getError());
+//        telemetry.addData("Grade", turret.gra());
+        telemetry.addData("Voltage", nominalvoltage/voltage);
         telemetry.update();
 
-        outtake.update_kinematics();
+        outtake.update();
     }
 
     @Override
@@ -448,8 +529,7 @@ public class Auto_aproape_blue extends OpMode {
 
     public void numaitrag() {
         outtake.blocat();
-        target_velocity = 0;
-        act_outtake = false;
+        target_velocity = 990;
         transfer = false;
         intake.trage_transfer(0.47);
     }

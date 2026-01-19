@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.odoX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.odoY;
+
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
@@ -21,7 +24,8 @@ public class Constants {
             .lateralZeroPowerAcceleration(-73)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.3, 0, 0.037, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(1.3, 0, 0.06, 0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.005, 0, 0.0009, 0.4, 0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0047, 0, 0.0009, 0.4, 0))//0.005
+            .useSecondaryDrivePIDF(false)
             .centripetalScaling(0.005);
 
 
@@ -33,14 +37,15 @@ public class Constants {
             .rightRearMotorName("rightRear")
             .leftRearMotorName("leftRear")
             .leftFrontMotorName("leftFront")
+            .useVoltageCompensation(true)
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-130.0)
-            .strafePodX(-11.5)
+            .forwardPodY(-128.953) //128.953  130
+            .strafePodX(-10.453) //34.477 11.5
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("odo")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
