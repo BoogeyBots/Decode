@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.final_target;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.nominalvoltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ramp;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
@@ -12,16 +12,17 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.v
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.gr;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.timp_aer;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.trage_gresit;
+
+import static java.lang.Math.abs;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
@@ -39,9 +40,11 @@ public class TeleOP_blue extends LinearOpMode {
     OuttakeModule outtake = null;
     TurretModule turret = null;
     PinpointModule pinpoint;
-    ElapsedTime timer, timer_sensor;
+    ElapsedTime timer, timer_intake, loop;
     double delta_velocity;
     boolean deschis = false;
+    boolean target_atins = false;
+    boolean intaking = true, intaking_timer = false;
 
     enum STATE {
         trage,
@@ -58,7 +61,7 @@ public class TeleOP_blue extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake.init_teleOP();
+        intake.init();
         outtake.init_teleOP();
         turret.init_teleOP();
         pinpoint.init();
@@ -66,7 +69,8 @@ public class TeleOP_blue extends LinearOpMode {
         STATE mode = STATE.trage;
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        timer_sensor = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        timer_intake = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+        loop = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         boolean switchingState = false;
         boolean bila_in_intake = false;
@@ -75,6 +79,7 @@ public class TeleOP_blue extends LinearOpMode {
         act_turret = false;
         auto = false;
         trage_gresit = false;
+        target_atins = false;
 
         waitForStart();
 
@@ -85,6 +90,7 @@ public class TeleOP_blue extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
+            loop.reset();
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
@@ -101,26 +107,24 @@ public class TeleOP_blue extends LinearOpMode {
                     new Pose2d(
                             gamepad1.left_stick_y,
                             gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x * 0.7
+                            -gamepad1.right_stick_x
                     )
             );
 
             drive.update();
 
 
-            if (gamepad1.right_trigger > 0.01 && mode == STATE.trage) {
+            if (gamepad1.right_trigger > 0.01 && mode == STATE.trage && intaking) {
                 intake.trage_intake(1);
-                intake.trage_transfer(0.47);
-
-                if(intake.bile()) {
-                    gamepad1.rumbleBlips(1);
-                }
+//                if(intake.a_transfer() < 2.5)
+                    intake.trage_transfer(0.47);
+//                else intake.trage_transfer(0.2);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
                 intake.scuipa_intake(1);
                 intake.scuipa_transfer(1);
-                intake.sus();
+                intaking = true;
             }
 
             else {
@@ -128,28 +132,29 @@ public class TeleOP_blue extends LinearOpMode {
                 intake.stop_transfer();
             }
 
-            if(gamepad1.dpad_up) {
-                intake.sus();
-            }
-
-            if(gamepad1.dpad_down) {
-                intake.jos();
-            }
 
             if(gamepad1.a && mode == STATE.trage) {
-                intake.sus();
+                intaking = true;
+                intaking_timer = false;
                 act_turret = true;
                 Constants.outtake.act_outtake = true;
                 switchingState = true;
+                target_atins = false;
+                ramp = false;
                 timer.reset();
             }
 
 
             if(gamepad1.a && mode == STATE.numaitrage) {
-                Constants.outtake.target_velocity = 990;
+                if(distanta > 120) {
+                    Constants.outtake.target_velocity = 1340;
+                }
+                else {
+                    Constants.outtake.target_velocity = 1030;
+                }
                 deschis = false;
                 Constants.outtake.act_outtake = false;
-                act_turret = false;
+//                act_turret = false;
                 switchingState = true;
                 outtake.blocat();
                 timer.reset();
@@ -161,12 +166,27 @@ public class TeleOP_blue extends LinearOpMode {
                 switchingState = false;
             }
 
-            if(delta_velocity > 0 && Constants.turret.error <= 3 && Constants.outtake.act_outtake && timer.seconds() > 0.002 && gr > 350 && gr < 560) {
-                outtake.deblocat();
-                deschis = true;
+            boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > 0 && act_outtake && timer.seconds() > 0.17 && gr > 239 && gr < 544);
+
+            if(tragemsinoi) {
+                if(distanta >= 120 && abs(error) <= 3 && turret.getPower() < 0.07) {
+                    outtake.deblocat();
+                    deschis = true;
+                    target_atins = true;
+                }
+
+                else if(distanta < 120 && abs(error) <= 5.4) {
+                    outtake.deblocat();
+                    deschis = true;
+                    target_atins = true;
+                }
             }
 
-            if(deschis && timer.seconds() > 0.067 && distanta < 120) {
+            if(target_atins && delta_velocity < -50 && distanta > 125) {
+                outtake.reglare();
+            }
+
+            if(deschis && timer.seconds() > 0.25 && distanta < 120) {
                 intake.trage_intake(1);
                 if(velocityX > 0.7 || velocityY > 0.7) {
                     intake.trage_transfer(0.77);
@@ -174,8 +194,8 @@ public class TeleOP_blue extends LinearOpMode {
                 else intake.trage_transfer(1);
             }
 
-            else if(deschis && distanta >= 120 && timer.seconds() > 0.117) {
-                intake.trage_transfer(0.87);
+            else if(deschis && distanta >= 120 && timer.seconds() > 0.25) {
+                intake.trage_transfer(nominalvoltage / voltage);
                 intake.trage_intake(1);
             }
 
@@ -191,17 +211,50 @@ public class TeleOP_blue extends LinearOpMode {
                 decalation -= 0.3;
             }
 
-            telemetry.addData("V", velocity);
-            telemetry.addData("T", target_velocity);
-            telemetry.addData("TT", final_target);
-            telemetry.addData("Delta velocity", delta_velocity);
-            telemetry.addData("Decalare", decalation);
-            telemetry.addData("STATE", mode);
-            telemetry.addData("Gra", turret.gra());
-            telemetry.addData("Distance", distanta);
-            telemetry.addData("VelocityX", velocityX);
-            telemetry.addData("VelocityY", velocityY);
-            telemetry.addData("Timp", timp_aer);
+            if(intake.a_intake() > 1 && intake.a_transfer() > 1.3 && !intake.sensor()) {
+                if(!intaking_timer) {
+                    timer_intake.reset();
+                    intaking_timer = true;
+                }
+
+                else if(timer_intake.seconds() > 0.25) {
+                    intake.stop_intake();
+                    intake.stop_transfer();
+                    intaking = false;
+                    intaking_timer = false;
+                }
+            }
+          else intaking_timer = false;
+
+
+
+
+//            telemetry.addData("V", velocity);
+//            telemetry.addData("T", target_velocity);
+//            telemetry.addData("TT", final_target);
+//            telemetry.addData("Delta velocity", delta_velocity);
+//            telemetry.addData("Decalare", decalation);
+//            telemetry.addData("STATE", mode);
+//            telemetry.addData("Gra", turret.gra());
+//            telemetry.addData("Eroare", turret.getError());
+//            telemetry.addData("Loop time", loop.milliseconds());
+//            telemetry.addData("Gra", turret.gra());
+//            telemetry.addData("CurrentHeading", currentHeading);
+//            telemetry.addData("Turret current pose", turretCurrentPos);
+            telemetry.addData("Transfer", intake.a_transfer());
+            telemetry.addData("Intake", intake.a_intake());
+////            telemetry.addData("Sensor intake", intake.s_intake());
+////            telemetry.addData("Sensor mij", intake.s_mij());
+//            telemetry.addData("Intaking_timer", intaking_timer);
+//            telemetry.addData("Timer", timer_intake.seconds());
+//            if(gamepad1.dpad)
+//            telemetry.addData("Distance", distanta);
+//            telemetry.addData("VelocityX", velocityX);
+//            telemetry.addData("VelocityY", velocityY);
+//            telemetry.addData("Heading", currentHeading);
+//            telemetry.addData("Tureta", turretCurrentPos);
+//            telemetry.addData("Timp", timp_aer);
+
             telemetry.update();
         }
     }

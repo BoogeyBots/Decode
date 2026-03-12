@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Teste;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
-@Configurable
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import dev.frozenmilk.sinister.loading.Pinned;
+
 @TeleOp
-public class Test_servo extends LinearOpMode {
-    Servo servo;
-    public static double poz;
+public class SlothTest extends LinearOpMode {
+    DcMotor motor;
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.get(Servo.class, "servo_blocaj");
+        motor = hardwareMap.get(DcMotorEx.class, "motor_intake");
 
         waitForStart();
 
         while (opModeIsActive()) {
-            servo.setPosition(poz);
+            motor.setPower(0.1);
         }
-
     }
 }

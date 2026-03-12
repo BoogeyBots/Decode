@@ -4,30 +4,38 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ve
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentHeading;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentY;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Configurable
 public class TurretModule extends Constants.turret {
+    public static double grade_st = 100, grade_dr = 600;
     HardwareMap hardwareMap;
+
     public TurretModule (HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
     CRServo servo_right, servo_left;
     DcMotorEx encoder;
-    PIDController controller = new PIDController(kp, ki, kd);
+    PIDFController controller = new PIDFController(kp, ki, kd, kf);
 
 
     public void init_teleOP() {
         servo_right = hardwareMap.get(CRServo.class, "servo_right");
         servo_left = hardwareMap.get(CRServo.class, "servo_left");
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
+
+        encoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         servo_right.setDirection(DcMotorSimple.Direction.REVERSE);
         servo_left.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -47,12 +55,21 @@ public class TurretModule extends Constants.turret {
 
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         controller.reset();
     }
 
+    private double calculatePowerWithKS(double error) {
+        double p = controller.calculate(error);
+        if (Math.abs(error) > 0.1) { // 0.1 degree deadband
+            p += Math.signum(error) * ks;
+        }
+        return p;
+    }
+
     public void update_red() {
-        controller.setPID(kp, ki, kd);
+        controller.setPIDF(kp, ki, kd, kf);
 
         if(currentHeading < 0) {
             currentHeading = 360 + currentHeading;
@@ -66,7 +83,7 @@ public class TurretModule extends Constants.turret {
 
         error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
 
         if(gr > 195 && gr < 390) {
@@ -82,22 +99,25 @@ public class TurretModule extends Constants.turret {
     }
 
     public void update_blue() {
-        controller.setPID(kp, ki, kd);
+        controller.setPIDF(kp, ki, kd, kf);
+        
+        turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        if(turretCurrentPos > 0) {
+            if(currentHeading < 0) currentHeading += 360;
+        }
 
-        currentHeading += 360;
+        else currentHeading += 360;
 
-        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
-
-        relative_angle = Math.toDegrees(Math.atan2(144 - currentY, 0 - currentX));
+        relative_angle = Math.toDegrees(Math.atan2(141 - currentY, 0 - currentX));
 
         gr = currentHeading + relative_angle;
 
         error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
 
-        if(gr > 350 && gr < 520 && act_turret) {
+        if(gr > 239 && gr < 544 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -110,24 +130,38 @@ public class TurretModule extends Constants.turret {
     }
 
     public void update_auto_red (double x, double y, double h) {
-        controller.setPID(kp, ki, kd);
+        turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
 
-        if(h < 0) {
-            h = 360 + h;
+        if(turretCurrentPos > 0) {
+            if(h < 0) h += 360;
         }
 
-        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        else h += 360;
 
-        relative_angle = Math.toDegrees(Math.atan2(144 - y, 144 - x));
+        if(turretCurrentPos < -8) {
+            controller.setPIDF(kp, ki, kd, kf);
+        }
+
+        else {
+            controller.setPIDF(kp2, 0, kd2, kf2);
+            ks = 0.005;
+        }
+
+        if (distanta < 120) {
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, 149 - x));
+        }
+
+        else if(distanta >= 120) {
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, 145.5 - x));
+        }
 
         gr = h + relative_angle;
 
         error = (h - 180) - relative_angle + turretCurrentPos;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
-
-            if(gr > 130 && gr < 470 && act_turret) {
+        if(gr > 239 && gr < 544 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -139,21 +173,38 @@ public class TurretModule extends Constants.turret {
     }
 
     public void update_auto_blue (double x, double y, double h) {
-        controller.setPID(kp, ki, kd);
+        turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
 
-        h += 360;
+        if(turretCurrentPos > 0) {
+            if(h < 0) h += 360;
+        }
 
-        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        else h += 360;
 
-        relative_angle = Math.toDegrees(Math.atan2(144 - y, 0 - x));
+        if(turretCurrentPos < -8) {
+            controller.setPIDF(kp, ki, kd, kf);
+        }
+
+        else {
+            controller.setPIDF(kp2, 0, kd2, kf2);
+            ks = 0.005;
+        }
+
+        if (distanta < 120) {
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, -5 - x));
+        }
+
+        else if(distanta >= 120) {
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, -1.5 - x));
+        }
 
         gr = h + relative_angle;
 
         error = (h - 180) - relative_angle + turretCurrentPos;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
-        if(gr > 350 && gr < 560 && act_turret) {
+        if(gr > 239 && gr < 544 && act_turret) {
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
@@ -176,13 +227,28 @@ public class TurretModule extends Constants.turret {
     //Compensare cinematică
 
     public void update_kinematics_blue() {
-        if(currentHeading < 0) {
-            currentHeading = 360 + currentHeading;
+        turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        if(turretCurrentPos > 0) {
+            if(currentHeading < 0) currentHeading += 360;
         }
+
+        else currentHeading += 360;
+
+        if(turretCurrentPos < -8) {
+            controller.setPIDF(kp, ki, kd, kf);
+        }
+
+        else {
+            controller.setPIDF(kp2, 0, kd2, kf2);
+            ks = 0.005;
+        }
+
 
         double dx = 0 - currentX;
         double dy = 144 - currentY;
         double realDist = Math.hypot(dx, dy);
+
+        double virtualX, virtualY;
 
         double transformare_inch = 12.368 / 28;
 
@@ -194,20 +260,27 @@ public class TurretModule extends Constants.turret {
 
         timp_aer = realDist / viteza_lansare;
 
-        double virtualX = 0 - (velocityX * timp_aer * constanta_inertie);
-        double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        if(distanta < 120) {
+            virtualX = 0 - (velocityX * timp_aer * constanta_inertie);
+            virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        }
+
+        else {
+            virtualX = 3.5 - (velocityX * timp_aer * constanta_inertie);
+            virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        }
 
         virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
 
-        double relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
+        relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
 
-        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
         gr = currentHeading + relative_angle;
+
         error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
-        if(gr > 350 && gr < 560 && act_turret) {
+        if(gr > 239 && gr < 544 && act_turret) {
             trage_gresit = false;
             servo_right.setPower(power);
             servo_left.setPower(power);
@@ -220,13 +293,28 @@ public class TurretModule extends Constants.turret {
     }
 
     public void update_kinematics_red() {
-        if(currentHeading < 0) {
-            currentHeading = 360 + currentHeading;
+        turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
+        if(turretCurrentPos > 0) {
+            if(currentHeading < 0) currentHeading += 360;
         }
+
+        else currentHeading += 360;
+
+        if(turretCurrentPos < -8) {
+            controller.setPIDF(kp, ki, kd, kf);
+        }
+
+        else {
+            controller.setPIDF(kp2, 0, kd2, kf2);
+            ks = 0.005;
+        }
+
 
         double dx = 144 - currentX;
         double dy = 144 - currentY;
         double realDist = Math.hypot(dx, dy);
+
+        double virtualX, virtualY;
 
         double transformare_inch = 12.368 / 28;
 
@@ -238,32 +326,41 @@ public class TurretModule extends Constants.turret {
 
         timp_aer = realDist / viteza_lansare;
 
-        double virtualX = 144 - (velocityX * timp_aer * constanta_inertie);
-        double virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        if(distanta < 120) {
+            virtualX = 144 - (velocityX * timp_aer * constanta_inertie);
+            virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        }
+
+        else {
+            virtualX = 140.5 - (velocityX * timp_aer * constanta_inertie);
+            virtualY = 144 - (velocityY * timp_aer * constanta_inertie);
+        }
 
         virtual_distance = Math.hypot(virtualX - currentX, virtualY - currentY);
 
-        double relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
+        relative_angle = Math.toDegrees(Math.atan2(virtualY - currentY, virtualX - currentX));
 
-        double turretCurrentPos = encoder.getCurrentPosition() / TICKS_PER_DEGREE;
         gr = currentHeading + relative_angle;
+
         error = (currentHeading - 180) - relative_angle + turretCurrentPos + decalation;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
-        if(gr > 195 && gr < 390 && act_turret) {
+        if(gr > 239 && gr < 544 && act_turret) {
+            trage_gresit = false;
             servo_right.setPower(power);
             servo_left.setPower(power);
         }
         else {
+            trage_gresit = true;
             servo_right.setPower(0);
             servo_left.setPower(0);
         }
     }
 
     public void update_auto_blue_kinematics (double x, double y, double h, double vx, double vy) {
-        controller.setPID(kp, ki, kd);
-
+        controller.setPIDF(kp, ki, kd, kf);
+        
         if(h < 0) {
             h = 360 + h;
         }
@@ -293,7 +390,7 @@ public class TurretModule extends Constants.turret {
         gr = h + relative_angle;
         error = (h - 180) - relative_angle + turretCurrentPos + decalation;
 
-        power = controller.calculate(error);
+        power = calculatePowerWithKS(error);
 
         if(gr > 350 && gr < 560 && act_turret) {
             servo_right.setPower(power);
@@ -303,6 +400,10 @@ public class TurretModule extends Constants.turret {
             servo_right.setPower(0);
             servo_left.setPower(0);
         }
+    }
+
+    public double getPower() {
+        return servo_right.getPower();
     }
 
 }

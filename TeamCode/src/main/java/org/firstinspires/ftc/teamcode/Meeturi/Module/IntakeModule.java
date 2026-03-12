@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class IntakeModule extends Constants.intake {
@@ -18,53 +19,65 @@ public class IntakeModule extends Constants.intake {
     DigitalChannel senzor_intake;
     DistanceSensor senzor_mij;
     Servo servo;
-    public void init_teleOP() {
+
+    private double lastIntakePower = 0;
+    private double lastTransferPower = 0;
+
+    public void init() {
         motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
         motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
         senzor_intake = hardwareMap.get(DigitalChannel.class, "senzor_intake");
-        senzor_mij = hardwareMap.get(DistanceSensor.class, "senzor_mij");
 
         senzor_intake.setMode(DigitalChannel.Mode.INPUT);
 
+
         motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-        servo = hardwareMap.get(Servo.class, "servo_intake");
-        sus();
-    }
-
-    public void init_auto() {
-        motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
-        motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
-        motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-        senzor_intake = hardwareMap.get(DigitalChannel.class, "senzor_intake");
-        senzor_mij = hardwareMap.get(DistanceSensor.class, "senzor_mij");
-        servo = hardwareMap.get(Servo.class, "servo_intake");
-
-        senzor_intake.setMode(DigitalChannel.Mode.INPUT);
-
     }
 
     public void trage_intake(double power) {
-        motor_intake.setPower(power);
+        double target = -power;
+        if (Math.abs(target - lastIntakePower) > 0.005) {
+            motor_intake.setPower(target);
+            lastIntakePower = target;
+        }
     }
 
     public void scuipa_intake(double power) {
-        motor_intake.setPower(-power);
+        double target = power;
+        if (Math.abs(target - lastIntakePower) > 0.005) {
+            motor_intake.setPower(target);
+            lastIntakePower = target;
+        }
     }
 
     public void stop_intake() {
-        motor_intake.setPower(0);
+        if (lastIntakePower != 0) {
+            motor_intake.setPower(0);
+            lastIntakePower = 0;
+        }
     }
 
     public void trage_transfer(double power) {
-        motor_transfer.setPower(power);
+        double target = power;
+        if (Math.abs(target - lastTransferPower) > 0.005) {
+            motor_transfer.setPower(target);
+            lastTransferPower = target;
+        }
     }
 
     public void scuipa_transfer(double power) {
-        motor_transfer.setPower(-power);
+        double target = -power;
+        if (Math.abs(target - lastTransferPower) > 0.005) {
+            motor_transfer.setPower(target);
+            lastTransferPower = target;
+        }
     }
 
     public void stop_transfer() {
-        motor_transfer.setPower(0);
+        if (lastTransferPower != 0) {
+            motor_transfer.setPower(0);
+            lastTransferPower = 0;
+        }
     }
 
     public void jos() {
@@ -74,11 +87,30 @@ public class IntakeModule extends Constants.intake {
     public void sus() {
         servo.setPosition(sus);
     }
-    public boolean bile() {
-        if(senzor_mij.getDistance(DistanceUnit.CM) < 2.65 && !senzor_intake.getState()) {
-            return true;
-        }
-
-        return false;
+    public double a_transfer() {
+        return motor_transfer.getCurrent(CurrentUnit.AMPS);
     }
+
+    public double a_intake() {
+        return motor_intake.getCurrent(CurrentUnit.AMPS);
+    }
+//    public boolean bile() {
+//        if(senzor_mij.getDistance(DistanceUnit.CM) < 2.65 && !senzor_intake.getState()) {
+//            return true;
+//        }
+//
+//        return false;
+//    }
+
+    public double s_mij() {
+        return senzor_mij.getDistance(DistanceUnit.CM);
+    }
+
+    public boolean s_intake() {
+        return senzor_intake.getState();
+    }
+
+    public double get_ptransfer() {return motor_transfer.getPower();}
+    public double get_pintake() {return motor_intake.getPower();}
+    public boolean sensor() {return senzor_intake.getState();}
 }

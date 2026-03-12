@@ -28,12 +28,11 @@ public class PinpointModule extends Constants.pinpoint {
         camera = hardwareMap.get(Limelight3A.class, "camera");
         camera.pipelineSwitch(0);
 
-        pinpoint.setOffsets(-130.0, -11.5, DistanceUnit.MM);
+        pinpoint.setOffsets(4.579, 4.469, DistanceUnit.INCH);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         camera.start();
-
     }
 
     public void update_red() {

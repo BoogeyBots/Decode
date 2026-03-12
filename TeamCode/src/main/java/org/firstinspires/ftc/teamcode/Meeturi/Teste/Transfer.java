@@ -4,7 +4,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 @Configurable
@@ -15,15 +14,14 @@ public class Transfer extends LinearOpMode {
         IntakeModule intake = new IntakeModule(hardwareMap);
         OuttakeModule outtake = new OuttakeModule(hardwareMap);
 
-        intake.init_teleOP();
+        intake.init();
         outtake.init_teleOP();
 
         waitForStart();
 
         while(opModeIsActive()) {
-            intake.trage_intake(Constants.intake.power);
-            outtake.blocat();
-            outtake.update();
+            intake.trage_intake(1);
+            intake.trage_transfer(1);
         }
     }
 }
