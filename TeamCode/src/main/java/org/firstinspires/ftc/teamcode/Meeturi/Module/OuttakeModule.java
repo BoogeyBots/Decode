@@ -28,8 +28,8 @@ public class OuttakeModule extends Constants.outtake {
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
     public static double pos_servo;
-    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1010, vel75_80 = 1080, vel80_86 = 1140, vel86_95 = 1140, vel95_105 = 1130, vel105_120 = 1200, vel120 = 1310, vel144 = 1240, progresie = 4.5; //1060 1090
-    public static double p50_60 = 0, p60_70 = 0, p70_75 = 0.17, p75_80 = 0.23, p80_86 = 0.35, p86_95 = 0.37, p95_105 = 0.26, p105_120 = 0.43, p120 = 0.76;
+    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1010, vel75_80 = 1080, vel80_86 = 1140, vel86_95 = 1140, vel95_105 = 1130, vel105_120 = 1200, vel120 = 1310, vel144 = 1240, progresie = 4.8; //1060 1090
+    public static double p50_60 = 0, p60_70 = 0, p70_75 = 0.17, p75_80 = 0.23, p80_86 = 0.42, p86_95 = 0.43, p95_105 = 0.26, p105_120 = 0.43, p120 = 0.78;
     public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_86 = 0, reg86_95 = 0, reg95_105 = 0, reg105_120 = 0, reg120 = 0, pow = 50;
 
     PIDFController controller = new PIDFController(kp, 0, 0, 0);
@@ -44,11 +44,12 @@ public class OuttakeModule extends Constants.outtake {
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
         motorST.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorDR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         blocat();
         aproape();
 
-        target_velocity = 990;
+        target_velocity = 0;
     }
 
     public void init_auto_aproape() {
@@ -59,6 +60,7 @@ public class OuttakeModule extends Constants.outtake {
         servo_blocaj = hardwareMap.get(Servo.class, "servo_blocaj");
 
         motorST.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorDR.setDirection(DcMotorSimple.Direction.REVERSE);
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
@@ -214,7 +216,7 @@ public class OuttakeModule extends Constants.outtake {
     //Compesare cinematica
 
     public void update_kinematics() {
-        velocity = motorDR.getVelocity();
+        velocity = - motorDR.getVelocity();
 
         controller.setPIDF(kp, 0, 0, 0);
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);

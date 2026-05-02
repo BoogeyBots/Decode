@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
-@Autonomous (group = "Blue")
-public class Departe_blue extends OpMode {
+@Autonomous (group = "Red")
+public class Departe_red extends OpMode {
     double delta_velocity;
     boolean target_atins = false;
     IntakeModule intake;
@@ -43,41 +43,41 @@ public class Departe_blue extends OpMode {
     public static double x_colectare1 = 6.5, y_colectare1 = 11.5, heading_c1 = 27;
     public static double x_colectare11 = 6, y_colectare11 = 10.2, heading_c11 = 4;
     public static double x_rand3 = 12, y_rand3 = 36;
-    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose));
-    private final Pose colectare1 = new Pose(x_colectare1, y_colectare1, Math.toRadians(heading_c1));
-    private final Pose colectare11 = new Pose(x_colectare11, y_colectare11, Math.toRadians(heading_c11));
-    private final Pose collect3 = new Pose(x_rand3, y_rand3, Math.toRadians(heading_startPose));
-    private final Pose cp_rand3 = new Pose(60, 40);
+    private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
+    private final Pose colectare1 = new Pose(x_colectare1, y_colectare1, Math.toRadians(heading_c1)).mirror();
+    private final Pose colectare11 = new Pose(x_colectare11, y_colectare11, Math.toRadians(heading_c11)).mirror();
+    private final Pose collect3 = new Pose(x_rand3, y_rand3, Math.toRadians(heading_startPose)).mirror();
+    private final Pose cp_rand3 = new Pose(60, 40).mirror();
 
 
     private PathChain cycle1, cycle11, trage1, rand3, trage3;
 
     public void buildPaths() {
-         cycle1 = follower.pathBuilder()
+        cycle1 = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, colectare1))
                 .setLinearHeadingInterpolation(startPose.getHeading(), colectare1.getHeading())
                 .build();
 
-         cycle11 = follower.pathBuilder()
-                 .addPath(new BezierLine(colectare1, colectare11))
-                 .setConstantHeadingInterpolation(colectare11.getHeading())
-                 .build();
+        cycle11 = follower.pathBuilder()
+                .addPath(new BezierLine(colectare1, colectare11))
+                .setConstantHeadingInterpolation(colectare11.getHeading())
+                .build();
 
-         trage1 = follower.pathBuilder()
-                 .addPath(new BezierLine(colectare11, startPose))
-                 .setTangentHeadingInterpolation()
-                 .build();
+        trage1 = follower.pathBuilder()
+                .addPath(new BezierLine(colectare11, startPose))
+                .setConstantHeadingInterpolation(colectare11.getHeading())
+                .build();
 
-         rand3 = follower.pathBuilder()
-                 .addPath(new BezierCurve(startPose, cp_rand3, collect3))
-                 .setConstantHeadingInterpolation(startPose.getHeading())
-                 .setNoDeceleration()
-                 .build();
+        rand3 = follower.pathBuilder()
+                .addPath(new BezierCurve(startPose, cp_rand3, collect3))
+                .setConstantHeadingInterpolation(startPose.getHeading())
+                .setNoDeceleration()
+                .build();
 
-         trage3 = follower.pathBuilder()
-                 .addPath(new BezierCurve(collect3, cp_rand3, startPose))
-                 .setConstantHeadingInterpolation(startPose.getHeading())
-                 .build();
+        trage3 = follower.pathBuilder()
+                .addPath(new BezierCurve(collect3, cp_rand3, startPose))
+                .setConstantHeadingInterpolation(startPose.getHeading())
+                .build();
 
     }
 
@@ -120,8 +120,14 @@ public class Departe_blue extends OpMode {
             case 4:
                 if(!follower.isBusy()) {
                     follower.followPath(cycle11, true);
-                    setPathState(5);
+                    setPathState(99);
                 }
+
+                break;
+
+            case 99:
+                if(pathTimer.getElapsedTimeSeconds() > 1.5)
+                    setPathState(5);
 
                 break;
 
@@ -162,8 +168,8 @@ public class Departe_blue extends OpMode {
                 break;
 
             case 9:
-                follower.followPath(rand3, true);
-                setPathState(10);
+                follower.followPath(cycle1, true);
+                setPathState(1000);
 
                 break;
 
@@ -244,8 +250,8 @@ public class Departe_blue extends OpMode {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
-        distanta = Math.sqrt((0 - x) * (0 - x) + (144 - y) * (144 - y));
-        //turret.update_auto_blue(x, y, h, m);
+        distanta = Math.sqrt((144 - x) * (144 - x) + (144 - y) * (144 - y));
+        turret.update_auto_red(x, y, h);
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         delta_velocity = velocity - target_velocity - 1;

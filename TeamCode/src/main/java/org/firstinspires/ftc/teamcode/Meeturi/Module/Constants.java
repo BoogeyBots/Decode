@@ -26,8 +26,10 @@ public class Constants {
     }
     @Configurable
     public static class turret {
-        public static double kp = 0.015, ki, kd = 0.0003, kf = 0.1, ks = 0.03, power, error, gr; //kp = 0.01   kd = 0.00027
-        public static double kp2 = 0.02, kd2 = 0.0003, kf2 = 0.2;
+//        public static double kp = 0.008, ki, kd = 0.0003, kf = 0, ks = 0.03, power, error, gr;
+        public static double kp = 0.011, ki, kd = 0.0002, kf = 0.1, ks = 0.03, power, error, gr;
+        //        public static double kp2 = 0.008, kd2 = 0.0003, kf2 = 0;
+        public static double kp2 = 0.011, kd2 = 0.0002, kf2 = 0.2;
         public static double TICKS_PER_DEGREE = 60.681481, relative_angle, decalation = 0, turretCurrentPos;
         public static boolean act_turret;
         public static double constanta_inertie = 2; //de tunat
@@ -35,6 +37,7 @@ public class Constants {
         public static double frecari = 0.37; //de tunat
         public static double timp_aer;
         public static boolean trage_gresit = false;
+        public static boolean ridicare = false;
 
 
     }

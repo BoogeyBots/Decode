@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.Meeturi.Auto.Nou;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.deblocat;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.nominalvoltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -33,20 +35,21 @@ public class Aproape_blue extends OpMode {
     OuttakeModule outtake;
     TurretModule turret;
     private Follower follower;
+    double m;
     private Timer pathTimer;
     private int pathState;
     public static double cat_trage = 0.4;
     public static double x_startPose = 117.223, y_startPose = 129.29, heading_startPose = 225;
     public static double x_preload = 86, y_preload = 83, heading_preload = 225;
-    public static double x_collect1 = 120, y_collect1 = 84, heading_collect = 180;
-    public static double x_trapa = 129, y_trapa = 70, heading_trapa = 110;
-    public static double x_collect2 = 128, y_collect2 = 57;
+    public static double x_collect1 = 127.5, y_collect1 = 84, heading_collect = 180;
+    public static double x_trapa = 126, y_trapa = 70, heading_trapa = 110;
+    public static double x_collect2 = 125, y_collect2 = 57;
     public static double x_collect3 = 126, y_collect3 = 35;
     public static double x_cp2 = 70.4, y_cp2 = 59;
     public static double x_cp3 = 82, y_cp3 = 29;
     public static double x_cptrapa = 109, y_cptrapa = 66;
     public static double x_afara = 115, y_afara = 83;
-    public static double x_colectare_gate = 10, y_colectare_gate = 60, heading_colectare_gate = -32; //-32
+    public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32
     private final Pose startPose = new Pose(x_startPose, y_startPose, Math.toRadians(heading_startPose)).mirror();
     private final Pose scorePose = new Pose(x_preload, y_preload, Math.toRadians(heading_preload)).mirror();
     private final Pose collect1 = new Pose(x_collect1, y_collect1, Math.toRadians(heading_collect)).mirror();
@@ -59,6 +62,7 @@ public class Aproape_blue extends OpMode {
     private final Pose afara = new Pose(x_afara, y_afara).mirror();
     private final Pose colectare_gate = new Pose(x_colectare_gate, y_colectare_gate, Math.toRadians(heading_colectare_gate));
     private final Pose cp_gate = new Pose(40, 60);
+    private final Pose parcare = new Pose(84.2, 104).mirror();
 
     private Path scorePreload;
     private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4, sprecolt2, trage5, leave, spretrapa2, gate, trage_gate;
@@ -79,7 +83,7 @@ public class Aproape_blue extends OpMode {
 
 
         trage1 = follower.pathBuilder()
-                .addPath(new BezierLine(collect1, scorePose))
+                .addPath(new BezierLine(collect1, parcare))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -186,6 +190,7 @@ public class Aproape_blue extends OpMode {
                     deblocare_automata();
                     act_outtake = true;
                     setPathState(8);
+                    decalation = -8;
                 }
 
                 break;
@@ -221,17 +226,18 @@ public class Aproape_blue extends OpMode {
                 break;
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 4) {
+                if(pathTimer.getElapsedTimeSeconds() > 3) {
                     follower.followPath(trage_gate, true);
                     deblocare_automata();
                     act_outtake = true;
                     setPathState(13);
+                    decalation = -8;
                 }
 
                 break;
 
             case 13:
-                if (follower.atPose(scorePose, 5, 5)) {
+                if (follower.atPose(scorePose, 2, 2)) {
                     if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
                         setPathState(14);
                     }
@@ -261,17 +267,18 @@ public class Aproape_blue extends OpMode {
                 break;
 
             case 17:
-                if(pathTimer.getElapsedTimeSeconds() > 3.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 3) {
                     follower.followPath(trage_gate, true);
                     deblocare_automata();
                     act_outtake = true;
                     setPathState(18);
+                    decalation = -7;
                 }
 
                 break;
 
             case 18:
-                if (follower.atPose(scorePose, 5, 5)) {
+                if (follower.atPose(scorePose, 2, 2)) {
                     if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
                         setPathState(19);
                     }
@@ -301,22 +308,22 @@ public class Aproape_blue extends OpMode {
                 break;
 
             case 22:
-                if(pathTimer.getElapsedTimeSeconds() > 3.5) {
+                if(pathTimer.getElapsedTimeSeconds() > 3) {
                     follower.followPath(trage_gate, true);
                     deblocare_automata();
                     act_outtake = true;
                     setPathState(23);
+                    decalation = -11.;
                 }
 
                 break;
 
             case 23:
-                if (follower.atPose(scorePose, 5, 5)) {
+                if (follower.atPose(scorePose, 2, 2)) {
                     if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
                         setPathState(24);
                     }
                 }
-
                 break;
 
             case 24:
@@ -351,7 +358,7 @@ public class Aproape_blue extends OpMode {
 
             case 28:
                 if(pathTimer.getElapsedTimeSeconds() > 0.3) deblocare_automata();
-                if (follower.atPose(scorePose, 5, 5)) {
+                if (follower.atPose(parcare, 5, 5)) {
                     if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
                         setPathState(29);
                     }
@@ -405,7 +412,7 @@ public class Aproape_blue extends OpMode {
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
         distanta = Math.sqrt((0 - x) * (0 - x) + (144 - y) * (144 - y));
-        turret.update_auto_blue(x, y, h);
+        turret.update_auto_blue(x, y, h, 3);
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 

@@ -39,8 +39,8 @@ public class Aproape_red extends OpMode {
     public static double x_startPose = 117.223, y_startPose = 129.29, heading_startPose = 225;
     public static double x_preload = 86, y_preload = 83, heading_preload = 225;
     public static double x_collect1 = 120, y_collect1 = 84, heading_collect = 180;
-    public static double x_trapa = 129, y_trapa = 70, heading_trapa = 110;
-    public static double x_collect2 = 128, y_collect2 = 57;
+    public static double x_trapa = 126, y_trapa = 70, heading_trapa = 110;
+    public static double x_collect2 = 125, y_collect2 = 57;
     public static double x_collect3 = 126, y_collect3 = 35;
     public static double x_cp2 = 70.4, y_cp2 = 59;
     public static double x_cp3 = 82, y_cp3 = 29;
@@ -59,6 +59,7 @@ public class Aproape_red extends OpMode {
     private final Pose afara = new Pose(x_afara, y_afara);
     private final Pose colectare_gate = new Pose(x_colectare_gate, y_colectare_gate, Math.toRadians(heading_colectare_gate)).mirror();
     private final Pose cp_gate = new Pose(40, 60).mirror();
+    private final Pose parcare = new Pose(84.2, 104);
 
     private Path scorePreload;
     private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4, sprecolt2, trage5, leave, spretrapa2, gate, trage_gate;
@@ -79,7 +80,7 @@ public class Aproape_red extends OpMode {
 
 
         trage1 = follower.pathBuilder()
-                .addPath(new BezierLine(collect1, scorePose))
+                .addPath(new BezierLine(collect1, parcare))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -115,7 +116,7 @@ public class Aproape_red extends OpMode {
 
         gate = follower.pathBuilder()
                 .addPath(new BezierCurve(scorePose, cp_gate, colectare_gate))
-                .setLinearHeadingInterpolation(follower.getHeading(), colectare_gate.getHeading())
+                .setLinearHeadingInterpolation(follower.getHeading() + 180, colectare_gate.getHeading())
                 .build();
 
         trage_gate = follower.pathBuilder()

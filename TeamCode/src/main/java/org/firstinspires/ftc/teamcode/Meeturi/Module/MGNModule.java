@@ -26,11 +26,17 @@ public class MGNModule extends Constants.intake {
     }
 
     public void ridicare() {
+        left.setPower(1);
+        right.setPower(1);
+    }
+
+    public void stop() {
+        left.setPower(0.3);
+        right.setPower(0.3);
+    }
+
+    public void deschidere() {
         servo.setPosition(0.5);
-        if(servo.getPosition() == 0.5) {
-            left.setPower(1);
-            right.setPower(1);
-        }
     }
 
 }

@@ -14,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.gr;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.ridicare;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.trage_gresit;
 
 import static java.lang.Math.abs;
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Meeturi.Module.Constants;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
+import org.firstinspires.ftc.teamcode.Meeturi.Module.MGNModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.OuttakeModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.PinpointModule;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
@@ -61,25 +63,31 @@ public class TeleOP_blue extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intake.init();
-        outtake.init_teleOP();
-        turret.init_teleOP();
-        pinpoint.init();
+            intake.init();
+            outtake.init_teleOP();
+            turret.init_teleOP();
+            pinpoint.init();
+
+
 
         STATE mode = STATE.trage;
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
         timer_intake = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
-        loop = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        //loop = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         boolean switchingState = false;
         boolean bila_in_intake = false;
+
 
         act_outtake = false;
         act_turret = false;
         auto = false;
         trage_gresit = false;
         target_atins = false;
+        ridicare = false;
+
+        decalation = 0;
 
         waitForStart();
 
@@ -90,7 +98,7 @@ public class TeleOP_blue extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            loop.reset();
+            //loop.reset();
             for (LynxModule hub : allHubs) {
                 hub.clearBulkCache();
             }
@@ -117,8 +125,26 @@ public class TeleOP_blue extends LinearOpMode {
             if (gamepad1.right_trigger > 0.01 && mode == STATE.trage && intaking) {
                 intake.trage_intake(1);
 //                if(intake.a_transfer() < 2.5)
-                    intake.trage_transfer(0.47);
+                intake.trage_transfer(0.47);
 //                else intake.trage_transfer(0.2);
+
+//                if(intake.a_transfer() > 0.6 && !intake.sensor()) {
+//                    if(!intaking_timer) {
+//                        timer_intake.reset();
+//                        intaking_timer = true;
+//                    }
+//
+//                    else if(timer_intake.seconds() > 0.1) {
+//                        intake.stop_intake();
+//                        intake.stop_transfer();
+//                        intaking = false;
+//                        intaking_timer = false;
+//                        gamepad1.rumble(250);
+//                    }
+//                }
+//                else intaking_timer = false;
+
+                outtake.rampa(0.9);
             }
 
             else if (gamepad1.left_trigger > 0.01) {
@@ -166,10 +192,10 @@ public class TeleOP_blue extends LinearOpMode {
                 switchingState = false;
             }
 
-            boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > 0 && act_outtake && timer.seconds() > 0.17 && gr > 239 && gr < 544);
+            boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > -11 && act_outtake && timer.seconds() > 0.02 && gr > 332 && gr < 544);
 
             if(tragemsinoi) {
-                if(distanta >= 120 && abs(error) <= 3 && turret.getPower() < 0.07) {
+                if(distanta >= 120 && abs(error) <= 3) {
                     outtake.deblocat();
                     deschis = true;
                     target_atins = true;
@@ -199,9 +225,9 @@ public class TeleOP_blue extends LinearOpMode {
                 intake.trage_intake(1);
             }
 
-            if(gamepad1.triangle) {
-                pinpoint.recalibration();
-            }
+//            if(gamepad1.triangle) {
+//                pinpoint.recalibration();
+//            }
 
             if(gamepad1.right_bumper) {
                 decalation += 0.3;
@@ -211,39 +237,23 @@ public class TeleOP_blue extends LinearOpMode {
                 decalation -= 0.3;
             }
 
-            if(intake.a_intake() > 1 && intake.a_transfer() > 1.3 && !intake.sensor()) {
-                if(!intaking_timer) {
-                    timer_intake.reset();
-                    intaking_timer = true;
-                }
-
-                else if(timer_intake.seconds() > 0.25) {
-                    intake.stop_intake();
-                    intake.stop_transfer();
-                    intaking = false;
-                    intaking_timer = false;
-                }
-            }
-          else intaking_timer = false;
-
-
-
 
 //            telemetry.addData("V", velocity);
 //            telemetry.addData("T", target_velocity);
 //            telemetry.addData("TT", final_target);
-//            telemetry.addData("Delta velocity", delta_velocity);
+            telemetry.addData("Delta velocity", delta_velocity);
+//            telemetry.addData("Act_outtake", act_outtake);
 //            telemetry.addData("Decalare", decalation);
 //            telemetry.addData("STATE", mode);
 //            telemetry.addData("Gra", turret.gra());
-//            telemetry.addData("Eroare", turret.getError());
+            telemetry.addData("Eroare", turret.getError());
 //            telemetry.addData("Loop time", loop.milliseconds());
 //            telemetry.addData("Gra", turret.gra());
 //            telemetry.addData("CurrentHeading", currentHeading);
 //            telemetry.addData("Turret current pose", turretCurrentPos);
             telemetry.addData("Transfer", intake.a_transfer());
             telemetry.addData("Intake", intake.a_intake());
-////            telemetry.addData("Sensor intake", intake.s_intake());
+            telemetry.addData("Sensor intake", intake.s_intake());
 ////            telemetry.addData("Sensor mij", intake.s_mij());
 //            telemetry.addData("Intaking_timer", intaking_timer);
 //            telemetry.addData("Timer", timer_intake.seconds());

@@ -166,10 +166,10 @@ public class TeleOP_red extends LinearOpMode {
                 switchingState = false;
             }
 
-            boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > 0 && act_outtake && timer.seconds() > 0.17 && gr > 239 && gr < 544);
+            boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > -17 && act_outtake && timer.seconds() > 0.17 && gr > 164 && gr < 427);
 
             if(tragemsinoi) {
-                if(distanta >= 120 && abs(error) <= 3 && turret.getPower() < 0.07) {
+                if(distanta >= 120 && abs(error) <= 3) {
                     outtake.deblocat();
                     deschis = true;
                     target_atins = true;
@@ -238,7 +238,7 @@ public class TeleOP_red extends LinearOpMode {
 //            telemetry.addData("Gra", turret.gra());
 //            telemetry.addData("Eroare", turret.getError());
 //            telemetry.addData("Loop time", loop.milliseconds());
-//            telemetry.addData("Gra", turret.gra());
+            telemetry.addData("Gra", turret.gra());
 //            telemetry.addData("CurrentHeading", currentHeading);
 //            telemetry.addData("Turret current pose", turretCurrentPos);
             telemetry.addData("Transfer", intake.a_transfer());
