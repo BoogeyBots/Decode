@@ -4,19 +4,24 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
-@Configurable
+
+
 @TeleOp
-public class Test_servo extends LinearOpMode {
-    Servo servo;
+@Configurable
+public class Test_tilt extends LinearOpMode {
+    Servo sr, sl;
     public static double poz;
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.get(Servo.class, "ridicare_left");
+        sr = hardwareMap.get(Servo.class, "ridicare_right");
+        sl = hardwareMap.get(Servo.class, "ridicare_left");
+
 
         waitForStart();
 
         while (opModeIsActive()) {
-            servo.setPosition(poz);
+            sr.setPosition(1 - poz);
+            sl.setPosition(poz);
         }
 
     }

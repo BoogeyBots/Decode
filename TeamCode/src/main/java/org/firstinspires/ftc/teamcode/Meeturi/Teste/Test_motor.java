@@ -9,7 +9,7 @@ public class Test_motor extends LinearOpMode {
     DcMotorEx motor;
     @Override
     public void runOpMode() throws InterruptedException {
-        motor = hardwareMap.get(DcMotorEx.class, "motorST");
+        motor = hardwareMap.get(DcMotorEx.class, "motorDR");
 
         waitForStart();
 

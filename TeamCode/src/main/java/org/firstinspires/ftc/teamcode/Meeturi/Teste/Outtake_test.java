@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Meeturi.Module.IntakeModule;
 
 @Configurable
@@ -36,7 +37,7 @@ public class Outtake_test extends LinearOpMode {
         s1 = hardwareMap.get(Servo.class, "servo_blocaj");
 
 
-        motorst.setDirection(DcMotorSimple.Direction.REVERSE);
+        motordr.setDirection(DcMotorSimple.Direction.REVERSE);
         motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -57,6 +58,8 @@ public class Outtake_test extends LinearOpMode {
             panelsTelemetry.addData("Velocity", velocity);
             panelsTelemetry.addData("Target", targe);
             panelsTelemetry.addData("Voltage", voltage);
+            panelsTelemetry.addData("Voltage st", motorst.getCurrent(CurrentUnit.AMPS));
+            panelsTelemetry.addData("Voltage dr", motordr.getCurrent(CurrentUnit.AMPS));
             panelsTelemetry.update(telemetry);
 
             if(manual == true) {

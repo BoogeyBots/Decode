@@ -21,24 +21,18 @@ public class PinpointModule extends Constants.pinpoint {
     }
 
     GoBildaPinpointDriver pinpoint;
-    Limelight3A camera;
 
     public void init() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        camera = hardwareMap.get(Limelight3A.class, "camera");
-        camera.pipelineSwitch(0);
 
-        pinpoint.setOffsets(4.579, 4.469, DistanceUnit.INCH);
+        pinpoint.setOffsets(-5.087, -0.417, DistanceUnit.INCH);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        camera.start();
     }
 
     public void update_red() {
         pinpoint.update();
-
-        camera.updateRobotOrientation(currentHeading);
 
         currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
         currentX = pinpoint.getPosX(DistanceUnit.INCH);
@@ -54,8 +48,6 @@ public class PinpointModule extends Constants.pinpoint {
     public void update_blue() {
         pinpoint.update();
 
-        camera.updateRobotOrientation(currentHeading);
-
         currentHeading = pinpoint.getHeading(AngleUnit.DEGREES);
         currentX = pinpoint.getPosX(DistanceUnit.INCH);
         currentY = pinpoint.getPosY(DistanceUnit.INCH);
@@ -69,11 +61,11 @@ public class PinpointModule extends Constants.pinpoint {
 
     }
 
-    public void recalibration() {
-        LLResult result = camera.getLatestResult();
-        if(result != null && result.isValid()) {
-            Pose3D botpose = result.getBotpose();
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, botpose.getPosition().y * 39.3701 + 72, 72 - botpose.getPosition().x * 39.3701, AngleUnit.DEGREES, currentHeading));
-        }
-    }
+//    public void recalibration() {
+//        LLResult result = camera.getLatestResult();
+//        if(result != null && result.isValid()) {
+//            Pose3D botpose = result.getBotpose();
+//            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, botpose.getPosition().y * 39.3701 + 72, 72 - botpose.getPosition().x * 39.3701, AngleUnit.DEGREES, currentHeading));
+//        }
+//    }
 }

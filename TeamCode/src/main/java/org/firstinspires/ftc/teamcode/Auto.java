@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode.Meeturi.Auto.Nou;
+package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.deblocat;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.nominalvoltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
@@ -30,7 +28,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous (group = "Blue")
-public class Aproape_blue extends OpMode {
+public class Auto extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
@@ -39,7 +37,7 @@ public class Aproape_blue extends OpMode {
     private Timer pathTimer;
     private int pathState;
     public static double cat_trage = 0.4;
-    public static double x_startPose = 117.223, y_startPose = 129.29, heading_startPose = 225;
+    public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
     public static double x_preload = 86, y_preload = 83, heading_preload = 225;
     public static double x_collect1 = 127.5, y_collect1 = 84, heading_collect = 180;
     public static double x_trapa = 126, y_trapa = 70, heading_trapa = 110;
@@ -132,254 +130,73 @@ public class Aproape_blue extends OpMode {
         switch (pathState) {
             case 0:
                 follower.followPath(scorePreload, true);
-                act_turret = true;
+                act_outtake = true;
+                intake.trage_intake(0.3);
                 setPathState(1);
 
                 break;
 
             case 1:
-                act_outtake = true;
-                setPathState(2);
+                if(follower.atPose(scorePose, 5, 5)) {
+                    deblocare();
+                    setPathState(2);
+                }
 
                 break;
 
             case 2:
-                if (follower.atPose(scorePose, 5, 5)) {
-                    if (target_velocity < velocity + 5 && error <= 5.4 && act_outtake) {
-                        outtake.deblocat();
-                        setPathState(3);
-                    }
+                if(!follower.isBusy()) {
+                    trage();
+                    setPathState(3);
                 }
 
                 break;
 
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 0.25) {
-                    intake.trage_intake(1);
-                    intake.trage_transfer(1);
-                    setPathState(4);
+                if(pathTimer.getElapsedTime() > cat_trage) {
+                    numaitrag();
                 }
 
                 break;
 
             case 4:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
-                    numaitrag();
-                    setPathState(5);
-                }
+                follower.followPath(rand1, true);
+                setPathState(5);
 
                 break;
 
             case 5:
-                follower.followPath(rand2, true);
-                setPathState(6);
+                if(!follower.isBusy()){
+                    follower.followPath(trage1, true);
+                    setPathState(6);
+                }
 
                 break;
 
             case 6:
-                if(!follower.isBusy()) {
-                    follower.followPath(spretrapa, true);
+                if(follower.atPose(scorePose, 5, 5)) {
+                    deblocare();
                     setPathState(7);
                 }
-
                 break;
 
             case 7:
-                if(!follower.isBusy()) {
-                    follower.followPath(trage2, true);
-                    deblocare_automata();
-                    act_outtake = true;
+                if(!follower.isBusy()){
+                    trage();
                     setPathState(8);
-                    decalation = -8;
                 }
-
                 break;
 
             case 8:
-                if (follower.atPose(scorePose, 5, 5)){
-                    if (target_velocity < velocity + 5 && error <= 5.4 && act_outtake) {
-                        setPathState(9);
-                    }
-                }
-
-                break;
-
-            case 9:
-                intake.trage_intake(1);
-                intake.trage_transfer(1);
-                setPathState(10);
-
-                break;
-
-            case 10:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                if(pathTimer.getElapsedTime() > cat_trage) {
                     numaitrag();
-                    setPathState(11);
+                    setPathState(9);
                 }
 
                 break;
 
-            case 11:
-                follower.followPath(gate, true);
-                setPathState(12);
 
-                break;
 
-            case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
-                    follower.followPath(trage_gate, true);
-                    deblocare_automata();
-                    act_outtake = true;
-                    setPathState(13);
-                    decalation = -8;
-                }
-
-                break;
-
-            case 13:
-                if (follower.atPose(scorePose, 2, 2)) {
-                    if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
-                        setPathState(14);
-                    }
-                }
-
-                break;
-
-            case 14:
-                intake.trage_intake(1);
-                intake.trage_transfer(1);
-                setPathState(15);
-
-                break;
-
-            case 15:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
-                    numaitrag();
-                    setPathState(16);
-                }
-
-                break;
-
-            case 16:
-                follower.followPath(gate, true);
-                setPathState(17);
-
-                break;
-
-            case 17:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
-                    follower.followPath(trage_gate, true);
-                    deblocare_automata();
-                    act_outtake = true;
-                    setPathState(18);
-                    decalation = -7;
-                }
-
-                break;
-
-            case 18:
-                if (follower.atPose(scorePose, 2, 2)) {
-                    if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
-                        setPathState(19);
-                    }
-                }
-
-                break;
-
-            case 19:
-                intake.trage_intake(1);
-                intake.trage_transfer(1);
-                setPathState(20);
-
-                break;
-
-            case 20:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
-                    numaitrag();
-                    setPathState(21);
-                }
-
-                break;
-
-            case 21:
-                follower.followPath(gate, true);
-                setPathState(22);
-
-                break;
-
-            case 22:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
-                    follower.followPath(trage_gate, true);
-                    deblocare_automata();
-                    act_outtake = true;
-                    setPathState(23);
-                    decalation = -11.;
-                }
-
-                break;
-
-            case 23:
-                if (follower.atPose(scorePose, 2, 2)) {
-                    if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
-                        setPathState(24);
-                    }
-                }
-                break;
-
-            case 24:
-                intake.trage_intake(1);
-                intake.trage_transfer(1);
-                setPathState(25);
-
-                break;
-
-            case 25:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
-                    numaitrag();
-                    setPathState(26);
-                }
-
-                break;
-
-            case 26:
-                follower.followPath(rand1, true);
-                setPathState(27);
-
-                break;
-
-            case 27:
-                if(!follower.isBusy()) {
-                    follower.followPath(trage1, true);
-                    act_outtake = true;
-                    setPathState(28);
-                }
-
-                break;
-
-            case 28:
-                if(pathTimer.getElapsedTimeSeconds() > 0.3) deblocare_automata();
-                if (follower.atPose(parcare, 5, 5)) {
-                    if (target_velocity < velocity + 5 && error <= 3.5 && act_outtake) {
-                        setPathState(29);
-                    }
-                }
-
-                break;
-
-            case 29:
-                intake.trage_intake(1);
-                intake.trage_transfer(1);
-                setPathState(30);
-
-                break;
-
-            case 30:
-                if (pathTimer.getElapsedTimeSeconds() > cat_trage) {
-                    numaitrag();
-                    setPathState(31);
-                }
-
-                break;
         }
     }
 
@@ -394,8 +211,8 @@ public class Aproape_blue extends OpMode {
         turret = new TurretModule(hardwareMap);
 
         intake.init();
-        outtake.init_auto_aproape();
-        turret.init_auto();
+        outtake.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
@@ -412,11 +229,9 @@ public class Aproape_blue extends OpMode {
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
         distanta = Math.sqrt((0 - x) * (0 - x) + (144 - y) * (144 - y));
-        turret.update_auto_blue(x, y, h, 3);
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
-        if(intake.get_pintake() == 0 && intake.get_ptransfer() == 0) outtake.deblocat();
 
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);
@@ -426,6 +241,7 @@ public class Aproape_blue extends OpMode {
         telemetry.update();
 
         outtake.update_kinematics();
+        turret.up_auto(x, y, h);
     }
 
     @Override
@@ -447,15 +263,21 @@ public class Aproape_blue extends OpMode {
         pathTimer.resetTimer();
     }
 
+    public void trage() {
+        intake.trage_intake(1);
+        intake.trage_transfer(1);
+    }
+
     public void numaitrag() {
         outtake.blocat();
-        target_velocity = 1030;
+        target_velocity = 1100;
         intake.trage_transfer(0.47);
     }
 
-    public void deblocare_automata() {
-        intake.stop_transfer();
+    public void deblocare() {
+        act_outtake = true;
         intake.stop_intake();
-
+        intake.stop_transfer();
+        outtake.deblocat();
     }
 }

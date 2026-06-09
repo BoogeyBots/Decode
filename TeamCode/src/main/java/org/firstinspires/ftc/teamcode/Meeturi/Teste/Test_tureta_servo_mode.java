@@ -6,18 +6,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 @Configurable
 @TeleOp
-public class Test_servo extends LinearOpMode {
-    Servo servo;
-    public static double poz;
+public class Test_tureta_servo_mode extends LinearOpMode {
+    Servo s1, s2;
+    public static double angle = 180;
     @Override
     public void runOpMode() throws InterruptedException {
-        servo = hardwareMap.get(Servo.class, "ridicare_left");
+        s1 = hardwareMap.get(Servo.class, "servo_right");
+        s2 = hardwareMap.get(Servo.class, "servo_left");
 
         waitForStart();
 
         while (opModeIsActive()) {
-            servo.setPosition(poz);
+            s1.setPosition(angle * 0.00277);
+            s2.setPosition(angle * 0.00277);
         }
-
     }
 }
