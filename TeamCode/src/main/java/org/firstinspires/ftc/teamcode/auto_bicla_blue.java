@@ -49,13 +49,13 @@ public class auto_bicla_blue extends OpMode {
     public static double x_afara = 115, y_afara = 83;
     public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32 */
     private final Pose startPose = new Pose(24.846, 128.044, Math.toRadians(134));
-    private final Pose scorePose = new Pose(58.021, 92.824, Math.toRadians(134));
-    private final Pose collect1 = new Pose(16.4, 82.429, Math.toRadians(0));
+    private final Pose scorePose = new Pose(57, 90, Math.toRadians(134));
+    private final Pose collect1 = new Pose(24, 82.429, Math.toRadians(0));
     private final Pose cp_collect1 = new Pose(69.227, 81.442);
-   private final Pose collect2 = new Pose(16.4, 58.623, Math.toRadians(0));
+   private final Pose collect2 = new Pose(19.4, 58.623, Math.toRadians(0));
    private final Pose cp_collect2 = new Pose(52.254, 57.487);
    // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8, 59, Math.toRadians(-41));
+    private final Pose colectare_gate = new Pose(8.2, 60, Math.toRadians(-38));
     private final Pose cp_gate = new Pose(34.75, 57.47);
     private final Pose cp_trage_gate = new Pose(44.40, 69.77);
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -64,7 +64,7 @@ public class auto_bicla_blue extends OpMode {
     //private final Pose afara = new Pose(x_afara, y_afara).mirror();
     //private final Pose colectare_gate = new Pose(x_colectare_gate, y_colectare_gate, Math.toRadians(heading_colectare_gate));
     //private final Pose cp_gate = new Pose(40, 60);
-    private final Pose parcare = new Pose(61.316, 99.723);
+    private final Pose parcare = new Pose(61.316, 100);
     private Path scorePreload;
     private PathChain rand1, trage1, spretrapa, rand2, trage2, rand3, trage3, sprecolt, trage4, sprecolt2, trage5, leave, spretrapa2, gate, trage_gate;
 
@@ -76,6 +76,7 @@ public class auto_bicla_blue extends OpMode {
                 .addPath(new BezierCurve(scorePose, cp_collect1, collect1))
                 .setTangentHeadingInterpolation()
                 .setReversed()
+                .setNoDeceleration()
                 .build();
 
         trage1 = follower.pathBuilder()
@@ -160,7 +161,7 @@ public class auto_bicla_blue extends OpMode {
                     break;
 
             case 2:
-                if(!follower.isBusy()) {
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
                     numaitrag();
                     trage();
                     follower.followPath(rand1, true);
@@ -171,129 +172,137 @@ public class auto_bicla_blue extends OpMode {
             case 3:
                 if(!follower.isBusy()){
                     follower.followPath(trage1);
-                    deblocare();
                     setPathState(4);
                 }
                 break;
-
             case 4:
-                if(follower.atPose(scorePose, 5, 5)) {
-                    trage();
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare();
                     setPathState(5);
                 }
-                break;
 
             case 5:
-                if(!follower.isBusy()){
-                    numaitrag();
+                if(follower.atPose(scorePose, 5, 5)) {
                     trage();
-                    follower.followPath(rand2, true);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (!follower.isBusy()){
-                    follower.followPath(trage2, true);
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    trage();
+                    follower.followPath(rand2, true);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                if (!follower.isBusy()){
+                    follower.followPath(trage2, true);
                     setPathState(8);
                 }
                 break;
-
             case 8:
-                if(!follower.isBusy()){
-                    numaitrag();
-                    follower.followPath(gate, true);
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare();
                     setPathState(9);
                 }
-                break;
 
             case 9:
-                if(!follower.isBusy()) {
+                if (follower.atPose(scorePose, 5, 5)){
                     trage();
                     setPathState(10);
                 }
-            break;
+                break;
 
             case 10:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.followPath(trage_gate, true);
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    follower.followPath(gate, true);
                     setPathState(11);
                 }
                 break;
 
             case 11:
-                if(follower.atPose(scorePose, 5, 5)){
+                if(!follower.isBusy()) {
                     trage();
                     setPathState(12);
                 }
-                break;
+            break;
 
             case 12:
-                if(!follower.isBusy()){
-                    numaitrag();
-                    follower.followPath(gate, true);
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    follower.followPath(trage_gate, true);
+                    deblocare();
                     setPathState(13);
                 }
                 break;
 
             case 13:
-                if(!follower.isBusy()) {
+                if(follower.atPose(scorePose, 5, 5)){
                     trage();
                     setPathState(14);
                 }
                 break;
 
             case 14:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.followPath(trage_gate, true);
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    follower.followPath(gate, true);
                     setPathState(15);
                 }
                 break;
 
             case 15:
-                if(follower.atPose(scorePose, 5, 5)){
+                if(!follower.isBusy()) {
                     trage();
                     setPathState(16);
                 }
                 break;
 
             case 16:
-                if(!follower.isBusy()){
-                    numaitrag();
-                    follower.followPath(gate, true);
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    follower.followPath(trage_gate, true);
+                    deblocare();
                     setPathState(17);
                 }
                 break;
 
             case 17:
-                if(!follower.isBusy()) {
+                if(follower.atPose(scorePose, 5, 5)){
                     trage();
                     setPathState(18);
                 }
                 break;
 
             case 18:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.followPath(leave, true);
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    follower.followPath(gate, true);
                     setPathState(19);
                 }
                 break;
 
             case 19:
-                if(follower.atPose(parcare, 5, 5)){
+                if(!follower.isBusy()) {
                     trage();
                     setPathState(20);
+                }
+                break;
+
+            case 20:
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    follower.followPath(leave, true);
+                    deblocare();
+                    setPathState(21);
+                }
+                break;
+
+            case 21:
+                if(follower.atPose(parcare, 5, 5)){
+                    trage();
+                    setPathState(22);
                 }
                 break;
 
