@@ -3,12 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.act_turret;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.decalation;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.error;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -241,7 +237,7 @@ public class Auto extends OpMode {
         telemetry.update();
 
         outtake.update_kinematics();
-        turret.up_auto(x, y, h);
+        turret.update_blue_auto(x, y, h);
     }
 
     @Override

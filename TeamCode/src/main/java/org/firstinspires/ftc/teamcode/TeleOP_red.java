@@ -33,15 +33,14 @@ import org.firstinspires.ftc.teamcode.Meeturi.Module.TurretModule;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 
 import java.util.List;
-@TeleOp (name = "Tiliopa blue")
-public class TeleOP_blue extends LinearOpMode {
+@TeleOp (name = "Tiliopa red")
+public class TeleOP_red extends LinearOpMode {
     SampleMecanumDrive drive = null;
     IntakeModule intake = null;
     OuttakeModule outtake = null;
     TurretModule turret = null;
     PinpointModule pinpoint;
     AscentModule tilt = null;
-
     ElapsedTime timer, timer_intake, loop;
     double delta_velocity;
     boolean deschis = false;
@@ -64,11 +63,11 @@ public class TeleOP_blue extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            intake.init();
-            outtake.init_teleOP();
-            turret.init();
-            pinpoint.init();
-            tilt.init();
+        intake.init();
+        outtake.init_teleOP();
+        turret.init();
+        pinpoint.init();
+        tilt.init();
 
 
 
@@ -108,8 +107,8 @@ public class TeleOP_blue extends LinearOpMode {
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
             outtake.update_kinematics();
-            pinpoint.update_blue();
-            turret.update_blue();
+            pinpoint.update_red();
+            turret.update_red();
 
             delta_velocity = velocity - target_velocity - 1;
 
