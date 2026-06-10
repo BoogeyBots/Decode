@@ -11,6 +11,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
@@ -90,7 +91,20 @@ public class Auto extends OpMode {
 
         trage2 = follower.pathBuilder()
                 .addPath(new BezierCurve(trapa, cp_rand2, scorePose))
-                .setConstantHeadingInterpolation(collect1.getHeading())
+                .setHeadingInterpolation(
+                        HeadingInterpolator.piecewise(
+                                        new HeadingInterpolator.PiecewiseNode(
+                                                0,
+                                                .8,
+                                                HeadingInterpolator.tangent
+                                        ),
+                                        new HeadingInterpolator.PiecewiseNode(
+                                                .8,
+                                                1,
+                                                HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(110))
+                                        )
+                        )
+                )
                 .build();
 
         rand3 = follower.pathBuilder()
