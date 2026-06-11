@@ -17,12 +17,19 @@ public class IntakeModule extends Constants.intake {
         this.hardwareMap = hardwareMap;
     }
     DcMotorEx motor_intake, motor_transfer;
+    DigitalChannel sensor_sus, sensor_jos;
     private double lastIntakePower = 0;
     private double lastTransferPower = 0;
 
     public void init() {
         motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
         motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
+
+        sensor_sus = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+       // sensor_jos = hardwareMap.get(DigitalChannel.class, "sensor_jos");
+
+        //sensor_sus.setMode(DigitalChannel.Mode.INPUT);
+       // sensor_jos.setMode(DigitalChannel.Mode.INPUT);
 
         motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -72,4 +79,8 @@ public class IntakeModule extends Constants.intake {
             lastTransferPower = 0;
         }
     }
+
+   /* public boolean suntbile() {
+        return !sensor_sus.getState() && !sensor_jos.getState();
+    }*/
 }

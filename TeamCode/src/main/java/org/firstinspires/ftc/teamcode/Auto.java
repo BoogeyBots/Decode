@@ -221,7 +221,7 @@ public class Auto extends OpMode {
         turret = new TurretModule(hardwareMap);
 
         intake.init();
-        outtake.init_teleOP();
+        outtake.init();
         turret.init();
 
         buildPaths();
@@ -250,7 +250,7 @@ public class Auto extends OpMode {
         telemetry.addData("Distanta", distanta);
         telemetry.update();
 
-        outtake.update_kinematics();
+        outtake.update_auto();
         turret.update_blue_auto(x, y, h);
     }
 

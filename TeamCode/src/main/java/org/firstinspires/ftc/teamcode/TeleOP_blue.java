@@ -65,7 +65,7 @@ public class TeleOP_blue extends LinearOpMode {
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             intake.init();
-            outtake.init_teleOP();
+            outtake.init();
             turret.init();
             pinpoint.init();
             tilt.init();
@@ -190,8 +190,18 @@ public class TeleOP_blue extends LinearOpMode {
                 }
             }
 
-            if(target_atins && delta_velocity < -50 && distanta > 125) {
-                outtake.reglare();
+            if(target_atins && delta_velocity < -50) {
+                if(distanta > 125) {
+                    outtake.reglare_departe();
+                }
+
+                else if(distanta > 78) {
+                    outtake.reglare_aproape_far();
+                }
+
+                else {
+                    outtake.reglare_aproape_aproape();
+                }
             }
 
             if(deschis && timer.seconds() > 0.07 && distanta < 120) {
