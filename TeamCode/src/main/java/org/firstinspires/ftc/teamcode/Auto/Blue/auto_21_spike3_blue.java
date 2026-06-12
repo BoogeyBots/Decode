@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Auto.Blue;
 
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
 @Autonomous (group = "Blue")
-public class auto_18_blue extends OpMode {
+public class auto_21_spike3_blue extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
@@ -36,29 +36,31 @@ public class auto_18_blue extends OpMode {
     private Timer pathTimer;
     private int pathState;
     public static double cat_trage = 0.4;
- /*   public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
-    public static double x_preload = 86, y_preload = 83, heading_preload = 225;
-    public static double x_collect1 = 127.5, y_collect1 = 84, heading_collect = 180;
-    public static double x_trapa = 126, y_trapa = 70, heading_trapa = 110;
-    public static double x_collect2 = 125, y_collect2 = 57;
-    public static double x_collect3 = 126, y_collect3 = 35;
-    public static double x_cp2 = 70.4, y_cp2 = 59;
-    public static double x_cp3 = 82, y_cp3 = 29;
-    public static double x_cptrapa = 109, y_cptrapa = 66;
-    public static double x_afara = 115, y_afara = 83;
-    public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32 */
+    /*   public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
+       public static double x_preload = 86, y_preload = 83, heading_preload = 225;
+       public static double x_collect1 = 127.5, y_collect1 = 84, heading_collect = 180;
+       public static double x_trapa = 126, y_trapa = 70, heading_trapa = 110;
+       public static double x_collect2 = 125, y_collect2 = 57;
+       public static double x_collect3 = 126, y_collect3 = 35;
+       public static double x_cp2 = 70.4, y_cp2 = 59;
+       public static double x_cp3 = 82, y_cp3 = 29;
+       public static double x_cptrapa = 109, y_cptrapa = 66;
+       public static double x_afara = 115, y_afara = 83;
+       public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32 */
     private final Pose startPose = new Pose(24.846, 128.044, Math.toRadians(134));
     private final Pose scorePose = new Pose(53.95, 84.52, Math.toRadians(134));
     private final Pose collect1 = new Pose(31.5, 84.429, Math.toRadians(0));
     private final Pose cp_collect1 = new Pose(69.227, 81.442);
-   private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
-   private final Pose cp_collect2 = new Pose(43.82, 60.48);
-   // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8.2, 55, Math.toRadians(-30));
-    private final Pose colectare_gate2 = new Pose(8.2, 55, Math.toRadians(-30));
-    private final Pose colectare_gate3 = new Pose(8.2, 55, Math.toRadians(-30));
+    private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
+    private final Pose cp_collect2 = new Pose(43.82, 60.48);
+    // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
+    private final Pose colectare_gate = new Pose(8.2, 59, Math.toRadians(-30));
+    private final Pose colectare_gate2 = new Pose(8.2, 59, Math.toRadians(-32.5));
+    private final Pose colectare_gate3 = new Pose(8.2, 58.5, Math.toRadians(-33));
     private final Pose cp_gate = new Pose(34.75, 57.47);
     private final Pose cp_trage_gate = new Pose(44.40, 68.77);
+    private final Pose collect3 = new Pose(18.14, 35.75, Math.toRadians(0));
+    private final Pose cp_collect3 = new Pose(53.04, 31.85);
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
     //private final Pose cp_rand3 = new Pose(x_cp3, y_cp3).mirror();
     //private final Pose cp_trapa = new Pose(x_cptrapa, y_cptrapa).mirror();
@@ -96,6 +98,19 @@ public class auto_18_blue extends OpMode {
                 .addPath(new BezierLine(collect2, scorePose))
                 .setTangentHeadingInterpolation()
                 .build();
+
+        rand3 = follower.pathBuilder()
+                .addPath(new BezierCurve(scorePose, cp_collect3, collect3))
+                .setTangentHeadingInterpolation()
+                .setReversed()
+                .setNoDeceleration()
+                .build();
+
+        trage3 = follower.pathBuilder()
+                .addPath(new BezierLine(collect3, scorePose))
+                .setTangentHeadingInterpolation()
+                .build();
+
 
         gate = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, colectare_gate))
@@ -165,8 +180,9 @@ public class auto_18_blue extends OpMode {
 
 
         leave = follower.pathBuilder()
-                .addPath(new BezierCurve(colectare_gate, cp_trage_gate, parcare))
+                .addPath(new BezierLine(collect3, parcare))
                 .setTangentHeadingInterpolation()
+                .setNoDeceleration()
                 .build();
 
 
@@ -182,10 +198,7 @@ public class auto_18_blue extends OpMode {
                 .setNoDeceleration()
                 .build();
 
-        trage3 = follower.pathBuilder()
-                .addPath(new BezierLine(collect3, scorePose))
-                .setTangentHeadingInterpolation()
-                .build();
+
 
 
 
@@ -202,7 +215,7 @@ public class auto_18_blue extends OpMode {
                 follower.followPath(scorePreload, true);
                 act_outtake = true;
                 if(pathTimer.getElapsedTime() > 0.1){
-                    deblocare(0.35);
+                    deblocare();
                     setPathState(1);
                 }
 
@@ -211,11 +224,11 @@ public class auto_18_blue extends OpMode {
                 break;
 
             case 1:
-                    if(follower.atPose(scorePose, 5, 5)) {
-                        trage();
-                        setPathState(2);
-                    }
-                    break;
+                if(follower.atPose(scorePose, 5, 5)) {
+                    trage();
+                    setPathState(2);
+                }
+                break;
 
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
@@ -234,7 +247,7 @@ public class auto_18_blue extends OpMode {
                 break;
             case 4:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare(0.39);
+                    deblocare();
                     setPathState(5);
                 }
 
@@ -262,7 +275,7 @@ public class auto_18_blue extends OpMode {
                 break;
             case 8:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare(0.38);
+                    deblocare();
                     setPathState(9);
                 }
 
@@ -287,12 +300,12 @@ public class auto_18_blue extends OpMode {
                     intake.trage_transfer(0.3);
                     setPathState(12);
                 }
-            break;
+                break;
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 0.9){
+                if(pathTimer.getElapsedTimeSeconds() > 0.6){
                     follower.followPath(trage_gate, true);
-                    deblocare(0.39);
+                    deblocare();
                     setPathState(13);
                 }
                 break;
@@ -321,9 +334,9 @@ public class auto_18_blue extends OpMode {
                 break;
 
             case 16:
-                if(pathTimer.getElapsedTimeSeconds() > 0.9){
+                if(pathTimer.getElapsedTimeSeconds() > 0.8){
                     follower.followPath(trage_gate, true);
-                    deblocare(0.39);
+                    deblocare();
                     setPathState(17);
                 }
                 break;
@@ -351,17 +364,47 @@ public class auto_18_blue extends OpMode {
                 break;
 
             case 20:
-                if(pathTimer.getElapsedTimeSeconds() > 0.9){
-                    follower.followPath(leave, true);
-                    deblocare(0.38);
+                if(pathTimer.getElapsedTimeSeconds() > 0.8){
+                    follower.followPath(trage_gate, true);
+                    deblocare();
                     setPathState(21);
                 }
                 break;
 
             case 21:
-                if(follower.atPose(parcare, 5, 5)){
+                if(follower.atPose(scorePose, 5, 5)){
                     trage();
                     setPathState(22);
+                }
+                break;
+
+            case 22:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    trage();
+                    follower.followPath(rand3, true);
+                    setPathState(23);
+                }
+                break;
+
+            case 23:
+                if (!follower.isBusy()){
+                    follower.followPath(leave, true);
+                    setPathState(24);
+                }
+                break;
+
+            case 24:
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare();
+                    setPathState(25);
+                }
+                break;
+
+            case 25:
+                if (follower.atPose(parcare, 5, 5)){
+                    trage();
+                    setPathState(26);
                 }
                 break;
 
@@ -409,11 +452,11 @@ public class auto_18_blue extends OpMode {
         telemetry.addData("pathTimer", pathTimer.getElapsedTime());
         telemetry.update();
 
-        outtake.update_kinematics();
+        outtake.update_auto();
         turret.update_blue_auto(x, y, h);
 
         if(target_atins && velocity - target_velocity < -50)
-            outtake.reglare_aproape_far();
+            outtake.reglare_departe();
     }
 
     @Override
@@ -448,11 +491,10 @@ public class auto_18_blue extends OpMode {
         target_atins = false;
     }
 
-    public void deblocare(double hood) {
+    public void deblocare() {
         act_outtake = true;
         intake.stop_intake();
         intake.stop_transfer();
         outtake.deblocat();
-        outtake.rampa(hood);
     }
 }

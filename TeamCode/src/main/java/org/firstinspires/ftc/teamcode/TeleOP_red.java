@@ -41,6 +41,7 @@ public class TeleOP_red extends LinearOpMode {
     TurretModule turret = null;
     PinpointModule pinpoint;
     AscentModule tilt = null;
+
     ElapsedTime timer, timer_intake, loop;
     double delta_velocity;
     boolean deschis = false;
@@ -68,8 +69,6 @@ public class TeleOP_red extends LinearOpMode {
         turret.init();
         pinpoint.init();
         tilt.init();
-
-
 
         STATE mode = STATE.trage;
 
@@ -189,8 +188,18 @@ public class TeleOP_red extends LinearOpMode {
                 }
             }
 
-            if(target_atins && delta_velocity < -50 && distanta > 125) {
-                outtake.reglare_departe();
+            if(target_atins && delta_velocity < -50) {
+                if(distanta > 125) {
+                    outtake.reglare_departe();
+                }
+
+                else if(distanta > 78) {
+                    outtake.reglare_aproape_far();
+                }
+
+                else {
+                    outtake.reglare_aproape_aproape();
+                }
             }
 
             if(deschis && timer.seconds() > 0.07 && distanta < 120) {
