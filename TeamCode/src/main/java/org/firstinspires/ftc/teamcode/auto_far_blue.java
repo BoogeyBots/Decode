@@ -30,6 +30,7 @@ public class auto_far_blue extends OpMode {
     IntakeModule intake;
     OuttakeModule outtake;
     TurretModule turret;
+    boolean target_atins = false;
     private Follower follower;
     double m;
     private Timer pathTimer;
@@ -383,6 +384,9 @@ public class auto_far_blue extends OpMode {
 
         outtake.update_kinematics();
         turret.update_blue_auto(x, y, h);
+
+        if(target_atins && velocity - target_velocity < -50)
+            outtake.reglare_departe();
     }
 
     @Override
@@ -407,12 +411,14 @@ public class auto_far_blue extends OpMode {
     public void trage() {
         intake.trage_intake(1);
         intake.trage_transfer(1);
+        target_atins = true;
     }
 
     public void numaitrag() {
         outtake.blocat();
         target_velocity = 1500;
         intake.trage_transfer(0.47);
+        target_atins = false;
     }
 
     public void deblocare() {
