@@ -54,10 +54,10 @@ public class auto_far_blue extends OpMode {
    // private final Pose cp_collect2 = new Pose(43.82, 60.48);
      private final Pose collect3 = new Pose(20.34, 35.52, Math.toRadians(0));
      private final Pose cp_collect3 = new Pose(66.31, 50.04);
-     private final Pose hp = new Pose(9.76, 13.34, Math.toRadians(15));
-     private final Pose hp1pe2 = new Pose(17.29, 10.66, Math.toRadians(0));
+     private final Pose hp = new Pose(9.5, 14.5, Math.toRadians(15));
+     private final Pose hp1pe2 = new Pose(18.29, 10.66, Math.toRadians(0));
      private final Pose hpiar = new Pose(10.83, 8.86, Math.toRadians(5));
-     private final Pose shrek = new Pose(9.79, 47.17, Math.toRadians(-90));
+     private final Pose shrek = new Pose(9.79, 37.17, Math.toRadians(-90));
   //  private final Pose colectare_gate = new Pose(8.2, 59, Math.toRadians(-30));
   //  private final Pose colectare_gate2 = new Pose(8.2, 59, Math.toRadians(-32.5));
    // private final Pose colectare_gate3 = new Pose(8.2, 58.5, Math.toRadians(-33));
@@ -85,21 +85,7 @@ public class auto_far_blue extends OpMode {
 
         trage3 = follower.pathBuilder()
                 .addPath(new BezierLine(collect3, scorePose))
-                .setHeadingInterpolation(
-                        HeadingInterpolator.piecewise(
-                                new HeadingInterpolator.PiecewiseNode(
-                                        0,
-                                        .4,
-                                        HeadingInterpolator.tangent
-                                ),
-                                new HeadingInterpolator.PiecewiseNode(
-                                        .4,
-                                        1,
-                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(15))
-                                )
-                        )
-
-                )
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(20))
                 .build();
 
         human = follower.pathBuilder()
@@ -124,7 +110,6 @@ public class auto_far_blue extends OpMode {
         fanta2 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, hp))
                 .setTangentHeadingInterpolation()
-                .setNoDeceleration()
                 .setReversed()
                 .build();
 
@@ -137,7 +122,7 @@ public class auto_far_blue extends OpMode {
 
         trage_primulshrek = follower.pathBuilder()
                 .addPath(new BezierLine(shrek, scorePose))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(20))
                 .build();
 
         fanta3 = follower.pathBuilder()
@@ -269,13 +254,13 @@ public class auto_far_blue extends OpMode {
                     numaitrag();
                     intake.trage_transfer(0.5);
                     intake.trage_intake(1);
-                    follower.followPath(human, true);
+                    follower.followPath(human, false);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if(pathTimer.getElapsedTimeSeconds() > 0.9){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     follower.followPath(fanta, true);
                     setPathState(9);
                 }
@@ -290,7 +275,7 @@ public class auto_far_blue extends OpMode {
                 break;
 
             case 10:
-                if (!follower.isBusy()){
+                if (pathTimer.getElapsedTimeSeconds() > 0.7){
                     follower.followPath(trageprimuhp);
                     setPathState(11);
                 }
@@ -316,29 +301,38 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     trage();
-                    follower.followPath(fanta2);
+                    follower.followPath(fanta2, false);
                     setPathState(14);
                 }
                 break;
 
+
             case 14:
-                if(!follower.isBusy()){
-                    follower.followPath(trage_primulshrek);
+                if(pathTimer.getElapsedTimeSeconds() > 0.6){
+                    follower.followPath(fanta21);
                     setPathState(15);
                 }
                 break;
 
+
             case 15:
-                if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > 0.6){
+                    follower.followPath(trage_primulshrek);
                     setPathState(16);
                 }
                 break;
 
             case 16:
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare();
+                    setPathState(17);
+                }
+                break;
+
+            case 17:
                 if (follower.atPose(scorePose, 5, 5)){
                     trage();
-                    setPathState(17);
+                    setPathState(18);
                 }
 
                 break;
