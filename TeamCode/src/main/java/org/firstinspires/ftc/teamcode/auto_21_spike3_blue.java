@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 
@@ -30,6 +31,7 @@ public class auto_21_spike3_blue extends OpMode {
     OuttakeModule outtake;
     TurretModule turret;
     private Follower follower;
+    boolean target_atins = false;
     double m;
     private Timer pathTimer;
     private int pathState;
@@ -452,6 +454,9 @@ public class auto_21_spike3_blue extends OpMode {
 
         outtake.update_auto();
         turret.update_blue_auto(x, y, h);
+
+        if(target_atins && velocity - target_velocity < -50)
+            outtake.reglare_departe();
     }
 
     @Override
@@ -476,12 +481,14 @@ public class auto_21_spike3_blue extends OpMode {
     public void trage() {
         intake.trage_intake(1);
         intake.trage_transfer(1);
+        target_atins = true;
     }
 
     public void numaitrag() {
         outtake.blocat();
         target_velocity = 1100;
         intake.trage_transfer(0.47);
+        target_atins = false;
     }
 
     public void deblocare() {

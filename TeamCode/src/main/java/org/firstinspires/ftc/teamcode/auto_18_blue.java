@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.act_outtake;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.auto;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.target_velocity;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 
@@ -30,6 +31,7 @@ public class auto_18_blue extends OpMode {
     OuttakeModule outtake;
     TurretModule turret;
     private Follower follower;
+    boolean target_atins = false;
     double m;
     private Timer pathTimer;
     private int pathState;
@@ -52,9 +54,9 @@ public class auto_18_blue extends OpMode {
    private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
    private final Pose cp_collect2 = new Pose(43.82, 60.48);
    // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8.2, 59, Math.toRadians(-30));
-    private final Pose colectare_gate2 = new Pose(8.2, 59, Math.toRadians(-32.5));
-    private final Pose colectare_gate3 = new Pose(8.2, 58.5, Math.toRadians(-33));
+    private final Pose colectare_gate = new Pose(8.2, 55, Math.toRadians(-30));
+    private final Pose colectare_gate2 = new Pose(8.2, 55, Math.toRadians(-30));
+    private final Pose colectare_gate3 = new Pose(8.2, 55, Math.toRadians(-30));
     private final Pose cp_gate = new Pose(34.75, 57.47);
     private final Pose cp_trage_gate = new Pose(44.40, 68.77);
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -200,7 +202,7 @@ public class auto_18_blue extends OpMode {
                 follower.followPath(scorePreload, true);
                 act_outtake = true;
                 if(pathTimer.getElapsedTime() > 0.1){
-                    deblocare();
+                    deblocare(0.35);
                     setPathState(1);
                 }
 
@@ -232,7 +234,7 @@ public class auto_18_blue extends OpMode {
                 break;
             case 4:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare();
+                    deblocare(0.39);
                     setPathState(5);
                 }
 
@@ -260,7 +262,7 @@ public class auto_18_blue extends OpMode {
                 break;
             case 8:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare();
+                    deblocare(0.38);
                     setPathState(9);
                 }
 
@@ -290,7 +292,7 @@ public class auto_18_blue extends OpMode {
             case 12:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(trage_gate, true);
-                    deblocare();
+                    deblocare(0.39);
                     setPathState(13);
                 }
                 break;
@@ -321,7 +323,7 @@ public class auto_18_blue extends OpMode {
             case 16:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(trage_gate, true);
-                    deblocare();
+                    deblocare(0.39);
                     setPathState(17);
                 }
                 break;
@@ -351,7 +353,7 @@ public class auto_18_blue extends OpMode {
             case 20:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(leave, true);
-                    deblocare();
+                    deblocare(0.38);
                     setPathState(21);
                 }
                 break;
@@ -407,8 +409,11 @@ public class auto_18_blue extends OpMode {
         telemetry.addData("pathTimer", pathTimer.getElapsedTime());
         telemetry.update();
 
-        outtake.update_auto();
+        outtake.update_kinematics();
         turret.update_blue_auto(x, y, h);
+
+        if(target_atins && velocity - target_velocity < -50)
+            outtake.reglare_aproape_far();
     }
 
     @Override
@@ -433,18 +438,21 @@ public class auto_18_blue extends OpMode {
     public void trage() {
         intake.trage_intake(1);
         intake.trage_transfer(1);
+        target_atins = true;
     }
 
     public void numaitrag() {
         outtake.blocat();
         target_velocity = 1100;
         intake.trage_transfer(0.47);
+        target_atins = false;
     }
 
-    public void deblocare() {
+    public void deblocare(double hood) {
         act_outtake = true;
         intake.stop_intake();
         intake.stop_transfer();
         outtake.deblocat();
+        outtake.rampa(hood);
     }
 }

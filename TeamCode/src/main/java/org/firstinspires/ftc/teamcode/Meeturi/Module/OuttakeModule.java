@@ -27,7 +27,7 @@ public class OuttakeModule extends Constants.outtake {
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
     public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1025, vel75_80 = 1125, vel80_86 = 1145, vel86_95 = 1160, vel95_105 = 1190, vel105_120 = 1200, vel120 = 1400, vel144 = 1240, progresie = 4.8; //1060 1090
-    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.33, p80_86 = 0.35, p86_95 = 0.36, p95_105 = 0.39, p105_120 = 0.42, p120 = 0.525;
+    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.33, p80_86 = 0.35, p86_95 = 0.36, p95_105 = 0.39, p105_120 = 0.42, p120 = 0.57, p_120auto = 0.65;
     public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_86 = 0, reg86_95 = 0, reg95_105 = 0, reg105_120 = 0, reg120 = 0, pow = 50;
 
     PIDFController controller = new PIDFController(kp, 0, 0, 0);
@@ -51,7 +51,9 @@ public class OuttakeModule extends Constants.outtake {
         target_velocity = 0;
     }
 
-    public void init_auto_aproape() {
+
+
+    public void init_auto_departe() {
         motorDR = hardwareMap.get(DcMotorEx.class, "motorDR");
         motorST = hardwareMap.get(DcMotorEx.class, "motorST");
 
@@ -62,6 +64,8 @@ public class OuttakeModule extends Constants.outtake {
 
         timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 
+
+        servo_rampa.setPosition(0.6);
         blocat();
         aproape();
 
@@ -199,6 +203,11 @@ public class OuttakeModule extends Constants.outtake {
 
     public void reglare_departe() {
         servo_rampa.setPosition(0.3);
+        ramp = true;
+    }
+
+    public void reglare_departe_auto() {
+        servo_rampa.setPosition(0.43);
         ramp = true;
     }
 
@@ -366,6 +375,23 @@ public class OuttakeModule extends Constants.outtake {
 
         double PID_output = controller.calculate(velocity, 1245);
         double ff_output = feedforward.calculate(1245);
+        double output = PID_output + ff_output;
+
+        motorDR.setPower(output * (nominalvoltage / voltage));
+        motorST.setPower(output * (nominalvoltage / voltage));
+    }
+
+    public void update_auto_far() {
+        velocity = motorDR.getVelocity();
+
+        controller.setPIDF(kp, 0, 0, 0);
+        feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+
+        double extra_power = distanta - 120;
+        target_velocity = vel120 + extra_power * progresie;
+
+        double PID_output = controller.calculate(velocity, target_velocity);
+        double ff_output = feedforward.calculate(target_velocity);
         double output = PID_output + ff_output;
 
         motorDR.setPower(output * (nominalvoltage / voltage));

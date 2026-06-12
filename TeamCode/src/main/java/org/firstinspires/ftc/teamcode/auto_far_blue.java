@@ -53,11 +53,11 @@ public class auto_far_blue extends OpMode {
   //  private final Pose cp_collect1 = new Pose(69.227, 81.442);
   //  private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
    // private final Pose cp_collect2 = new Pose(43.82, 60.48);
-     private final Pose collect3 = new Pose(20.34, 35.52, Math.toRadians(0));
-     private final Pose cp_collect3 = new Pose(66.31, 50.04);
+     private final Pose collect3 = new Pose(21.5, 35.52, Math.toRadians(0));
+     private final Pose cp_collect3 = new Pose(66.31, 53.04);
      private final Pose hp = new Pose(9.5, 14.5, Math.toRadians(15));
      private final Pose hp1pe2 = new Pose(18.29, 10.66, Math.toRadians(0));
-     private final Pose hpiar = new Pose(10.83, 8.86, Math.toRadians(5));
+     private final Pose hpiar = new Pose(10.83, 7.86, Math.toRadians(-15));
      private final Pose shrek = new Pose(9.79, 37.17, Math.toRadians(-90));
   //  private final Pose colectare_gate = new Pose(8.2, 59, Math.toRadians(-30));
   //  private final Pose colectare_gate2 = new Pose(8.2, 59, Math.toRadians(-32.5));
@@ -109,13 +109,13 @@ public class auto_far_blue extends OpMode {
 
 
         fanta2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, hp))
+                .addPath(new BezierLine(scorePose, hpiar))
                 .setTangentHeadingInterpolation()
                 .setReversed()
                 .build();
 
         fanta21 = follower.pathBuilder()
-                .addPath(new BezierLine(hp, shrek))
+                .addPath(new BezierLine(hpiar, shrek))
                 .setConstantHeadingInterpolation(Math.toRadians(-80))
                 .setNoDeceleration()
                 .build();
@@ -127,39 +127,39 @@ public class auto_far_blue extends OpMode {
                 .build();
 
         fanta3 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, hp))
+                .addPath(new BezierLine(scorePose, hpiar))
                 .setTangentHeadingInterpolation()
                 .setNoDeceleration()
                 .setReversed()
                 .build();
 
         fanta31 = follower.pathBuilder()
-                .addPath(new BezierLine(hp,shrek))
+                .addPath(new BezierLine(hpiar,shrek))
                 .setConstantHeadingInterpolation(Math.toRadians(-80))
                 .setNoDeceleration()
                 .build();
 
         trage_aldoileashrek = follower.pathBuilder()
                 .addPath(new BezierLine(shrek, scorePose))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(20))
                 .build();
 
         fanta4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, hp))
+                .addPath(new BezierLine(scorePose, hpiar))
                 .setTangentHeadingInterpolation()
                 .setNoDeceleration()
                 .setReversed()
                 .build();
 
         fanta41 = follower.pathBuilder()
-                .addPath(new BezierLine(hp, shrek))
+                .addPath(new BezierLine(hpiar, shrek))
                 .setConstantHeadingInterpolation(Math.toRadians(-80))
                 .setNoDeceleration()
                 .build();
 
         trage_altreileashrek = follower.pathBuilder()
                 .addPath(new BezierLine(shrek, scorePose))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(20))
                 .build();
 
 
@@ -206,8 +206,7 @@ public class auto_far_blue extends OpMode {
 
             case 1:
                 if(target_velocity < velocity + 5){
-                    outtake.deblocat();
-
+                    deblocare(0.57);
                     setPathState(2);
                 }
                 break;
@@ -222,7 +221,6 @@ public class auto_far_blue extends OpMode {
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
-                    intake.trage_transfer(0.5);
                     intake.trage_intake(1);
                     follower.followPath(rand3, true);
                     setPathState(4);
@@ -238,7 +236,8 @@ public class auto_far_blue extends OpMode {
 
             case 5:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare();
+                    deblocare(0.57);
+                    act_outtake = true;
                     setPathState(6);
                 }
                 break;
@@ -253,7 +252,6 @@ public class auto_far_blue extends OpMode {
             case 7:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
-                    intake.trage_transfer(0.5);
                     intake.trage_intake(1);
                     follower.followPath(human, false);
                     setPathState(8);
@@ -276,7 +274,7 @@ public class auto_far_blue extends OpMode {
                 break;
 
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 0.7){
+                if (pathTimer.getElapsedTimeSeconds() > 0.8){
                     follower.followPath(trageprimuhp);
                     setPathState(11);
                 }
@@ -284,8 +282,9 @@ public class auto_far_blue extends OpMode {
 
             case 11:
 
-                if(follower.atPose(scorePose, 7, 7)){
-                    deblocare();
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare(0.58);
+                    act_outtake = true;
                     setPathState(12);
                 }
                 break;
@@ -301,7 +300,7 @@ public class auto_far_blue extends OpMode {
             case 13:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
-                    trage();
+                    intake.trage_intake(1);
                     follower.followPath(fanta2, false);
                     setPathState(14);
                 }
@@ -317,7 +316,7 @@ public class auto_far_blue extends OpMode {
 
 
             case 15:
-                if(pathTimer.getElapsedTimeSeconds() > 0.6){
+                if(!follower.isBusy()){
                     follower.followPath(trage_primulshrek);
                     setPathState(16);
                 }
@@ -325,7 +324,8 @@ public class auto_far_blue extends OpMode {
 
             case 16:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare();
+                    deblocare(0.6);
+                    act_outtake = true;
                     setPathState(17);
                 }
                 break;
@@ -335,9 +335,83 @@ public class auto_far_blue extends OpMode {
                     trage();
                     setPathState(18);
                 }
-
                 break;
 
+            case 18:
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
+                    numaitrag();
+                    intake.trage_intake(1);
+                    follower.followPath(fanta3, false);
+                    setPathState(19);
+                }
+                break;
+
+            case 19:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6){
+                    follower.followPath(fanta31);
+                    setPathState(20);
+                }
+                break;
+
+            case 20:
+                if(!follower.isBusy()){
+                    follower.followPath(trage_aldoileashrek);
+                    setPathState(21);
+                }
+                break;
+
+            case 21:
+                if (pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare(0.6);
+                    act_outtake = true;
+                    setPathState(22);
+                }
+                break;
+
+            case 22:
+                if (follower.atPose(scorePose, 5, 5)){
+                    trage();
+                    setPathState(23);
+                }
+                break;
+
+            case 23:
+                if(pathTimer.getElapsedTimeSeconds() > 0.55){
+                    numaitrag();
+                    intake.trage_intake(1);
+                    follower.followPath(fanta4);
+                    setPathState(24);
+                }
+                break;
+
+            case 24:
+                if(pathTimer.getElapsedTimeSeconds() > 0.6){
+                    follower.followPath(fanta41);
+                    setPathState(25);
+                }
+                break;
+
+            case 25:
+                if (!follower.isBusy()){
+                    follower.followPath(trage_altreileashrek);
+                    setPathState(26);
+                }
+                break;
+
+            case 26:
+                if(pathTimer.getElapsedTimeSeconds() > 0.7){
+                    deblocare(0.60);
+                    act_outtake = true;
+                    setPathState(27);
+                }
+                break;
+
+            case 27:
+                if(follower.atPose(scorePose, 5, 5)){
+                    trage();
+                    setPathState(28);
+                }
+                break;
         }
     }
 
@@ -352,11 +426,12 @@ public class auto_far_blue extends OpMode {
         turret = new TurretModule(hardwareMap);
 
         intake.init();
-        outtake.init();
+        outtake.init_auto_departe();
         turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
+
 
         auto = true;
     }
@@ -382,11 +457,11 @@ public class auto_far_blue extends OpMode {
         telemetry.addData("pathTimer", pathTimer.getElapsedTime());
         telemetry.update();
 
-        outtake.update_kinematics();
+        outtake.update_auto_far();
         turret.update_blue_auto(x, y, h);
 
         if(target_atins && velocity - target_velocity < -50)
-            outtake.reglare_departe();
+            outtake.reglare_departe_auto();
     }
 
     @Override
@@ -416,15 +491,15 @@ public class auto_far_blue extends OpMode {
 
     public void numaitrag() {
         outtake.blocat();
-        target_velocity = 1500;
+        target_velocity = 1200;
         intake.trage_transfer(0.47);
         target_atins = false;
     }
 
-    public void deblocare() {
-        act_outtake = true;
+    public void deblocare(double hood) {
         intake.stop_intake();
         intake.stop_transfer();
         outtake.deblocat();
+        outtake.rampa(hood);
     }
 }
