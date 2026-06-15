@@ -49,14 +49,14 @@ public class auto_18_blue extends OpMode {
     public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32 */
     private final Pose startPose = new Pose(24.846, 128.044, Math.toRadians(134));
     private final Pose scorePose = new Pose(53.95, 84.52, Math.toRadians(134));
-    private final Pose collect1 = new Pose(31.5, 84.429, Math.toRadians(0));
+    private final Pose collect1 = new Pose(30.5, 84.429, Math.toRadians(0));
     private final Pose cp_collect1 = new Pose(69.227, 81.442);
    private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
    private final Pose cp_collect2 = new Pose(43.82, 60.48);
    // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8.2, 55, Math.toRadians(-30));
-    private final Pose colectare_gate2 = new Pose(8.2, 55, Math.toRadians(-30));
-    private final Pose colectare_gate3 = new Pose(8.2, 55, Math.toRadians(-30));
+    private final Pose colectare_gate = new Pose(8.2, 59.5, Math.toRadians(-30));
+    private final Pose colectare_gate2 = new Pose(8.2, 59.5, Math.toRadians(-30));
+    private final Pose colectare_gate3 = new Pose(8.2, 59.5, Math.toRadians(-30));
     private final Pose cp_gate = new Pose(34.75, 57.47);
     private final Pose cp_trage_gate = new Pose(44.40, 68.77);
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -380,7 +380,7 @@ public class auto_18_blue extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init();
+        turret.init_teleOP();
 
         buildPaths();
         follower.setStartingPose(startPose);

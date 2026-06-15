@@ -66,7 +66,7 @@ public class TeleOP_blue extends LinearOpMode {
 
             intake.init();
             outtake.init();
-            turret.init();
+            turret.init_teleOP();
             pinpoint.init();
             tilt.init();
 
@@ -109,7 +109,7 @@ public class TeleOP_blue extends LinearOpMode {
 
             outtake.update_kinematics();
             pinpoint.update_blue();
-            turret.update_blue();
+            turret.update_blue_mod();
 
             delta_velocity = velocity - target_velocity - 1;
 
@@ -162,7 +162,7 @@ public class TeleOP_blue extends LinearOpMode {
                 }
                 deschis = false;
                 Constants.outtake.act_outtake = false;
-//                act_turret = false;
+                act_turret = false;
                 switchingState = true;
                 outtake.blocat();
                 timer.reset();
@@ -221,11 +221,11 @@ public class TeleOP_blue extends LinearOpMode {
                 tilt.tilt();
             }
 
-            if(gamepad1.left_bumper)
-                decalation += 0.1 / 320.0;
-
-            if(gamepad1.right_bumper)
-                decalation -= 0.1 / 320.0;
+//            if(gamepad1.left_bumper)
+//                decalation += 0.1 / 320.0;
+//
+//            if(gamepad1.right_bumper)
+//                decalation -= 0.1 / 320.0;
 
 
 

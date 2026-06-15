@@ -27,7 +27,7 @@ public class TurretModule extends Constants.turret {
     PIDFController controller = new PIDFController(kp, ki, kd, kf);
 
 
-    public void init() {
+    public void init_teleOP() {
         servo_right = hardwareMap.get(Servo.class, "servo_right");
         servo_left = hardwareMap.get(Servo.class, "servo_left");
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
@@ -67,6 +67,42 @@ public class TurretModule extends Constants.turret {
         double limitMax = 330.0 / 360.0;
 
         double safeServoPosition = Range.clip(servoPos, limitMin, limitMax);
+
+        servo_right.setPosition(safeServoPosition);
+        servo_left.setPosition(safeServoPosition);
+    }
+
+    private double lastServoPos = 0.5;
+
+    public void update_blue_mod() {
+        double target_angle;
+        if(distanta < 120) {
+            target_angle = Math.toDegrees(Math.atan2(144 - currentY, 3 - currentX));
+        }
+        else {
+            target_angle = Math.toDegrees(Math.atan2(144 - currentY, 5 - currentX));
+        }
+
+        double turretAngle = AngleUnit.normalizeDegrees(target_angle - currentHeading);
+
+        double MIN_ANGLE = -160.0;
+        double MAX_ANGLE = 160.0;
+        double clippedAngle = Range.clip(turretAngle, MIN_ANGLE, MAX_ANGLE);
+
+        double requestedServoPos = 0.5 + (clippedAngle / 320.0) + decalation;
+
+        double limitMin = 30.0 / 360.0;
+        double limitMax = 330.0 / 360.0;
+
+        requestedServoPos = Range.clip(requestedServoPos, limitMin, limitMax);
+
+        double MAX_SERVO_STEP = 0.05;
+
+        double safeServoPosition = Range.clip(requestedServoPos,
+                lastServoPos - MAX_SERVO_STEP,
+                lastServoPos + MAX_SERVO_STEP);
+
+        lastServoPos = safeServoPosition;
 
         servo_right.setPosition(safeServoPosition);
         servo_left.setPosition(safeServoPosition);

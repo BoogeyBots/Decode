@@ -49,14 +49,14 @@ public class auto_18_red extends OpMode {
        public static double x_colectare_gate = 10, y_colectare_gate = 61.2, heading_colectare_gate = -32; //-32 */
     private final Pose startPose = new Pose(24.846, 128.044, Math.toRadians(134)).mirror();
     private final Pose scorePose = new Pose(53.95, 84.52, Math.toRadians(134)).mirror();
-    private final Pose collect1 = new Pose(31.5, 84.429, Math.toRadians(0)).mirror();
+    private final Pose collect1 = new Pose(120.017, 84.429, Math.toRadians(180));
     private final Pose cp_collect1 = new Pose(69.227, 81.442).mirror();
-    private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0)).mirror();
+    private final Pose collect2 = new Pose(129.27, 59, Math.toRadians(180));
     private final Pose cp_collect2 = new Pose(43.82, 60.48).mirror();
     // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8.2, 55, Math.toRadians(-38)).mirror();
-    private final Pose colectare_gate2 = new Pose(8.2, 55, Math.toRadians(-38)).mirror();
-    private final Pose colectare_gate3 = new Pose(8.2, 55, Math.toRadians(-38)).mirror();
+    private final Pose colectare_gate = new Pose(7, 59.5, Math.toRadians(-38)).mirror();
+    private final Pose colectare_gate2 = new Pose(7, 59.5, Math.toRadians(-38)).mirror();
+    private final Pose colectare_gate3 = new Pose(7, 59.5, Math.toRadians(-38)).mirror();
     private final Pose cp_gate = new Pose(34.75, 57.47).mirror();
     private final Pose cp_trage_gate = new Pose(44.40, 68.77).mirror();
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -77,6 +77,7 @@ public class auto_18_red extends OpMode {
                 .addPath(new BezierLine(scorePose, collect1))
                 .setTangentHeadingInterpolation()
                 .setNoDeceleration()
+                .setReversed()
                 .build();
 
         trage1 = follower.pathBuilder()
@@ -88,6 +89,7 @@ public class auto_18_red extends OpMode {
                 .addPath(new BezierCurve(scorePose, cp_collect2, collect2))
                 .setTangentHeadingInterpolation()
                 .setNoDeceleration()
+                .setReversed()
                 .build();
 
         trage2 = follower.pathBuilder()
@@ -101,11 +103,12 @@ public class auto_18_red extends OpMode {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        .5,
+                                        .7,
                                         HeadingInterpolator.tangent
+                                                .reverse()
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        .5,
+                                        .7,
                                         1,
                                         HeadingInterpolator.linear(follower.getHeading(), colectare_gate.getHeading())
                                 )
@@ -120,11 +123,12 @@ public class auto_18_red extends OpMode {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        .5,
+                                        .7,
                                         HeadingInterpolator.tangent
+                                                .reverse()
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        .5,
+                                        .7,
                                         1,
                                         HeadingInterpolator.linear(follower.getHeading(), colectare_gate.getHeading())
                                 )
@@ -139,11 +143,12 @@ public class auto_18_red extends OpMode {
                         HeadingInterpolator.piecewise(
                                 new HeadingInterpolator.PiecewiseNode(
                                         0,
-                                        .5,
+                                        .7,
                                         HeadingInterpolator.tangent
+                                                .reverse()
                                 ),
                                 new HeadingInterpolator.PiecewiseNode(
-                                        .5,
+                                        .7,
                                         1,
                                         HeadingInterpolator.linear(follower.getHeading(), colectare_gate.getHeading())
                                 )
@@ -375,7 +380,7 @@ public class auto_18_red extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init();
+        turret.init_teleOP();
 
         buildPaths();
         follower.setStartingPose(startPose);
@@ -451,3 +456,5 @@ public class auto_18_red extends OpMode {
         outtake.rampa(hood);
     }
 }
+
+

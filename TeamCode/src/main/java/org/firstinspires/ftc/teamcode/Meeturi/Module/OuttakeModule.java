@@ -212,12 +212,12 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void reglare_aproape_far() {
-        servo_rampa.setPosition(0.17);
+        servo_rampa.setPosition(0.18);
         ramp = true;
     }
 
     public void reglare_aproape_aproape() {
-        servo_rampa.setPosition(0.12);
+        servo_rampa.setPosition(0.15);
         ramp = true;
     }
 

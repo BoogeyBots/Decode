@@ -222,7 +222,7 @@ public class Auto extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init();
+        turret.init_teleOP();
 
         buildPaths();
         follower.setStartingPose(startPose);

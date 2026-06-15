@@ -66,7 +66,7 @@ public class TeleOP_red extends LinearOpMode {
 
         intake.init();
         outtake.init();
-        turret.init();
+        turret.init_teleOP();
         pinpoint.init();
         tilt.init();
 
