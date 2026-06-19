@@ -405,7 +405,7 @@ public class auto_21_4gate_red extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);

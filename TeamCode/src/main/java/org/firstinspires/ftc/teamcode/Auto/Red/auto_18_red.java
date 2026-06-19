@@ -380,7 +380,7 @@ public class auto_18_red extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);

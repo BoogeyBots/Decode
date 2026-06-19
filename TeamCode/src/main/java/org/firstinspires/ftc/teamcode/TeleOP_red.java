@@ -66,7 +66,7 @@ public class TeleOP_red extends LinearOpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
         pinpoint.init();
         tilt.init();
 
@@ -78,6 +78,7 @@ public class TeleOP_red extends LinearOpMode {
 
         boolean switchingState = false;
         boolean bila_in_intake = false;
+        boolean deja_vibrat = false;
 
 
         act_outtake = false;
@@ -217,6 +218,18 @@ public class TeleOP_red extends LinearOpMode {
 
             if(gamepad1.dpad_up) {
                 tilt.tilt();
+            }
+
+            if (intake.suntbile()) {
+
+
+                if (!deja_vibrat) {
+                    gamepad1.rumbleBlips(2);
+                    deja_vibrat = true;
+                }
+            }
+            else {
+                deja_vibrat = false;
             }
 
             if(gamepad1.left_bumper)

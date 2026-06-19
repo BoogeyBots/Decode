@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.ta
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.voltage;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentHeading;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentX;
+import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.currentY;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.distanta;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityX;
 import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.pinpoint.velocityY;
@@ -47,6 +49,7 @@ public class TeleOP_blue extends LinearOpMode {
     boolean deschis = false;
     boolean target_atins = false;
     boolean intaking = true, intaking_timer = false;
+    boolean ebilasus;
 
     enum STATE {
         trage,
@@ -64,11 +67,11 @@ public class TeleOP_blue extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            intake.init();
-            outtake.init();
-            turret.init_teleOP();
-            pinpoint.init();
-            tilt.init();
+        intake.init();
+        outtake.init();
+        turret.init();
+        pinpoint.init();
+        tilt.init();
 
 
 
@@ -79,7 +82,7 @@ public class TeleOP_blue extends LinearOpMode {
         //loop = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         boolean switchingState = false;
-        boolean bila_in_intake = false;
+        boolean deja_vibrat = false;
 
 
         act_outtake = false;
@@ -106,6 +109,7 @@ public class TeleOP_blue extends LinearOpMode {
             }
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+            //  ebilasus = intake.ebilasus();
 
             outtake.update_kinematics();
             pinpoint.update_blue();
@@ -128,13 +132,11 @@ public class TeleOP_blue extends LinearOpMode {
                 intake.trage_intake(1);
                 intake.trage_transfer(0.47);
             }
-
             else if (gamepad1.left_trigger > 0.01) {
                 intake.scuipa_intake(1);
                 intake.scuipa_transfer(1);
                 intaking = true;
             }
-
             else {
                 intake.stop_intake();
                 intake.stop_transfer();
@@ -221,14 +223,28 @@ public class TeleOP_blue extends LinearOpMode {
                 tilt.tilt();
             }
 
-//            if(gamepad1.left_bumper)
-//                decalation += 0.1 / 320.0;
+            if (intake.suntbile()) {
+
+
+                if (!deja_vibrat) {
+                    gamepad1.rumbleBlips(2);
+                    deja_vibrat = true;
+                }
+            }
+            else {
+                deja_vibrat = false;
+            }
+
+
+            if(gamepad1.left_bumper)
+                decalation += 0.1 / 320.0;
 //
-//            if(gamepad1.right_bumper)
-//                decalation -= 0.1 / 320.0;
+            if(gamepad1.right_bumper)
+                decalation -= 0.1 / 320.0;
 
-
-
+            if(gamepad1.square) {
+                pinpoint.reset_blue();
+            }
 
 //            telemetry.addData("V", velocity);
 //            telemetry.addData("T", target_velocity);
@@ -238,6 +254,11 @@ public class TeleOP_blue extends LinearOpMode {
 //            telemetry.addData("Decalare", decalation);
 //            telemetry.addData("STATE", mode);
 //            telemetry.addData("Gra", turret.gra());
+
+
+
+
+
             telemetry.addData("Eroare", turret.getError());
 //            telemetry.addData("Loop time", loop.milliseconds());
             telemetry.addData("Gra", turret.gra());
@@ -251,6 +272,8 @@ public class TeleOP_blue extends LinearOpMode {
 //            telemetry.addData("Timer", timer_intake.seconds());
 //            if(gamepad1.dpad)
             telemetry.addData("Distance", distanta);
+            telemetry.addData("x", currentX);
+            telemetry.addData("y", currentY);
 //            telemetry.addData("VelocityX", velocityX);
 //            telemetry.addData("VelocityY", velocityY);
 //            telemetry.addData("Heading", currentHeading);

@@ -9,6 +9,7 @@ public class Constants {
     public static class intake {
         public static double power;
         public static double jos = 0.06, sus = 0.19;
+
     }
     @Configurable
     public static class outtake {

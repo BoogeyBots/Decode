@@ -423,7 +423,7 @@ public class auto_21_spike3_blue extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
