@@ -26,9 +26,9 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motorDR, motorST;
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
-    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1025, vel75_80 = 1125, vel80_86 = 1145, vel86_95 = 1160, vel95_105 = 1190, vel105_120 = 1200, vel120 = 1400, vel144 = 1240, progresie = 4.8; //1060 1090
-    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.33, p80_86 = 0.35, p86_95 = 0.36, p95_105 = 0.39, p105_120 = 0.42, p120 = 0.57, p_120auto = 0.65;
-    public static double reg50_60 = 0, reg60_70 = 0, reg70_75 = 0, reg75_80 = 0, reg80_86 = 0, reg86_95 = 0, reg95_105 = 0, reg105_120 = 0, reg120 = 0, pow = 50;
+    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1045, vel75_80 = 1140, vel80_86 = 1200, vel86_95 = 1180, vel95_105 = 1200, vel105_120 = 1200, vel120 = 1450, vel144 = 1240, progresie = 4.8; //1060 1090
+    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.34, p80_86 = 0.385, p86_95 = 0.36, p95_105 = 0.39, p105_120 = 0.42, p120 = 0.57, p_120auto = 0.65;
+    public static double compaprapr=0.2, compaprdep=0.25, compdep=0.28;
 
     PIDFController controller = new PIDFController(kp, 0, 0, 0);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
@@ -50,7 +50,6 @@ public class OuttakeModule extends Constants.outtake {
 
         target_velocity = 0;
     }
-
 
 
     public void init_auto_departe() {
@@ -202,7 +201,7 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void reglare_departe() {
-        servo_rampa.setPosition(0.3);
+        servo_rampa.setPosition(compdep);
         ramp = true;
     }
 
@@ -212,12 +211,12 @@ public class OuttakeModule extends Constants.outtake {
     }
 
     public void reglare_aproape_far() {
-        servo_rampa.setPosition(0.18);
+        servo_rampa.setPosition(compaprdep);
         ramp = true;
     }
 
     public void reglare_aproape_aproape() {
-        servo_rampa.setPosition(0.15);
+        servo_rampa.setPosition(compaprapr);
         ramp = true;
     }
 
@@ -240,38 +239,44 @@ public class OuttakeModule extends Constants.outtake {
 
         if (distanta <= 50 && act_outtake && auto) {
             target_velocity = 1100;
-            servo_rampa.setPosition(0);
+            if(!ramp)
+                servo_rampa.setPosition(0);
         }
 
         if (distanta <= 54 && act_outtake && !auto) {
             target_velocity = 0;
-            servo_rampa.setPosition(0);
+            if(!ramp)
+                servo_rampa.setPosition(0);
         }
 
         if (distanta <= 60 && distanta > 55 && act_outtake) {
             target_velocity = vel50_60;
-            servo_rampa.setPosition(p50_60);
+            if(!ramp)
+                servo_rampa.setPosition(p50_60);
             zone = 1;
             timer.reset();
         }
 
         if (distanta <= 70 && distanta > 60 && act_outtake) {
             target_velocity = vel60_70;
-            servo_rampa.setPosition(p60_70);
+            if(!ramp)
+                servo_rampa.setPosition(p60_70);
             zone = 2;
             timer.reset();
         }
 
         if (distanta <= 76 && distanta > 70 && act_outtake) {
             target_velocity = vel70_75;
-            servo_rampa.setPosition(p70_75);
+            if(!ramp)
+                servo_rampa.setPosition(p70_75);
             zone = 3;
             timer.reset();
         }
 
         if (distanta <= 80 && distanta > 76 && act_outtake) {
             target_velocity = vel75_80;
-            servo_rampa.setPosition(p75_80);
+            if(!ramp)
+                servo_rampa.setPosition(p75_80);
             zone = 4;
             timer.reset();
         }
@@ -279,28 +284,32 @@ public class OuttakeModule extends Constants.outtake {
 
         if (distanta <= 86.5 && distanta > 80 && act_outtake) {
             target_velocity = vel80_86;
-            servo_rampa.setPosition(p80_86);
+            if(!ramp)
+                servo_rampa.setPosition(p80_86);
             zone = 5;
             timer.reset();
         }
 
         if (distanta <= 95 && distanta > 86.5 && act_outtake) {
             target_velocity = vel86_95;
-            servo_rampa.setPosition(p86_95);
+            if(!ramp)
+                servo_rampa.setPosition(p86_95);
             zone = 6;
             timer.reset();
         }
 
         if (distanta <= 105 && distanta > 95 && act_outtake) {
             target_velocity = vel95_105;
-            servo_rampa.setPosition(p95_105);
+            if(!ramp)
+                servo_rampa.setPosition(p95_105);
             zone = 7;
             timer.reset();
         }
 
         if (distanta <= 120 && distanta > 105 && act_outtake) {
             target_velocity = vel105_120;
-            servo_rampa.setPosition(p105_120);
+            if(!ramp)
+                servo_rampa.setPosition(p105_120);
             zone = 8;
             timer.reset();
         }

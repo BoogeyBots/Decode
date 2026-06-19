@@ -27,7 +27,7 @@ public class TurretModule extends Constants.turret {
     PIDFController controller = new PIDFController(kp, ki, kd, kf);
 
 
-    public void init_teleOP() {
+    public void init() {
         servo_right = hardwareMap.get(Servo.class, "servo_right");
         servo_left = hardwareMap.get(Servo.class, "servo_left");
         encoder = hardwareMap.get(DcMotorEx.class, "motor_intake");
@@ -144,7 +144,7 @@ public class TurretModule extends Constants.turret {
 
     public void update_blue_auto (double x, double y, double h) {
         if(distanta < 120) {
-            relative_angle = Math.toDegrees(Math.atan2(144 - y, 0 - x));
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, -3 - x));
         }
 
         else relative_angle = Math.toDegrees(Math.atan2(144 - y, 5 - x));

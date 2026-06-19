@@ -426,7 +426,7 @@ public class auto_far_blue extends OpMode {
 
         intake.init();
         outtake.init_auto_departe();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);

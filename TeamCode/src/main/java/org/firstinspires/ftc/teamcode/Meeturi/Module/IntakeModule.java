@@ -16,8 +16,9 @@ public class IntakeModule extends Constants.intake {
     public IntakeModule(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
+
     DcMotorEx motor_intake, motor_transfer;
-    DigitalChannel sensor_sus, sensor_jos;
+    DigitalChannel sensor_intake, sensor_blocaj;
     private double lastIntakePower = 0;
     private double lastTransferPower = 0;
 
@@ -25,11 +26,11 @@ public class IntakeModule extends Constants.intake {
         motor_intake = hardwareMap.get(DcMotorEx.class, "motor_intake");
         motor_transfer = hardwareMap.get(DcMotorEx.class, "motor_transfer");
 
-        sensor_sus = hardwareMap.get(DigitalChannel.class, "sensor_digital");
-       // sensor_jos = hardwareMap.get(DigitalChannel.class, "sensor_jos");
+        sensor_intake = hardwareMap.get(DigitalChannel.class, "sensor_intake");
+        sensor_blocaj = hardwareMap.get(DigitalChannel.class, "sensor_blocaj");
 
-        //sensor_sus.setMode(DigitalChannel.Mode.INPUT);
-       // sensor_jos.setMode(DigitalChannel.Mode.INPUT);
+        sensor_intake.setMode(DigitalChannel.Mode.INPUT);
+        sensor_blocaj.setMode(DigitalChannel.Mode.INPUT);
 
         motor_transfer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -80,7 +81,23 @@ public class IntakeModule extends Constants.intake {
         }
     }
 
-   /* public boolean suntbile() {
-        return !sensor_sus.getState() && !sensor_jos.getState();
-    }*/
+    public boolean suntbile() {
+        return !sensor_intake.getState() && !sensor_blocaj.getState();
+    }
+
+    public boolean ebilajos(){
+        return !sensor_blocaj.getState();
+    }
+
+   /* public void verificatesenzori(com.qualcomm.robotcore.hardware.Gamepad gamepad){
+        if(!sensor_blocaj.getState() && !sensor_intake.getState()){
+            stop_transfer();
+            stop_intake();
+            if(gamepad != null){
+                gamepad.rumble(500);
+            }
+
+    */
 }
+
+

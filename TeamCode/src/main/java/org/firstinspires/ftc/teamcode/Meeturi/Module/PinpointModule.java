@@ -1,18 +1,11 @@
 package org.firstinspires.ftc.teamcode.Meeturi.Module;
 
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.outtake.velocity;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.constanta_inertie;
-import static org.firstinspires.ftc.teamcode.Meeturi.Module.Constants.turret.frecari;
-
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class PinpointModule extends Constants.pinpoint {
     HardwareMap hardwareMap;
@@ -59,6 +52,12 @@ public class PinpointModule extends Constants.pinpoint {
 
         distanta = Math.sqrt((0 - currentX) * (0 - currentX) + deltaY * deltaY);
 
+    }
+
+    public void reset_blue() {
+//        pinpoint.setPosX(18.1, DistanceUnit.INCH);
+//        pinpoint.setPosY(78.2, DistanceUnit.INCH);
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 18.1, 78.2, AngleUnit.DEGREES, 0));
     }
 
 //    public void recalibration() {

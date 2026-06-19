@@ -410,7 +410,7 @@ public class auto_21_4gate_blue extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
@@ -439,7 +439,7 @@ public class auto_21_4gate_blue extends OpMode {
         telemetry.addData("pathTimer", pathTimer.getElapsedTime());
         telemetry.update();
 
-        outtake.update_auto();
+        outtake.update_kinematics();
         turret.update_blue_auto(x, y, h);
 
         if(target_atins && velocity - target_velocity < -50)

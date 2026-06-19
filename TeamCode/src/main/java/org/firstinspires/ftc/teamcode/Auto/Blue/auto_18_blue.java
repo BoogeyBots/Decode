@@ -36,6 +36,7 @@ public class auto_18_blue extends OpMode {
     private Timer pathTimer;
     private int pathState;
     public static double cat_trage = 0.4;
+    double delta_velocity;
  /*   public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
     public static double x_preload = 86, y_preload = 83, heading_preload = 225;
     public static double x_collect1 = 127.5, y_collect1 = 84, heading_collect = 180;
@@ -54,9 +55,9 @@ public class auto_18_blue extends OpMode {
    private final Pose collect2 = new Pose(19.5, 59, Math.toRadians(0));
    private final Pose cp_collect2 = new Pose(43.82, 60.48);
    // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(8.2, 59.5, Math.toRadians(-30));
-    private final Pose colectare_gate2 = new Pose(8.2, 59.5, Math.toRadians(-30));
-    private final Pose colectare_gate3 = new Pose(8.2, 59.5, Math.toRadians(-30));
+    private final Pose colectare_gate = new Pose(8.2, 55, Math.toRadians(-20));
+    private final Pose colectare_gate2 = new Pose(8.2, 55, Math.toRadians(-20));
+    private final Pose colectare_gate3 = new Pose(8.2, 55, Math.toRadians(-20));
     private final Pose cp_gate = new Pose(34.75, 57.47);
     private final Pose cp_trage_gate = new Pose(44.40, 68.77);
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -110,7 +111,7 @@ public class auto_18_blue extends OpMode {
                                 new HeadingInterpolator.PiecewiseNode(
                                         .5,
                                         1,
-                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-38))
+                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-20))
                                 )
                         )
 
@@ -130,7 +131,7 @@ public class auto_18_blue extends OpMode {
                                 new HeadingInterpolator.PiecewiseNode(
                                         .5,
                                         1,
-                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-38))
+                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-20))
                                 )
                         )
 
@@ -150,7 +151,7 @@ public class auto_18_blue extends OpMode {
                                 new HeadingInterpolator.PiecewiseNode(
                                         .5,
                                         1,
-                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-38))
+                                        HeadingInterpolator.linear(follower.getHeading(), Math.toRadians(-20))
                                 )
                         )
 
@@ -202,11 +203,9 @@ public class auto_18_blue extends OpMode {
                 follower.followPath(scorePreload, true);
                 act_outtake = true;
                 if(pathTimer.getElapsedTime() > 0.1){
-                    deblocare(0.35);
+                    deblocare(0.45);
                     setPathState(1);
                 }
-
-
 
                 break;
 
@@ -234,7 +233,7 @@ public class auto_18_blue extends OpMode {
                 break;
             case 4:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare(0.39);
+                    deblocare(0.5);
                     setPathState(5);
                 }
 
@@ -261,8 +260,8 @@ public class auto_18_blue extends OpMode {
                 }
                 break;
             case 8:
-                if(pathTimer.getElapsedTimeSeconds() > 0.7){
-                    deblocare(0.38);
+                if(pathTimer.getElapsedTimeSeconds() > 1){
+                    deblocare(0.4);
                     setPathState(9);
                 }
 
@@ -274,7 +273,7 @@ public class auto_18_blue extends OpMode {
                 break;
 
             case 10:
-                if(pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     follower.followPath(gate, false);
                     setPathState(11);
@@ -292,7 +291,7 @@ public class auto_18_blue extends OpMode {
             case 12:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(trage_gate, true);
-                    deblocare(0.39);
+                    deblocare(0.4);
                     setPathState(13);
                 }
                 break;
@@ -323,7 +322,7 @@ public class auto_18_blue extends OpMode {
             case 16:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(trage_gate, true);
-                    deblocare(0.39);
+                    deblocare(0.4);
                     setPathState(17);
                 }
                 break;
@@ -380,7 +379,7 @@ public class auto_18_blue extends OpMode {
 
         intake.init();
         outtake.init();
-        turret.init_teleOP();
+        turret.init();
 
         buildPaths();
         follower.setStartingPose(startPose);
@@ -412,8 +411,19 @@ public class auto_18_blue extends OpMode {
         outtake.update_kinematics();
         turret.update_blue_auto(x, y, h);
 
-        if(target_atins && velocity - target_velocity < -50)
-            outtake.reglare_aproape_far();
+        if(target_atins && delta_velocity < -50) {
+            if(distanta > 125) {
+                outtake.reglare_departe();
+            }
+
+            else if(distanta > 78) {
+                outtake.reglare_aproape_far();
+            }
+
+            else {
+                outtake.reglare_aproape_aproape();
+            }
+        }
     }
 
     @Override
