@@ -108,7 +108,7 @@ public class TeleOP_red extends LinearOpMode {
 
             outtake.update_kinematics();
             pinpoint.update_red();
-            turret.update_red();
+            turret.update_red_mod();
 
             delta_velocity = velocity - target_velocity - 1;
 
