@@ -177,17 +177,9 @@ public class TeleOP_blue extends LinearOpMode {
             boolean tragemsinoi = (delta_velocity < 40 && delta_velocity > -11 && act_outtake && timer.seconds() > 0.02);
 
             if(tragemsinoi) {
-                if(distanta >= 120) {
-                    outtake.deblocat();
-                    deschis = true;
-                    target_atins = true;
-                }
-
-                else if(distanta < 120) {
-                    outtake.deblocat();
-                    deschis = true;
-                    target_atins = true;
-                }
+                outtake.deblocat();
+                deschis = true;
+                target_atins = true;
             }
 
             if(target_atins && delta_velocity < -50) {
@@ -204,7 +196,7 @@ public class TeleOP_blue extends LinearOpMode {
                 }
             }
 
-            if(deschis && timer.seconds() > 0.07 && distanta < 120) {
+            if(deschis && timer.milliseconds() > 70 && distanta < 120) {
                 intake.trage_intake(1);
                 if(velocityX > 0.7 || velocityY > 0.7) {
                     intake.trage_transfer(0.77);
@@ -212,7 +204,7 @@ public class TeleOP_blue extends LinearOpMode {
                 else intake.trage_transfer(1);
             }
 
-            else if(deschis && distanta >= 120 && timer.seconds() > 0.07) {
+            else if(deschis && distanta >= 120 && timer.milliseconds() > 70) {
                 intake.trage_transfer(1);
                 intake.trage_intake(1);
             }
