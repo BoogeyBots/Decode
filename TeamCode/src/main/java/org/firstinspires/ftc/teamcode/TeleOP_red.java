@@ -189,21 +189,21 @@ public class TeleOP_red extends LinearOpMode {
                 }
             }
 
-            if(target_atins && delta_velocity < -50) {
-                if(distanta > 125) {
-                    outtake.reglare_departe();
-                }
-
-                else if(distanta > 78) {
-                    outtake.reglare_aproape_far();
-                }
-
-                else {
-                    outtake.reglare_aproape_aproape();
-                }
+            if(target_atins && distanta > 116 && delta_velocity < -50) {
+                outtake.reglare_departe();
             }
 
-            if(deschis && timer.seconds() > 0.07 && distanta < 120) {
+            else if(target_atins && distanta > 78 && delta_velocity < -20 && distanta <= 116) {
+                outtake.reglare_aproape_far();
+            }
+
+            else if(target_atins && delta_velocity < -15 && distanta <= 78)
+                outtake.reglare_aproape_aproape();
+
+
+
+
+            if(deschis && timer.milliseconds() > 70 && distanta < 120) {
                 intake.trage_intake(1);
                 if(velocityX > 0.7 || velocityY > 0.7) {
                     intake.trage_transfer(0.77);
@@ -211,7 +211,7 @@ public class TeleOP_red extends LinearOpMode {
                 else intake.trage_transfer(1);
             }
 
-            else if(deschis && distanta >= 120 && timer.seconds() > 0.07) {
+            else if(deschis && distanta >= 120 && timer.milliseconds() > 70) {
                 intake.trage_transfer(1);
                 intake.trage_intake(1);
             }

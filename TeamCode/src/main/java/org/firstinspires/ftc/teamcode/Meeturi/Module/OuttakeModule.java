@@ -26,8 +26,8 @@ public class OuttakeModule extends Constants.outtake {
     DcMotorEx motorDR, motorST;
     Servo servo_rampa, servo_blocaj;
     ElapsedTime timer;
-    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1045, vel75_80 = 1140, vel80_86 = 1200, vel86_95 = 1180, vel95_105 = 1200, vel105_120 = 1200, vel120 = 1450, vel144 = 1240, progresie = 4.8; //1060 1090
-    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.34, p80_86 = 0.385, p86_95 = 0.36, p95_105 = 0.39, p105_120 = 0.42, p120 = 0.57, p_120auto = 0.65;
+    public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1045, vel75_80 = 1140, vel80_86 = 1200, vel86_95 = 1180, vel95_105 = 1250, vel105_116 = 1320, vel120 = 1450, vel144 = 1240, progresie = 4.8; //1060 1090
+    public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.34, p80_86 = 0.49, p86_95 = 0.41, p95_105 = 0.43, p105_116 = 0.46, p120 = 0.57, p_120auto = 0.65;
     public static double compaprapr=0.2, compaprdep=0.25, compdep=0.28;
 
     PIDFController controller = new PIDFController(kp, 0, 0, 0);
@@ -155,16 +155,16 @@ public class OuttakeModule extends Constants.outtake {
             timer.reset();
         }
 
-        if(distanta <= 120 && distanta > 105 && act_outtake) {
-            target_velocity = vel105_120;
+        if(distanta <= 116 && distanta > 105 && act_outtake) {
+            target_velocity = vel105_116;
             if(!ramp) {
-                servo_rampa.setPosition(p105_120);
+                servo_rampa.setPosition(p105_116);
             }
             zone = 8;
             timer.reset();
         }
 
-        if(distanta > 121 && distanta <= 140 && act_outtake) {
+        if(distanta > 116 && distanta <= 140 && act_outtake) {
             if(!ramp) {
                 servo_rampa.setPosition(p120);
                 target_velocity = vel120;
@@ -306,10 +306,10 @@ public class OuttakeModule extends Constants.outtake {
             timer.reset();
         }
 
-        if (distanta <= 120 && distanta > 105 && act_outtake) {
-            target_velocity = vel105_120;
+        if (distanta <= 116 && distanta > 105 && act_outtake) {
+            target_velocity = vel105_116;
             if(!ramp)
-                servo_rampa.setPosition(p105_120);
+                servo_rampa.setPosition(p105_116);
             zone = 8;
             timer.reset();
         }
@@ -332,7 +332,7 @@ public class OuttakeModule extends Constants.outtake {
 //            timer.reset();
 //        }
 
-        if (distanta > 120 && act_outtake) {
+        if (distanta > 116 && act_outtake) {
             double extra_power = distanta - 120;
             if(!ramp) {
                 servo_rampa.setPosition(p120);
