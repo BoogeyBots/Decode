@@ -15,13 +15,13 @@ public class AscentModule {
         ridicare_right = hardwareMap.get(Servo.class, "ridicare_right");
         ridicare_left = hardwareMap.get(Servo.class, "ridicare_left");
 
-        ridicare_right.setPosition(0.85);
-        ridicare_left.setPosition(0.1);
+        ridicare_right.setPosition(1-0.3);
+        ridicare_left.setPosition(0.3);
     }
 
     public void tilt() {
-        ridicare_right.setPosition(0.1);
-        ridicare_left.setPosition(0.9);
+        ridicare_right.setPosition(1-0.6);
+        ridicare_left.setPosition(0.6);
     }
 
 }

@@ -322,7 +322,7 @@ public class auto_18_red extends OpMode {
             case 16:
                 if(pathTimer.getElapsedTimeSeconds() > 0.9){
                     follower.followPath(trage_gate, true);
-                    deblocare(0.37);
+                    deblocare(0.35);
                     setPathState(17);
                 }
                 break;
