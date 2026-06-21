@@ -28,7 +28,7 @@ public class OuttakeModule extends Constants.outtake {
     ElapsedTime timer;
     public static double vel50_60 = 960, vel60_70 = 970, vel70_75 = 1045, vel75_80 = 1140, vel80_86 = 1200, vel86_95 = 1180, vel95_105 = 1250, vel105_116 = 1320, vel120 = 1450, vel144 = 1240, progresie = 4.8; //1060 1090
     public static double p50_60 = 0, p60_70 = 0.1, p70_75 = 0.2, p75_80 = 0.34, p80_86 = 0.49, p86_95 = 0.41, p95_105 = 0.43, p105_116 = 0.46, p120 = 0.57, p_120auto = 0.65;
-    public static double compaprapr=0.2, compaprdep=0.25, compdep=0.28;
+    public static double compaprapr=0.2, compaprdep=0.23, compdep=0.28;
 
     PIDFController controller = new PIDFController(kp, 0, 0, 0);
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ks, kv, ka);
@@ -347,6 +347,8 @@ public class OuttakeModule extends Constants.outtake {
             double ff_output = feedforward.calculate(1100);
             double output = PID_output + ff_output;
 
+            act_outtake = false;
+
             motorDR.setPower(output * (nominalvoltage / voltage));
             motorST.setPower(output * (nominalvoltage / voltage));
         }
@@ -355,6 +357,8 @@ public class OuttakeModule extends Constants.outtake {
             double PID_output = controller.calculate(velocity, 1400);
             double ff_output = feedforward.calculate(1400);
             double output = PID_output + ff_output;
+
+            act_outtake = false;
 
             motorDR.setPower(output * (nominalvoltage / voltage));
             motorST.setPower(output * (nominalvoltage / voltage));

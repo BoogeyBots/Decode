@@ -34,6 +34,7 @@ public class auto_far_blue extends OpMode {
     double m;
     private Timer pathTimer;
     private int pathState;
+    double delta_velocity;
     public static double cat_trage = 0.4;
     /*   public static double x_startPose = 118.651, y_startPose = 127.826, heading_startPose = 225;
        public static double x_preload = 86, y_preload = 83, heading_preload = 225;
@@ -212,7 +213,9 @@ public class auto_far_blue extends OpMode {
 
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > 0.15){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(3);
                 }
                 break;
@@ -221,6 +224,7 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(rand3, true);
                     setPathState(4);
                 }
@@ -236,14 +240,15 @@ public class auto_far_blue extends OpMode {
             case 5:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
                     deblocare(0.57);
-                    act_outtake = true;
                     setPathState(6);
                 }
                 break;
 
             case 6:
                 if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(7);
                 }
                 break;
@@ -252,6 +257,7 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(human, false);
                     setPathState(8);
                 }
@@ -283,7 +289,6 @@ public class auto_far_blue extends OpMode {
 
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
                     deblocare(0.58);
-                    act_outtake = true;
                     setPathState(12);
                 }
                 break;
@@ -291,7 +296,9 @@ public class auto_far_blue extends OpMode {
             case 12:
 
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(13);
                 }
                 break;
@@ -300,6 +307,7 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(fanta2, false);
                     setPathState(14);
                 }
@@ -331,7 +339,9 @@ public class auto_far_blue extends OpMode {
 
             case 17:
                 if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(18);
                 }
                 break;
@@ -340,6 +350,7 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
                     intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(fanta3, false);
                     setPathState(19);
                 }
@@ -362,14 +373,15 @@ public class auto_far_blue extends OpMode {
             case 21:
                 if (pathTimer.getElapsedTimeSeconds() > 0.7){
                     deblocare(0.6);
-                    act_outtake = true;
                     setPathState(22);
                 }
                 break;
 
             case 22:
                 if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(23);
                 }
                 break;
@@ -378,6 +390,7 @@ public class auto_far_blue extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 0.55){
                     numaitrag();
                     intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(fanta4);
                     setPathState(24);
                 }
@@ -400,14 +413,15 @@ public class auto_far_blue extends OpMode {
             case 26:
                 if(pathTimer.getElapsedTimeSeconds() > 0.7){
                     deblocare(0.60);
-                    act_outtake = true;
                     setPathState(27);
                 }
                 break;
 
             case 27:
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(28);
                 }
                 break;
@@ -447,7 +461,7 @@ public class auto_far_blue extends OpMode {
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
-
+        delta_velocity = velocity - target_velocity;
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);
         telemetry.addData("y", y);

@@ -211,7 +211,9 @@ public class auto_18_blue extends OpMode {
 
             case 1:
                     if(follower.atPose(scorePose, 5, 5)) {
-                        trage();
+                        if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                            trage();
+                        }
                         setPathState(2);
                     }
                     break;
@@ -219,7 +221,8 @@ public class auto_18_blue extends OpMode {
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
                     numaitrag();
-                    trage();
+                    intake.trage_transfer(0.5);
+                    intake.trage_intake(1);
                     follower.followPath(rand1, true);
                     setPathState(3);
                 }
@@ -239,7 +242,9 @@ public class auto_18_blue extends OpMode {
 
             case 5:
                 if(follower.atPose(scorePose, 5, 5)) {
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(6);
                 }
                 break;
@@ -247,7 +252,8 @@ public class auto_18_blue extends OpMode {
             case 6:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
-                    trage();
+                    intake.trage_transfer(0.5);
+                    intake.trage_intake(1);
                     follower.followPath(rand2, true);
                     setPathState(7);
                 }
@@ -267,7 +273,9 @@ public class auto_18_blue extends OpMode {
 
             case 9:
                 if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(10);
                 }
                 break;
@@ -299,7 +307,9 @@ public class auto_18_blue extends OpMode {
 
             case 13:
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(14);
                 }
                 break;
@@ -314,7 +324,8 @@ public class auto_18_blue extends OpMode {
 
             case 15:
                 if(!follower.isBusy()) {
-                    trage();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     setPathState(16);
                 }
                 break;
@@ -329,7 +340,9 @@ public class auto_18_blue extends OpMode {
 
             case 17:
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(18);
                 }
                 break;
@@ -344,7 +357,8 @@ public class auto_18_blue extends OpMode {
 
             case 19:
                 if(!follower.isBusy()) {
-                    trage();
+                    intake.trage_transfer(0.5);
+                    intake.trage_intake(1);
                     setPathState(20);
                 }
                 break;
@@ -359,7 +373,9 @@ public class auto_18_blue extends OpMode {
 
             case 21:
                 if(follower.atPose(parcare, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(22);
                 }
                 break;
@@ -399,6 +415,8 @@ public class auto_18_blue extends OpMode {
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
+        delta_velocity = velocity - target_velocity;
+
 
         telemetry.addData("path state", pathState);
         telemetry.addData("x", x);
@@ -411,19 +429,16 @@ public class auto_18_blue extends OpMode {
         outtake.update_kinematics();
         turret.update_blue_auto(x, y, h);
 
-        if(target_atins && delta_velocity < -50) {
-            if(distanta > 125) {
-                outtake.reglare_departe();
-            }
-
-            else if(distanta > 78) {
-                outtake.reglare_aproape_far();
-            }
-
-            else {
-                outtake.reglare_aproape_aproape();
-            }
+        if(target_atins && distanta > 116 && delta_velocity < -50) {
+            outtake.reglare_departe();
         }
+
+        else if(target_atins && distanta > 78 && delta_velocity < -20 && distanta <= 116) {
+            outtake.reglare_aproape_far();
+        }
+
+        else if(target_atins && delta_velocity < -15 && distanta <= 78)
+            outtake.reglare_aproape_aproape();
     }
 
     @Override

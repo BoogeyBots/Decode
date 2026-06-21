@@ -204,7 +204,7 @@ public class TurretModule extends Constants.turret {
 
     public void update_red_auto (double x, double y, double h) {
         if(distanta < 120) {
-            relative_angle = Math.toDegrees(Math.atan2(144 - y, 150 - x));
+            relative_angle = Math.toDegrees(Math.atan2(144 - y, 152 - x));
         }
 
         else relative_angle = Math.toDegrees(Math.atan2(144 - y, 139 - x));

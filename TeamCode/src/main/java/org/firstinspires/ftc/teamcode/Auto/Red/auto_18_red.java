@@ -55,9 +55,9 @@ public class auto_18_red extends OpMode {
     private final Pose collect2 = new Pose(125.27, 59, Math.toRadians(180));
     private final Pose cp_collect2 = new Pose(43.82, 60.48).mirror();
     // private final Pose collect3 = new Pose(x_collect3, y_collect3, heading_collect).mirror();
-    private final Pose colectare_gate = new Pose(7.5, 56.5, Math.toRadians(-20)).mirror();
-    private final Pose colectare_gate2 = new Pose(7.5, 56.5, Math.toRadians(-20)).mirror();
-    private final Pose colectare_gate3 = new Pose(7.5, 56.5, Math.toRadians(-20)).mirror();
+    private final Pose colectare_gate = new Pose(8, 56, Math.toRadians(-20)).mirror();
+    private final Pose colectare_gate2 = new Pose(8, 56, Math.toRadians(-20)).mirror();
+    private final Pose colectare_gate3 = new Pose(8, 56, Math.toRadians(-20)).mirror();
     private final Pose cp_gate = new Pose(34.75, 57.47).mirror();
     private final Pose cp_trage_gate = new Pose(44.40, 68.77).mirror();
     //private final Pose cp_rand2 = new Pose(x_cp2, y_cp2).mirror();
@@ -202,8 +202,8 @@ public class auto_18_red extends OpMode {
             case 0:
                 follower.followPath(scorePreload, true);
                 act_outtake = true;
-                if(pathTimer.getElapsedTime() > 0.1){
-                    deblocare(0.45);
+                if(pathTimer.getElapsedTime() > 0.1) {
+                    deblocare(0.4);
                     setPathState(1);
                 }
 
@@ -211,15 +211,18 @@ public class auto_18_red extends OpMode {
 
             case 1:
                 if(follower.atPose(scorePose, 5, 5)) {
-                    trage();
+                    if(act_outtake && delta_velocity < 50 && delta_velocity > -50) {
+                        trage();
+                    }
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if(pathTimer.getElapsedTimeSeconds() > cat_trage) {
+                if(pathTimer.getElapsedTimeSeconds() > 0.5) {
                     numaitrag();
-                    trage();
+                    intake.trage_transfer(0.5);
+                    intake.trage_intake(1);
                     follower.followPath(rand1, true);
                     setPathState(3);
                 }
@@ -239,7 +242,9 @@ public class auto_18_red extends OpMode {
 
             case 5:
                 if(follower.atPose(scorePose, 5, 5)) {
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
                     trage();
+                }
                     setPathState(6);
                 }
                 break;
@@ -247,7 +252,8 @@ public class auto_18_red extends OpMode {
             case 6:
                 if(pathTimer.getElapsedTimeSeconds() > cat_trage){
                     numaitrag();
-                    trage();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     follower.followPath(rand2, true);
                     setPathState(7);
                 }
@@ -267,7 +273,9 @@ public class auto_18_red extends OpMode {
 
             case 9:
                 if (follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(10);
                 }
                 break;
@@ -299,7 +307,9 @@ public class auto_18_red extends OpMode {
 
             case 13:
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(14);
                 }
                 break;
@@ -314,7 +324,8 @@ public class auto_18_red extends OpMode {
 
             case 15:
                 if(!follower.isBusy()) {
-                    trage();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     setPathState(16);
                 }
                 break;
@@ -329,7 +340,9 @@ public class auto_18_red extends OpMode {
 
             case 17:
                 if(follower.atPose(scorePose, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(18);
                 }
                 break;
@@ -344,7 +357,8 @@ public class auto_18_red extends OpMode {
 
             case 19:
                 if(!follower.isBusy()) {
-                    trage();
+                    intake.trage_intake(1);
+                    intake.trage_transfer(0.5);
                     setPathState(20);
                 }
                 break;
@@ -359,7 +373,9 @@ public class auto_18_red extends OpMode {
 
             case 21:
                 if(follower.atPose(parcare, 5, 5)){
-                    trage();
+                    if(act_outtake && delta_velocity < 40 && delta_velocity > -40) {
+                        trage();
+                    }
                     setPathState(22);
                 }
                 break;
@@ -392,6 +408,8 @@ public class auto_18_red extends OpMode {
         follower.update();
         autonomousPathUpdate();
 
+        delta_velocity = velocity - target_velocity;
+
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
         double h = Math.toDegrees(follower.getPose().getHeading());
@@ -411,15 +429,18 @@ public class auto_18_red extends OpMode {
         outtake.update_kinematics();
         turret.update_red_auto(x, y, h);
 
-        if(target_atins && delta_velocity < -50) {
-            if (distanta > 125) {
-                outtake.reglare_departe();
-            } else if (distanta > 77) {
-                outtake.reglare_aproape_far();
-            } else {
-                outtake.reglare_aproape_aproape();
-            }
+        if(target_atins && distanta > 116 && delta_velocity < -50) {
+            outtake.reglare_departe();
         }
+
+        else if(target_atins && distanta > 78 && delta_velocity < -20 && distanta <= 116) {
+            outtake.reglare_aproape_far();
+        }
+
+        else if(target_atins && delta_velocity < -15 && distanta <= 78)
+            outtake.reglare_aproape_aproape();
+
+
     }
 
     @Override
@@ -450,7 +471,6 @@ public class auto_18_red extends OpMode {
     public void numaitrag() {
         outtake.blocat();
         target_velocity = 1100;
-        intake.trage_transfer(0.47);
         target_atins = false;
     }
 
@@ -463,4 +483,5 @@ public class auto_18_red extends OpMode {
     }
 }
 
-
+//esti big shrek
+//ce parere ai de bunnis?
